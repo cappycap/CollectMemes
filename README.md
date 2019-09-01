@@ -1,4 +1,4 @@
 # CollectMemes-Backend
 Backend/website for CollectMemes.
 
-![Backend Diagram](/CollectMemesBackend.png)
+![Backend Diagram]("/CollectMemes Backend.png")
