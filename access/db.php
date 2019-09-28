@@ -25,4 +25,34 @@ function inCollection($collection, $target) {
 
 }
 
+// Function for returning an array pack for naming, colorizing.
+function getRankInfo($memeRank, $dbSize) {
+
+	$ratio = intval($memeRank) / intval($dbSize);
+	$info = array();
+
+	if ($ratio <= 0.03) {
+
+		// Meme is Legendary.
+
+	} else if ($ratio > 0.03 and $ratio <= 0.13) {
+
+		// Meme is Epic.
+
+	} else if ($ratio > 0.13 and $ratio <= 0.28) {
+
+		// Meme is Rare.
+
+	} else if ($ratio > 0.28 and $ratio <= 0.58) {
+
+		// Meme is Uncommon.
+
+	} else if ($ratio > 0.58 and $ratio <= 1) {
+
+		// Meme is Common.
+
+	}
+
+}
+
 ?>

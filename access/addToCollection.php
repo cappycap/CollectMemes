@@ -63,7 +63,6 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
     $stmtUser->bind_param("i",$userId);
 
-
     $stmtUser->execute();
 
     $stmtUser->bind_result($collection,$collectionSize,$collectionSum);

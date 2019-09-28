@@ -35,7 +35,17 @@ if (isset($_GET['key'])) {
           $response['success'] = 1;
           $response['profile'] = $profile;
 
+        } else {
+
+          $response["success"] = 0;
+
         }
+
+      } else {
+
+        $response["success"] = 0;
+
+      }
 
     } else {
 
@@ -43,10 +53,15 @@ if (isset($_GET['key'])) {
 
     }
 
-    $response["success"] = 0;
+  } else {
+
+    $response['success'] = 0;
 
   }
 
+} else {
+
+  $response['success'] = 0;
 }
 
 echo json_encode($response);
