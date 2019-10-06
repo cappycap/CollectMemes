@@ -1,5 +1,4 @@
 # CollectMemes
-Backend/website for CollectMemes.
 =======
 
 Featuring:
