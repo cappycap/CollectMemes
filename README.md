@@ -1,11 +1,10 @@
-# CollectMemes-Backend
-<<<<<<< HEAD
+# CollectMemes
 Backend/website for CollectMemes.
 =======
 
 Featuring:
 * An API built around efficient GET and POST calls with either an Android or iOS client. 
-* Web access pages.
+* PHP-based JSON output pages rendered by Jasonette-powered apps for both platforms.
 * Operater files such as cronjob-powered ranking, meme submission, key management, app redirection, & more.
 
 ![Backend Diagram](/CollectMemesBackend.png)
