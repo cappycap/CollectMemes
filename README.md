@@ -5,5 +5,5 @@ Featuring:
 * PHP-based JSON output pages rendered by Jasonette-powered apps for both platforms.
 * Operater files such as cronjob-powered ranking, meme submission, key management, app redirection, & more.
 
-![Backend Diagram](/CollectMemesBackend.png)
+![Backend Diagram](/graphic.png)
 >>>>>>> 25b4e2ddb2ed97a4cf7d6e8a9a67b7e093ca6869
