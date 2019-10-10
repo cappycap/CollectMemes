@@ -1,0 +1,14 @@
+{
+  "layers": [
+    {
+      "type": "image",
+      "url": "https://collectmemes.com/app-images-new/logo.png",
+      "style": {
+        "width": "300",
+        "height": "100",
+        "top": "50%-50",
+        "left": "50%-150"
+      }
+    }
+  ]
+}

@@ -1,7 +1,5 @@
 <?php
-header('Content-Type: application/json');
-
-require 'base.php';
+header('Content-type:application/json;charset=utf-8');
 
 // Define response array for delivering status.
 $jason = array();
@@ -11,13 +9,19 @@ $jason = array();
     $head = array();
 
       // Get this from somewhere!
-      /*$data = "none"; */
+      $data = array("names"=>array(array("type"=>"people","items"=>array(array("name"=>"foo"),array("name"=>"bah"),array("name"=>"zee")))));
 
       $head['data'] = $data;
 
-      /*
+      $head['title'] = "Empty";
+
+
       $actions = array();
 
+        // Actions on app returning from background state.
+        $actions['$foreground'] = array("type"=>"\$reload");
+
+        /*
         // Actions on view loading for the first time.
         $actions['$load'] = array();
 
@@ -26,12 +30,10 @@ $jason = array();
 
         // Actions on pull down.
         $actions['$pull'] = array();
-
-        // Actions on app returning from background state.
-        $actions['$foreground'] = array();
+        */
 
       $head['actions'] = $actions;
-      */
+
 
       $templates = array();
 
@@ -47,6 +49,11 @@ $jason = array();
           "menu"=>array(
             "image"=>"https://collectmemes.com/menu.png"));
 
+      $sections = array(
+        "{{#each names}}"=>array(array("type"=>"horizontal","items"=>array("{{#each items}}"=>array("type"=>"vertical","style"=>array("background"=>"#fafafa","padding"=>"9","width"=>"90","height"=>"120"),"components"=>array(
+          array("type"=>"label","text"=>"{{name}}","style"=>array("background"=>"#cecece","size"=>"12")))))))
+      );
+
       $footer = array(
         "tabs"=>array(
           "style"=>array(
@@ -54,20 +61,20 @@ $jason = array();
             "color"=>"#000000"),
             "items"=>array(
               array(
-                "image"=>"",
+                "image"=>"https://collectmemes.com/menu.png",
                 "style"=>array(
                   "height"=>"21"),
                 "url"=>"https://collectmemes.com/views/friends.php"),
-              array("image"=>"",
+              array("image"=>"https://collectmemes.com/menu.png",
                 "style"=>array(
                   "height"=>"21"),
                 "url"=>"https://collectmemes.com/views/collect.php"),
-              array("image"=>"",
+              array("image"=>"https://collectmemes.com/menu.png",
                 "style"=>array(
                   "height"=>"21"),
                 "url"=>"https://collectmemes.com/views/vault.php"))));
 
-      $templateBody = array("header"=>$header,"footer"=>$footer);
+      $templateBody = array("header"=>$header,"sections"=>$sections,"footer"=>$footer);
 
       $templates['body'] = $templateBody;
 
