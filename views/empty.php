@@ -29,10 +29,10 @@ $json = '
                 "width": "94",
                 "height": "27"
               },
-              "url": "https://collectmemes.com/app-images/logo.png"
+              "url": "https://collectmemes.com/img/logo.png"
             },
             "menu": {
-              "image": "https://collectmemes.com/app-images/menu.png"
+              "image": "https://collectmemes.com/img/menu.png"
             }
           },
           "sections": [
@@ -134,21 +134,21 @@ $json = '
               },
               "items": [
                 {
-                  "image": "https://collectmemes.com/app-images-new/friends.png",
+                  "image": "https://collectmemes.com/img-new/friends.png",
                   "style": {
                     "height": "21"
                   },
                   "url": "https://collectmemes.com/views/friends.php"
                 },
                 {
-                  "image": "https://collectmemes.com/app-images-new/collect.png",
+                  "image": "https://collectmemes.com/img-new/collect.png",
                   "style": {
                     "height": "21"
                   },
                   "url": "https://collectmemes.com/views/collect.php"
                 },
                 {
-                  "image": "https://collectmemes.com/app-images-new/vault.png",
+                  "image": "https://collectmemes.com/img-new/vault.png",
                   "style": {
                     "height": "21"
                   },

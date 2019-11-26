@@ -1,0 +1,544 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Collect",
+      "actions": {
+        "$load": [{
+          "{{#if $global.firstLoadDone == 0}}": {
+            "type": "$cache.set",
+            "options": {
+              "collectStatus": "1"
+            },
+            "success": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/access/getList.php",
+                "method": "post",
+                "data": {
+                  "userId": "{{$global.userKey}}",
+                  "pass": "933kfjhga7862344bv"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "list": "{{$jason}}"
+                },
+                "success": {
+                  "type": "$cache.set",
+                  "options": {
+                    "spinStatus": "1"
+                  },
+                  "success": {
+                    "type": "$cache.set",
+                    "options": [{
+                        "{{#each $cache.list}}": {
+                          "{{#if $index == $global.spinsLeft}}": {
+                            "current": "{{this.id}}"
+                          }
+                        }
+                      }
+                    ],
+                    "success": {
+                      "type": "$network.request",
+                      "options": {
+                        "url": "https://collectmemes.com/access/checkTimeMinus901.php"
+                      },
+                      "success": {
+                        "type": "$cache.set",
+                        "options": {
+                          "lastCollect": "{{$jason.time}}"
+                        },
+                        "success": {
+                          "type": "$render"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "{{#else}}": [{
+              "{{#if $cache.collectStatus}}": {
+                "type": "$render"
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$network.request",
+                "options": {
+                  "url": "https://collectmemes.com/access/checkTimeMinus900.php"
+                },
+                "success": [{
+                  "{{#if $jason.time > $cache.lastCollect}}": {
+                    "type": "$cache.set",
+                    "options": {
+                      "collectStatus": "1"
+                    },
+                    "success": {
+                      "type": "$network.request",
+                      "options": {
+                        "url": "https://collectmemes.com/access/getList.php",
+                        "method": "post",
+                        "data": {
+                          "userId": "{{$global.userKey}}",
+                          "pass": "933kfjhga7862344bv"
+                        }
+                      },
+                      "success": {
+                        "type": "$cache.set",
+                        "options": {
+                          "list": "{{$jason}}"
+                        },
+                        "success": {
+                          "type": "$cache.set",
+                          "options": {
+                            "spinStatus": "1"
+                          },
+                          "success": {
+                            "type": "$cache.set",
+                            "options": [{
+                                "{{#each $cache.list}}": {
+                                  "{{#if $index == $global.spinsLeft}}": {
+                                    "current": "{{this.id}}"
+                                  }
+                                }
+                              }
+                            ],
+                            "success": {
+                              "type": "$render"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "{{#else}}": {
+                    "type": "$network.request",
+                    "options": {
+                      "url": "https://collectmemes.com/access/timeLeft.php",
+                      "method": "post",
+                      "data": {
+                        "lastCollect": "{{$cache.lastCollect}}"
+                      }
+                    },
+                    "success": {
+                      "type": "$timer.start",
+                      "options": {
+                        "interval": "{{$jason.timeLeft}}",
+                        "name": "timer1",
+                        "repeats": "false",
+                        "action": {
+                          "type": "$cache.set",
+                          "options": {
+                            "collectStatus": "1"
+                          },
+                          "success": {
+                            "type": "$network.request",
+                            "options": {
+                              "url": "https://collectmemes.com/access/getList.php",
+                              "method": "post",
+                              "data": {
+                                "userId": "{{$global.userKey}}",
+                                "pass": "933kfjhga7862344bv"
+                              }
+                            },
+                            "success": {
+                              "type": "$cache.set",
+                              "options": {
+                                "list": "{{$jason}}"
+                              },
+                              "success": {
+                                "type": "$cache.set",
+                                "options": {
+                                  "spinStatus": "1"
+                                },
+                                "success": {
+                                  "type": "$timer.stop",
+                                  "options": {
+                                    "name": "timer1"
+                                  },
+                                  "success": {
+                                    "type": "$cache.set",
+                                    "options": [{
+                                        "{{#each $cache.list}}": {
+                                          "{{#if $index == $global.spinsLeft}}": {
+                                            "current": "{{this.id}}"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "success": {
+                                      "type": "$render"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                ]
+              }
+            }
+          ]
+        }],
+        "onSpin": {
+          "type": "$global.set",
+          "options": {
+            "spinsLeft": "{{$global.spinsLeft - 1}}"
+          },
+          "success": [
+            {
+              "{{#if $global.spinsLeft == 0}}": {
+                "type": "$cache.set",
+                "options": {
+                  "spinStatus": "0"
+                },
+                "success": {
+                  "type": "$render"
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$render"
+              }
+            }
+          ]
+        },
+        "onCollect": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/checkTime.php"
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "lastCollect": "{{$jason.time}}"
+            },
+            "success": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/access/addToCollection.php",
+                "method": "post",
+                "data": {
+                  "userId": "{{$global.userKey}}",
+                  "memeId": "{{$cache.current}}"
+                }
+              }
+            }
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "style": {
+            "background": {
+              "type": "html",
+              "text": "<html>
+              <head>
+              <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+              <style>
+                .rotate-scale-up {
+                  animation: rotate-scale-up 0.3s linear both;
+                }
+
+                @keyframes rotate-scale-up {
+                  0% {
+                    transform: scale(3) rotateZ(0);
+                  }
+                  50% {
+                    transform: scale(2) rotateZ(180deg);
+                  }
+                  100% {
+                    transform: scale(1) rotateZ(360deg);
+                  }
+                }
+
+                .center {
+                  width:100%;
+                  margin:0;
+                  padding:0;
+                }
+
+                body {
+                  background:#111111;margin:0;height:100%;
+                }
+
+                .num {
+                  color:green;
+                }
+
+                .tracking-in-expand-fwd {
+                  left:0;
+                  animation: tracking-in-expand-fwd 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s both;
+                  width:100%;
+                  text-align:center;
+                  color:#111111;
+                  font-size:10vw;
+                  margin:0;
+                  padding:3% 0;
+                }
+
+                @keyframes tracking-in-expand-fwd {
+                0% {
+                  letter-spacing:-0.5em;
+                  transform: translateZ(-700px);
+                  opacity: 0;
+                }
+                50% {
+                  transform: translateZ(0);
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateZ(-700px);
+                  opacity: 0;
+                }
+              }
+
+              .buttons {
+                width:100%;
+                height:12%;
+                margin-top:6%;
+                color:#fff;
+                padding:0;
+                font-size:6vw;
+                text-align:center;
+              }
+
+              .spin-again {
+                display:inline-block;float:left;width:48%;height:100%;background:#34495e;border-radius:0px 35px 35px 0px;
+              }
+
+              .collect-meme {
+                display:inline-block;float:right;width:48%;height:100%;background:#3b9fdf;border-radius:35px 0px 0px 35px;
+              }
+
+              .centered-text {
+                display: table;
+                  height: 100%;
+                  width: 100%;
+              }
+
+              .centered-text span {
+                display: table-cell;
+                  vertical-align: middle;
+              }
+
+.box {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  margin: 0px 0px 0px 0px;
+}
+
+.box-sm {
+  height: 8px;
+  margin: 0;
+  flex-grow: 1;
+  transition: all .8s ease-in-out;
+  cursor: pointer;
+}
+.out {
+  background-color: #57bbfb;
+}
+
+.mid {
+  background-color: #3b9fdf;
+}
+
+.centerb {
+  background-color: #1a7ebe;
+}
+.info {
+  width:100%;
+  text-align:center;
+  display:table;
+  margin:20px 10px;
+  padding:0;
+  height:60px;
+  color:#111111;
+}
+.section-right {
+  display:table-cell;
+  width:16%;
+  background:#111111;
+  vertical-align:middle;
+  padding:4px;
+  font-size:20px;
+}
+
+.section-middle {
+  display:table-cell;
+  width:68%;
+  background:#0f0f0f;
+  color:white;
+  font-size:20px;
+  vertical-align:middle;
+}
+
+.section-left {
+  display:table-cell;
+  width:16%;
+  background:#111111;
+  color:white;
+  border:3px solid #FAB657;
+  vertical-align:middle;
+  padding:4px;
+  font-size:16px;
+}
+.source {
+  font-size:15px;
+}
+              </style>
+              </head>
+              <body>
+              <div class='info'>
+                <div class='section-left'>
+                  <div class='inner'>Rank:
+                  #307</div>
+                </div>
+                <div class='section-middle'>
+                  <div class='title'>Doot Doot.</div>
+                  <div class='source'>
+                    reddit - unknown
+                  </div>
+                </div>
+                <div class='section-right'>
+                  <div class='inner'></div>
+                </div>
+              </div>
+              <div class='box'>
+                <div class='box-sm out'></div>
+                <div class='box-sm mid'></div>
+                <div class='box-sm centerb'></div>
+                <div class='box-sm centerb'></div>
+                <div class='box-sm mid'></div>
+                <div class='box-sm out'></div>
+              </div>
+              <img class='rotate-scale-up center child' src='https://i.redd.it/tdwbxvaxf5v31.jpg'>
+              <div class='box'>
+              <div class='box-sm out'></div>
+              <div class='box-sm mid'></div>
+              <div class='box-sm centerb'></div>
+              <div class='box-sm centerb'></div>
+              <div class='box-sm mid'></div>
+              <div class='box-sm out'></div>
+</div>
+              <script>
+              var cw = $('.child').width();
+              $('.child').css({'height':cw+'px'});
+              </script>
+              </body></html>"
+            }
+          },
+          "header": {
+            "style": {
+              "background": "#ffffff"
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            },
+            "menu": {
+              "image": "https://collectmemes.com/img/menu.png",
+              "href": {
+                "url": "https://collectmemes.com/views/collect.json",
+                "transition": "push"
+              }
+            }
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/heart-white.png",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "top": "86",
+                "left": "86%-8"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Spin Again",
+              "style": {
+                "width": "47%",
+                "height": "8%",
+                "align": "center",
+                "top": "74%+50",
+                "left": "2%",
+                "background": "#34495e",
+                "color": "#ffffff",
+                "size": "22",
+                "corner_radius": "25"
+              },
+              "href": {
+                "url": "https://collectmemes.com/views/collect.json",
+                "transition": "push",
+                "loading": "true"
+              }
+            },
+            {
+              "type": "label",
+              "text": [
+                {
+                  "{{#if 1}}": "10 spins left"
+                },
+                {
+
+                }
+                ],
+              "style": {
+                "width": "47%",
+                "height": "8%",
+                "align": "center",
+                "top": "81%+55",
+                "left": "2%";
+                "color": "#0CE84A",
+                "size": "25"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Collect!",
+              "style": {
+                "width": "47%",
+                "height": "8%",
+                "align": "center",
+                "top": "74%+50",
+                "left": "51%";
+                "background": "#319CDE",
+                "color": "#ffffff",
+                "size": "22",
+                "corner_radius": "25"
+              },
+              "href": {
+                "url": "https://collectmemes.com/views/vault.json",
+                "transition": "push"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

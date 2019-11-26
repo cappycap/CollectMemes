@@ -9,7 +9,7 @@ if (isset($_GET['username']) and isset($_GET['password']) and isset($_GET['email
 
   // Clean + define variables.
   $user = $con->real_escape_string($_GET['username']);
-  $password = $con->real_escape_string($_GET['password']);
+  $password = crypt($con->real_escape_string($_GET['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
   $email = $con->real_escape_string($_GET['email']);
   $collection = "";
   $lastRoll = date("Y-m-d H:i:s",time() - 1810);

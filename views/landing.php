@@ -37,7 +37,7 @@ $json = '{
           "layers": [
             {
               "type": "image",
-              "url": "https://collectmemes.com/app-images-new/gifs/logo-spin.gif",
+              "url": "https://collectmemes.com/img/gifs/logo-spin.gif",
               "style": {
                 "width": "300",
                 "height": "100",
@@ -47,7 +47,7 @@ $json = '{
             },
             {
               "type": "label",
-              "text": "What if we kissed while the app loaded? JK! Unless...",
+              "text": "' . $phrase . '",
               "style": {
                 "width": "80%",
                 "height": "100",

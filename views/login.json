@@ -1,42 +1,200 @@
 {
   "$jason": {
     "head": {
-      "title": "login"
-    },
-    "body": {
-      "background": "#ffffff",
-      "layers": [
+      "title": "login",
+      "actions": {
+        "$load": [{
+          "{{#if typeOf $cache.last !== 'undefined'}}": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/access/checkTimeMinus600.php"
+            },
+            "success": [{
+              "{{#if $jason.time > $cache.last}}": {
+                "type": "$cache.set",
+                "options": {
+                  "tries": "4"
+                },
+                "success": {
+                  "type": "$render"
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$timer.start",
+                "options": {
+                  "interval": "{{ 600 - ($jason.time - $cache.last) }}",
+                  "name": "timer1",
+                  "repeats": "false",
+                  "action": {
+                    "type": "$cache.set",
+                    "options": {
+                      "tries": "4"
+                    },
+                    "success": {
+                      "type": "$cache.set",
+                      "options": {
+                        "last": "undefined"
+                      },
+                      "success": {
+                        "type": "$reload"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            ]
+          }
+          }
+        ],
+        "onLogin": [{
+          "{{#if typeOf $cache.tries !== 'undefined'}}": [{
+            "{{#if $cache.tries > 0}}": {
+              "trigger": "attemptLogin"
+            }
+            },
+            {
+              "{{#else}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Too Many Attempts",
+                  "description": "You have failed to login too many times. Please wait 10 minutes and try again."
+                }
+              }
+            }
+          ]
+        },
         {
-          "type": "image",
-          "url": "https://collectmemes.com/app-images-new/logo.png",
-          "style": {
-            "width": "300",
-            "height": "100",
-            "top": "25%-100",
-            "left": "50%-150"
+          "{{#else}}": {
+            "type": "$cache.set",
+            "options": {
+              "tries": "4"
+            },
+            "success": {
+              "trigger": "attemptLogin"
+            }
+          }
+        }
+      ],
+      "attemptLogin": {
+        "type": "$network.request",
+        "options": {
+          "url": "https://collectmemes.com/access/checkUser.php",
+          "method": "post",
+          "data": {
+            "username": "$get.username",
+            "password": "$get.password"
+          }
+        },
+        "success": [{
+          "{{#if $jason.success == 1}}": {
+            "type": "$global.set",
+            "options": {
+              "userKey": "{{$jason.userKey}}"
+            },
+            "success": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/views/collect.json"
+              }
+            }
           }
         },
         {
+          "{{#else}}": [
+              {
+                "{{#if $cache.tries !== 1}}": {
+                "type": "$cache.set",
+                "options": {
+                  "tries": "{{$cache.tries - 1}}"
+                },
+                "success": {
+                  "type": "$util.alert",
+                  "options": {
+                    "title": "Oops! Incorrect Info",
+                    "description": "You have {{$cache.tries}} tries left until you're locked out for 10 minutes."
+                  },
+                  "success": {
+                    "type": "$reload"
+                  }
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$cache.set",
+                "options": {
+                  "tries": "0"
+                },
+                "success": {
+                  "type": "$network.request",
+                  "options": {
+                    "url": "https://collectmemes.com/access/checkTime.php"
+                  },
+                  "success": {
+                    "type": "$cache.set",
+                    "options": {
+                      "last": "{{$jason.time}}"
+                    },
+                    "success": {
+                      "type": "$util.alert",
+                      "options": {
+                        "title": "Too Many Attempts",
+                        "description": "You have failed to login too many times. Please wait 10 minutes and try again."
+                      },
+                      "success": {
+                        "type": "$reload"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+        ]
+      }
+      }
+    },
+    "body": {
+      "background": "#ffffff",
+      "header": {
+        "style": {
+          "background": "#ffffff"
+        },
+        "title": {
+          "type": "image",
+          "style": {
+            "width": "94",
+            "height": "27"
+          },
+          "url": "https://collectmemes.com/img/logo.png"
+        }
+      },
+      "layers": [
+        {
           "type": "label",
-          "text": "Login",
+          "text": "Sign in",
           "style": {
             "color": "#111111",
             "align": "center",
             "width": "300",
             "left": "50%-150",
-            "top": "25%+5",
-            "size": "25"
+            "top": "10%",
+            "size": "30"
           }
         },
         {
           "type": "label",
-          "text": "to an existing account.",
+          "text": "to an existing account!",
           "style": {
             "color": "#b8b8b8",
             "align": "center",
             "width": "300",
             "left": "50%-150",
-            "top": "25%+40",
+            "top": "10%+35",
             "size": "15"
           }
         },
@@ -47,10 +205,10 @@
           "style": {
             "font": "Roboto",
             "size": "20",
-            "color": "#fefefe",
+            "color": "#111111",
             "background": "#eff0f2",
             "padding": "20",
-            "top": "38%",
+            "top": "21%",
             "width": "80%",
             "left": "10%",
             "corner_radius": "30"
@@ -62,11 +220,11 @@
           "style": {
             "font": "Roboto",
             "size": "20",
-            "color": "#fefefe",
+            "color": "#111111",
             "background": "#eff0f2",
             "padding": "20",
             "secure": "true",
-            "top": "50%",
+            "top": "34%",
             "width": "80%",
             "left": "10%",
             "corner_radius": "30"
@@ -74,36 +232,37 @@
         },
         { "type": "label",
           "text": "Sign in",
-          "action": {
-            "type": "$href",
-            "options": {
-              "url": "https://collectmemes.com/views/login.json",
-              "transition": "push"
-            }
-          },
           "style": {
             "width": "300",
             "height": "55",
             "size": "17",
-            "top": "65%",
+            "top": "49%",
             "left": "50%-150",
             "background": "#2d91d1",
             "color": "#ffffff",
             "padding": "2",
             "corner_radius": "50",
             "align": "center"
+          },
+          "action": {
+            "trigger": "onLogin"
           }
         },
         {
-          "type": "label",
-          "text": "Go Back",
+          "type": "image",
+          "url": "https://collectmemes.com/img/back.png",
           "style": {
-            "color": "#b8b8b8",
             "align": "left",
             "left": "2%",
-            "width": "10%",
-            "top": "2%",
-            "size": "15"
+            "width": "7%",
+            "top": "2%"
+          },
+          "action": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/views/welcome.json",
+              "transition": "push"
+            }
           }
         },
         {
@@ -114,8 +273,15 @@
             "align": "right",
             "width": "300",
             "left": "50%-150",
-            "top": "65%+70",
+            "top": "49%+70",
             "size": "15"
+          },
+          "action": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/views/login.json",
+              "transition": "push"
+            }
           }
         }
       ]

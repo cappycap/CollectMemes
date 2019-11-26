@@ -5,14 +5,14 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['password']) and isset($_GET['username'])) {
+if (isset($_POST['password']) and isset($_POST['username'])) {
 
   // Clean variables.
-  $pwd = $con->real_escape_string($_GET['password']);
+  $pwd = crypt($con->real_escape_string($_GET['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
   $user = $con->real_escape_string($_GET['username']);
 
   // Prepare and execute query.
-  $query = "SELECT password FROM users WHERE username=?";
+  $query = "SELECT id,password FROM users WHERE username=?";
 
   if ($stmt = $con->prepare($query)) {
 
@@ -21,7 +21,7 @@ if (isset($_GET['password']) and isset($_GET['username'])) {
     $stmt->execute();
 
     // Bind fetched results to variables.
-    $stmt->bind_result($realPwd);
+    $stmt->bind_result($id,$realPwd);
 
     // Check for results.
     if ($stmt->fetch()) {
@@ -36,6 +36,7 @@ if (isset($_GET['password']) and isset($_GET['username'])) {
 
         // The password matched.
         $response['success'] = 1;
+        $response['userKey'] = $id;
 
       }
 

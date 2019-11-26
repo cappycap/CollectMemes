@@ -1,0 +1,709 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Vault",
+      "actions": {
+        "$foreground": {
+          "type": "$reload"
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "#111111",
+          "style": {
+            "border": "none"
+          },
+          "header": {
+            "style": {
+              "background": "#ffffff"
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            }
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/back.png",
+              "style": {
+                "align": "left",
+                "left": "2%",
+                "width": "7%",
+                "top": "2%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/vault.json",
+                  "transition": "push"
+                }
+              }
+            },
+            {
+              "type": "label",
+              "text": ".",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "left": "2%",
+                "top": "123",
+                "background": "#dedede",
+                "color": "#dedede"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/sort-up.png",
+              "style": {
+                "width": "30",
+                "height": "30",
+                "left": "2%+5",
+                "top": "128"
+              }
+            },
+            {
+              "type": "button",
+              "text": "Recent",
+              "style": {
+                "width": "46%-41",
+                "height": "40",
+                "left": "2%+41",
+                "top": "123",
+                "align": "center",
+                "background": "#dedede",
+                "color": "#111111",
+                "size": "16"
+              }
+            },
+            {
+              "type": "button",
+              "text": "Likes",
+              "style": {
+                "width": "46%",
+                "height": "40",
+                "left": "52%",
+                "top": "123",
+                "align": "center",
+                "background": "#A3A3A3",
+                "color": "#111111",
+                "size": "16"
+              }
+            },
+            {
+              "type": "label",
+              "text": ".",
+              "style": {
+                "width": "30",
+                "height": "30",
+                "left": "2%",
+                "top": "82%+3",
+                "background": "#dedede",
+                "color": "#dedede",
+                "corner_radius": "15"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/left.png",
+              "style": {
+                "width": "20",
+                "height": "20",
+                "left": "2%+5",
+                "top": "82%+8"
+              }
+            },
+            {
+              "type": "label",
+              "text": ".",
+              "style": {
+                "width": "30",
+                "height": "30",
+                "left": "98%-30",
+                "top": "82%+3",
+                "background": "#dedede",
+                "color": "#dedede",
+                "corner_radius": "15"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/right.png",
+              "style": {
+                "width": "20",
+                "height": "20",
+                "left": "98%-25",
+                "top": "82%+8"
+              }
+            }
+          ],
+          "sections": [{
+            "items": [
+              {
+                "type": "html",
+                "text": "<html>
+                <head>
+                  <style>
+                    body {
+                      background:#111111;
+                      margin:0;
+                    }
+                    span {
+                      font-size:40px;
+                      color:white;
+                    }
+                    .title {
+                      padding:10px;
+                      margin-bottom:60px;
+                    }
+                    .box {
+                      display: flex;
+                      width: 100%;
+                      height: 8px;
+                      margin: 0px 0px 0px 0px;
+                    }
+
+                    .box-sm {
+                      height: 8px;
+                      margin: 0;
+                      flex-grow: 1;
+                      transition: all .8s ease-in-out;
+                      cursor: pointer;
+                    }
+                    .update {
+                      background-color:#FA5341;
+                    }
+
+                    .orange {
+                      background-color: #E74C3C;
+                    }
+
+                    .yellow {
+                      background-color: #BA3E30;
+                    }
+
+                    .green {
+                      background-color: #BA3E30;
+                    }
+
+                    .blue {
+                      background-color: #E74C3C;
+                    }
+
+                    .purple {
+                      background-color: #FA5341;
+                    }
+
+                    .stats {
+                        position: absolute;
+                        color: #c3c3c3;
+                        top: 26px;
+                        left: 115px;
+                        font-size: 16px;
+                        font-style: italic;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class='title'>
+                    <span>Liked Memes</span>
+
+                  </div>
+                  <div class='stats'>
+
+                  </div>
+                  <div class='box'>
+                    <div class='box-sm update'></div>
+                    <div class='box-sm orange'></div>
+                    <div class='box-sm yellow'></div>
+                    <div class='box-sm green'></div>
+                    <div class='box-sm blue'></div>
+                    <div class='box-sm update'></div>
+                  </div>
+                </body>
+                </html>",
+                "style": {
+                  "width": "100%",
+                  "height": "133"
+                }
+              },
+              {
+                "type": "vertical",
+                "style": {
+                  "padding": "0",
+                  "spacing": "0"
+                },
+                "components": [
+                  {
+                    "type": "horizontal",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0"
+                    },
+                    "components": [
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-color: #111111;
+                            width:100%;
+                            margin:0;
+                            height:130px;
+                        }
+
+                        .image {
+                          background-image:    url(https://collectmemes.com/img/apyr.jpg);
+                          background-size:     cover;                      /* <------ */
+                          background-repeat:   no-repeat;
+                          background-position: center center;              /* optional, center the image */
+                          width:100%;
+                          height:130px;
+                          margin:0;
+                          font-size:30px;
+                        }
+
+                        .text {
+                          position:absolute;
+                          top:34%;
+                          right:25%;
+                          text-align:center;
+                          color:#ffffff;
+                          font-size:35px;
+                        }
+
+                        </style>
+                        </head>
+                        <body>
+                        <div class='image'>
+
+                        </div>
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button2!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-color: #111111;
+                            width:100%;
+                            margin:0;
+                            height:130px;
+                        }
+
+                        .image {
+                          background-image:    url(https://i.redd.it/kmmx63wlhqr31.jpg);
+                          background-size:     cover;                      /* <------ */
+                          background-repeat:   no-repeat;
+                          background-position: center center;              /* optional, center the image */
+                          width:100%;
+                          height:130px;
+                          margin:0;
+                          font-size:30px;
+                        }
+
+                        .text {
+                          position:absolute;
+                          top:34%;
+                          right:25%;
+                          text-align:center;
+                          color:#ffffff;
+                          font-size:35px;
+                        }
+
+                        </style>
+                        </head>
+                        <body>
+                        <div class='image'>
+
+                        </div>
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button2!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-color: #111111;
+                            width:100%;
+                            margin:0;
+                            height:130px;
+                        }
+
+                        .image {
+                          background-image:    url(https://i.redd.it/wbliudtqyli31.jpg);
+                          background-size:     cover;                      /* <------ */
+                          background-repeat:   no-repeat;
+                          background-position: center center;              /* optional, center the image */
+                          width:100%;
+                          height:130px;
+                          margin:0;
+                          font-size:30px;
+                        }
+
+                        .text {
+                          position:absolute;
+                          top:34%;
+                          right:25%;
+                          text-align:center;
+                          color:#ffffff;
+                          font-size:35px;
+                        }
+
+                        </style>
+                        </head>
+                        <body>
+                        <div class='image'>
+
+                        </div>
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button2!"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "horizontal",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0"
+                    },
+                    "components": [
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:0;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:0;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:0;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "horizontal",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0"
+                    },
+                    "components": [
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:2px;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:0;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      },
+                      {
+                        "type": "html",
+                        "text": "<html>
+                        <head>
+                        <style>
+                        body {
+                            background-image:    url(https://collectmemes.com/img/empty.png);
+                            background-size:     cover;                      /* <------ */
+                            background-repeat:   no-repeat;
+                            background-position: center center;              /* optional, center the image */
+                            height:100%;
+                            margin:0;
+                        }
+                        </style>
+                        </head>
+                        <body>
+
+                        </body>
+                        </html>",
+                        "style": {
+                          "height": "130"
+                        },
+                        "action": {
+                          "type": "$util.alert",
+                          "options": {
+                            "title": "Good job!",
+                            "description": "You know how to press a button!"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "html",
+                "text": "<html>
+                <head>
+                  <style>
+                    body {
+                      background:#fff;
+                      margin:0;
+                    }
+                    .box {
+                      display: flex;
+                      width: 100%;
+                      height: 8px;
+                      margin: 0px 0px 0px 0px;
+                    }
+
+                    .box-sm {
+                      height: 8px;
+                      margin: 0;
+                      flex-grow: 1;
+                      transition: all .8s ease-in-out;
+                      cursor: pointer;
+                    }
+                    .update {
+                      background-color:#FA5341;
+                    }
+
+                    .orange {
+                      background-color: #E74C3C;
+                    }
+
+                    .yellow {
+                      background-color: #BA3E30;
+                    }
+
+                    .green {
+                      background-color: #BA3E30;
+                    }
+
+                    .blue {
+                      background-color: #E74C3C;
+                    }
+
+                    .purple {
+                      background-color: #FA5341;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class='box'>
+                    <div class='box-sm update'></div>
+                    <div class='box-sm orange'></div>
+                    <div class='box-sm yellow'></div>
+                    <div class='box-sm green'></div>
+                    <div class='box-sm blue'></div>
+                    <div class='box-sm update'></div>
+                  </div>
+                </body>
+                </html>",
+                "style": {
+                  "width": "100%",
+                  "height": "8"
+                }
+              }
+            ]
+          }],
+          "footer": {
+            "tabs": {
+              "style": {
+                "background": "rgba(255,255,255,1)",
+                "color": "#000000"
+              },
+              "items": [
+                {
+                  "image": "https://collectmemes.com/img/friends.png",
+                  "style": {
+                    "height": "21"
+                  },
+                  "url": "https://collectmemes.com/views/friends.php"
+                },
+                {
+                  "image": "https://collectmemes.com/img/collect.png",
+                  "style": {
+                    "height": "21"
+                  },
+                  "url": "https://collectmemes.com/views/collect.php"
+                },
+                {
+                  "image": "https://collectmemes.com/img/vault.png",
+                  "style": {
+                    "height": "21"
+                  },
+                  "url": "https://collectmemes.com/views/vault.php"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

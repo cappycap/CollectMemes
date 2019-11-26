@@ -1,0 +1,82 @@
+--
+$global needs:
+	userKey :
+	  - tells whether or not user is logged in. is userId from database.
+		- set on profile creation
+		
+	spinsLeft :
+	  - 0 through 9
+	  - set to 9 on profile creation
+		- use as index of list
+
+	firstLoadDone :
+		- 0/1 whether or not setup tasks have been done
+		- set to zero on profile creation
+
+$cache on collect:
+	list :
+	  - 10 element list of memes
+
+	lastCollect :
+	  - timestamp of last collect
+
+	spinStatus :
+	  - 0/user can't spin
+	  - 1/user can spin
+
+ 	collectStatus :
+  	  - 0/user can't collect
+          - 1/user can collect
+
+	current :
+		- current meme's id
+
+
+--
+make memes a list (of 10 or 15 spins)
+
+"list": [{"url": "bla", "name": "bla", ... , "totalLikes": "107"},{ .. next .. }]
+
+^ similar to "members" example on templates
+
+--
+
+on load:
+
+	if (!firstLoadDone) :
+	  - collectstatus = 1, spinStatus = 1, populate new list, lastCollect = 901 seconds ago, firstLoadDone = 1, update current
+	else :
+		if (collectStatus == 1) :
+		  - render view
+		elseif (collectStatus == 0)
+		 1. network request for currentTime
+		 2. if (currentTime - 900 > lastCollect) :
+		  - user has waited long enough and collectStatus should be 1.
+		  - collectStatus == 1, populate a new list, render view, set current
+		3. else :
+		  - create timer with interval = to time left until spin
+			+ action to execute is update cache
+			  - on success refresh
+
+	in html:
+	- javascript to generate rank info from php page when meme's rank is provided.
+
+	in template:
+	- if (spinsLeft > 0)
+	- allow spin button to be used, else not
+	- if (collectStatus == 1)
+	- allow collect button to be used, else not
+	- if (collectStatus == 0)
+	- display javascript timer
+
+on spin:
+	- minus spinsLeft by 1
+	- if spinsLeft == 0, set spinStatus to 0
+	- refresh view
+
+on collect:
+	- update lastCollect with currentTime
+	- set collectStatus == 0
+	- add meme to user's collection
+	- update meme's collects and likes by 1
+	- maybe a util alert or something else saying congrats youve collected a meme, etc.

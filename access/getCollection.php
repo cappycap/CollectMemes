@@ -28,8 +28,13 @@ if (isset($_GET['userId'])) {
     } else {
 
       $response['success'] = 0;
-      
+
     }
+
+    $stmtUser->free_result();
+
+    $stmtUser->close();
+    
   }
 }
 echo json_encode($response);
