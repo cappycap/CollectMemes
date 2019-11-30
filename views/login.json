@@ -7,7 +7,11 @@
           "{{#if typeOf $cache.last !== 'undefined'}}": {
             "type": "$network.request",
             "options": {
-              "url": "https://collectmemes.com/access/checkTimeMinus600.php"
+              "url": "https://collectmemes.com/access/checkTime.php",
+              "method": "post",
+              "data": {
+                "sub": "900"
+              }
             },
             "success": [{
               "{{#if $jason.time > $cache.last}}": {
@@ -45,39 +49,47 @@
                 }
               }
             }
-            ]
-          }
-          }
-        ],
-        "onLogin": [{
-          "{{#if typeOf $cache.tries !== 'undefined'}}": [{
-            "{{#if $cache.tries > 0}}": {
-              "trigger": "attemptLogin"
+          ]
+        }
+      }
+    ],
+      "onLogin": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/checkTries.php",
+            "method": "post",
+            "data": {
+              "tries": "{{$cache.tries}}"
             }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 0}}": {
+                "trigger": "attemptLogin"
+              }
             },
             {
-              "{{#else}}": {
+              "{{#elseif $jason.success == 1}}": {
+                "type": "$cache.set",
+                "options": {
+                  "tries": "4"
+                },
+                "success": {
+                  "trigger": "attemptLogin"
+                }
+              }
+            },
+            {
+              "{{#elseif $jason.success == 2}}": {
                 "type": "$util.alert",
                 "options": {
                   "title": "Too Many Attempts",
-                  "description": "You have failed to login too many times. Please wait 10 minutes and try again."
+                  "description": "You have failed to login too many times. Wait 10 minutes, then try again!"
                 }
               }
             }
           ]
-        },
-        {
-          "{{#else}}": {
-            "type": "$cache.set",
-            "options": {
-              "tries": "4"
-            },
-            "success": {
-              "trigger": "attemptLogin"
-            }
-          }
-        }
-      ],
+      },
       "attemptLogin": {
         "type": "$network.request",
         "options": {
@@ -103,59 +115,87 @@
           }
         },
         {
-          "{{#else}}": [
-              {
-                "{{#if $cache.tries !== 1}}": {
+          "{{#else}}": {
+            "trigger": "cacheCheck"
+          }
+        }
+        ]
+      },
+      "cacheCheck": [
+        {
+          "{{#if $cache.tries !== 'undefined'}}": {
+            "trigger": "updateCache"
+          }
+        },
+        {
+          "{{#else}}": {
+            "type": "$cache.set",
+            "options": {
+              "tries": "3"
+            },
+            "success": {
+              "type": "$util.alert",
+              "options": {
+                "title": "Oops! Incorrect Info",
+                "description": "You have 3 tries left until you're locked out for 10 minutes."
+              },
+              "success": {
+                "type": "$reload"
+              }
+            }
+          }
+        }
+      ],
+      "updateCache": [
+          {
+            "{{#if $cache.tries !== 1}}": {
+            "type": "$cache.set",
+            "options": {
+              "tries": "{{$cache.tries - 1}}"
+            },
+            "success": {
+              "type": "$util.alert",
+              "options": {
+                "title": "Oops! Incorrect Info",
+                "description": "You have {{$cache.tries}} tries left until you're locked out for 10 minutes."
+              },
+              "success": {
+                "type": "$reload"
+              }
+            }
+          }
+        },
+        {
+          "{{#else}}": {
+            "type": "$cache.set",
+            "options": {
+              "tries": "0"
+            },
+            "success": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/access/checkTime.php"
+              },
+              "success": {
                 "type": "$cache.set",
                 "options": {
-                  "tries": "{{$cache.tries - 1}}"
+                  "last": "{{$jason.time}}"
                 },
                 "success": {
                   "type": "$util.alert",
                   "options": {
-                    "title": "Oops! Incorrect Info",
-                    "description": "You have {{$cache.tries}} tries left until you're locked out for 10 minutes."
+                    "title": "Too Many Attempts",
+                    "description": "You have failed to login too many times. Please wait 10 minutes and try again."
                   },
                   "success": {
                     "type": "$reload"
                   }
                 }
               }
-            },
-            {
-              "{{#else}}": {
-                "type": "$cache.set",
-                "options": {
-                  "tries": "0"
-                },
-                "success": {
-                  "type": "$network.request",
-                  "options": {
-                    "url": "https://collectmemes.com/access/checkTime.php"
-                  },
-                  "success": {
-                    "type": "$cache.set",
-                    "options": {
-                      "last": "{{$jason.time}}"
-                    },
-                    "success": {
-                      "type": "$util.alert",
-                      "options": {
-                        "title": "Too Many Attempts",
-                        "description": "You have failed to login too many times. Please wait 10 minutes and try again."
-                      },
-                      "success": {
-                        "type": "$reload"
-                      }
-                    }
-                  }
-                }
-              }
             }
-          ]
+          }
         }
-        ]
-      }
+      ]
       }
     },
     "body": {
