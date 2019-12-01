@@ -38,10 +38,31 @@ if (isset($_GET['username']) and isset($_GET['password']) and isset($_GET['email
 
   }
 
+  // Return userKey.
+  $q = "SELECT id FROM users WHERE username=?";
+
+  if ($stmt = $con->prepare($q)) {
+
+    $stmt->bind_param("s",$user);
+    $stmt->execute();
+    $stmt->bind_result($id);
+
+    if ($stmt->fetch()) {
+
+      $response['userKey'] = $id;
+
+    }
+
+    $stmt->close();
+
+  }
+
 } else {
 
   $response['success'] = 0;
+  
 }
+
 
 echo json_encode($response);
 

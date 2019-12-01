@@ -1,0 +1,9 @@
+- = - = - register logic - = - = -
+
+- deliver username,email to checkRegisterCredentials.php:
+	- check if username or email exists 
+	- success: 0 - something is taken
+		   1 - we gucci
+	- if success: 0
+	- have a failed: "username"/"email"/"username and email"
+		   

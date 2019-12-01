@@ -1,7 +1,76 @@
 {
   "$jason": {
     "head": {
-      "title": "register"
+      "title": "register",
+      "actions": {
+        "onClick": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/checkRegisterCredentials.php",
+            "method": "post",
+            "data": {
+              "username": "$get.username",
+              "email": "$get.email",
+              "password": "$get.password"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 1}}": {
+                "type": "$network.request",
+                "options": {
+                  "url": "https://collectmemes.com/access/createUser.php",
+                  "method": "post",
+                  "data": {
+                    "username": "$get.username",
+                    "email": "$get.email",
+                    "password": "$get.password"
+                  }
+                },
+                "success": [
+                  {
+                    "{{#if $jason.success == 1}}": {
+                      "type": "$global.set",
+                      "options": {
+                        "userKey": "{{$jason.userKey}}",
+                        "spinsLeft": "9",
+                        "firstLoadDone": "0"
+                      },
+                      "success": {
+                        "type": "$href",
+                        "options": {
+                          "url": "https://collectmemes.com/views/collect.json"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "{{#elseif $jason.success == 0}}": {
+                      "type": "$util.alert",
+                      "options": {
+                        "title": "Maintenence",
+                        "description": "CollectMemes is doing some backend work right now. Try registering in a little bit!"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "{{#elseif $jason.success == 0}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "So close...",
+                  "description": "{{$jason.failed}}"
+                },
+                "success": {
+                  "type": "$reload"
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "body": {
       "background": "#ffffff",

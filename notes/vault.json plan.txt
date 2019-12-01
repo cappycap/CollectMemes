@@ -1,0 +1,22 @@
+=- =- =- =- vault logic -= -= -= -= 
+
+- vault.json continually keeps track of a number (cur) that represents the beginning of the current page
+	+ cur starts at 1
+
+- if cur + 9 < collectionSize, display right arrow
+
+- if cur !== 1, display left arrow
+
+- changing to a different sorting method resets cur. sorting method controlled through
+
+I need to restructure database!
+
+It's not feasible to have a string of user's collection for fetching from vault.
+Instead, I need to create an 'owners' column within memes table, then for vault I can:
+
+oCalc is the necessary column value to carry out sort supplied by client
+
+SELECT bla FROM memes WHERE CONTAINS(owners, userKey) ORDER BY oCalc OFFSET cur-1 ASC/DESC
+
+getMemeById not utilized in vault!
+
