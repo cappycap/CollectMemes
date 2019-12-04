@@ -14,6 +14,7 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
   $uFailed = 0;
   $eFailed = 0;
   $pFailed = 0;
+  $eFilterFailed = 0;
 
   // Check username.
   $uQ = "SELECT id FROM users WHERE username=?";
@@ -55,6 +56,12 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
 
   }
 
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+    $eFilterFailed = 1;
+
+  }
+
   // Check p.
   if (strlen($p) < 8 or !preg_match('/[A-Z]/', $p)) {
 
@@ -66,17 +73,17 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
   if ($uFailed and $eFailed) {
 
     $response['success'] = 0;
-    $response['failed'] = "That username and email were already taken. Try something else!";
+    $response['failed'] = "That username and email are already taken. Try something else!";
 
   } else if ($uFailed) {
 
     $response['success'] = 0;
-    $response['failed'] = "That username was already taken. Try something else!";
+    $response['failed'] = "That username is already taken. Try something else!";
 
   } else if ($eFailed) {
 
     $response['success'] = 0;
-    $response['failed'] = "That email was already taken. Try something else!";
+    $response['failed'] = "That email is already taken. Try something else!";
 
   } else {
 
@@ -86,12 +93,23 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
 
   if ($response['success'] == 0 and $pFailed) {
 
-    $response['failed'] .= " Also, be sure your password is at least 8 chars long and contains an uppercase letter."
+    $response['failed'] .= " Also, be sure your password is at least 8 chars long and contains an uppercase letter.";
 
   } else if ($pFailed) {
 
     $response['success'] = 0;
     $response['failed'] = "Be sure your password is at least 8 chars long and contains an uppercase letter!";
+
+  }
+
+  if ($eFilterFailed and $response['success'] == 1) {
+
+    $response['success'] = 0;
+    $response['failed'] = "Be sure to supply a valid email!";
+
+  } else if ($eFilterFailed) {
+
+    $response['failed'] .= " And be sure to supply a valid email.";
 
   }
 

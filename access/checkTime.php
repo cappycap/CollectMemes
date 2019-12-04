@@ -7,16 +7,17 @@ $response = array();
 
 $time = time();
 
-if (isset($_POST['sub') {
+if (isset($_POST['sub'])) {
 
 	$sub = -1 * ((int) $_POST['sub']);
 	$time += $sub;
 
 } else if (isset($_POST['add'])) {
 
-	$time += abs($_POST['add'];
+	$time += abs($_POST['add']);
 
 }
+
 
 $response['time'] = $time;
 

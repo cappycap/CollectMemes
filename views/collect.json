@@ -8,7 +8,7 @@
       },
       "title": "Collect",
       "actions": {
-        "$load": [{
+        "mainLoad": [{
           "{{#if $global.firstLoadDone == 0}}": {
             "type": "$cache.set",
             "options": {
@@ -39,7 +39,7 @@
                     "options": [{
                         "{{#each $cache.list}}": {
                           "{{#if $index == $global.spinsLeft}}": {
-                            "current": "{{this.id}}"
+                            "current": "{{this}}"
                           }
                         }
                       }
@@ -47,12 +47,16 @@
                     "success": {
                       "type": "$network.request",
                       "options": {
-                        "url": "https://collectmemes.com/access/checkTimeMinus901.php"
+                        "url": "https://collectmemes.com/access/checkTime.php",
+                        "method": "post",
+                        "data": {
+                          "sub": "1"
+                        }
                       },
                       "success": {
                         "type": "$cache.set",
                         "options": {
-                          "lastCollect": "{{$jason.time}}"
+                          "nextSpin": "{{$jason.time}}"
                         },
                         "success": {
                           "type": "$render"
@@ -67,7 +71,7 @@
         },
         {
           "{{#else}}": [{
-              "{{#if $cache.collectStatus}}": {
+              "{{#if $cache.collectStatus == 1}}": {
                 "type": "$render"
               }
             },
@@ -75,10 +79,10 @@
               "{{#else}}": {
                 "type": "$network.request",
                 "options": {
-                  "url": "https://collectmemes.com/access/checkTimeMinus900.php"
+                  "url": "https://collectmemes.com/access/checkTime.php"
                 },
                 "success": [{
-                  "{{#if $jason.time > $cache.lastCollect}}": {
+                  "{{#if $jason.time > $cache.nextSpin}}": {
                     "type": "$cache.set",
                     "options": {
                       "collectStatus": "1"
@@ -108,13 +112,19 @@
                             "options": [{
                                 "{{#each $cache.list}}": {
                                   "{{#if $index == $global.spinsLeft}}": {
-                                    "current": "{{this.id}}"
+                                    "current": "{{this}}"
                                   }
                                 }
                               }
                             ],
                             "success": {
-                              "type": "$render"
+                              "type": "$global.set",
+                              "options": {
+                                "spinsLeft": "10"
+                              },
+                              "success": {
+                                "type": "$render"
+                              }
                             }
                           }
                         }
@@ -126,16 +136,12 @@
                   "{{#else}}": {
                     "type": "$network.request",
                     "options": {
-                      "url": "https://collectmemes.com/access/timeLeft.php",
-                      "method": "post",
-                      "data": {
-                        "lastCollect": "{{$cache.lastCollect}}"
-                      }
+                      "url": "https://collectmemes.com/access/checkTime.php"
                     },
                     "success": {
                       "type": "$timer.start",
                       "options": {
-                        "interval": "{{$jason.timeLeft}}",
+                        "interval": "{{$cache.nextSpin - $jason.time}}",
                         "name": "timer1",
                         "repeats": "false",
                         "action": {
@@ -173,13 +179,19 @@
                                     "options": [{
                                         "{{#each $cache.list}}": {
                                           "{{#if $index == $global.spinsLeft}}": {
-                                            "current": "{{this.id}}"
+                                            "current": "{{this}}"
                                           }
                                         }
                                       }
                                     ],
                                     "success": {
-                                      "type": "$render"
+                                      "type": "$global.set",
+                                      "options": {
+                                        "spinsLeft": "10"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
                                     }
                                   }
                                 }
@@ -196,6 +208,21 @@
             }
           ]
         }],
+        "$load": [
+          {
+            "{{#if 'userKey' in $global}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/views/welcome.json"
+              }
+            }
+          }
+        ],
         "onSpin": {
           "type": "$global.set",
           "options": {
@@ -209,13 +236,26 @@
                   "spinStatus": "0"
                 },
                 "success": {
-                  "type": "$render"
+                  "type": "$network.request",
+                  "options": {
+                    "url": "https://collectmemes.com/access/checkTime.php",
+                    "method": "post",
+                    "data": {
+                      "add": "900"
+                    }
+                  },
+                  "success": {
+                    "type": "$cache.set",
+                    "options": {
+                      "nextSpin": "{{$jason.time}}"
+                    }
+                  }
                 }
               }
             },
             {
               "{{#else}}": {
-                "type": "$render"
+                "type": "$reload"
               }
             }
           ]
@@ -223,12 +263,18 @@
         "onCollect": {
           "type": "$network.request",
           "options": {
-            "url": "https://collectmemes.com/access/checkTime.php"
+            "url": "https://collectmemes.com/access/checkTime.php",
+            "method": "post",
+            "data": {
+              "add": "900"
+            }
           },
           "success": {
             "type": "$cache.set",
             "options": {
-              "lastCollect": "{{$jason.time}}"
+              "nextSpin": "{{$jason.time}}",
+              "collectStatus": "0",
+              "spinStatus": "0"
             },
             "success": {
               "type": "$network.request",
@@ -237,7 +283,14 @@
                 "method": "post",
                 "data": {
                   "userId": "{{$global.userKey}}",
-                  "memeId": "{{$cache.current}}"
+                  "memeId": "{{$cache.current.id}}"
+                }
+              },
+              "success": {
+                "type": "$util.banner",
+                "options": {
+                  "title": "Congrats!",
+                  "description": "Meme collected: #{{$jason.rank}}: {{$cache.current.title}}"
                 }
               }
             }
@@ -249,201 +302,375 @@
           "style": {
             "background": {
               "type": "html",
-              "text": "<html>
-              <head>
-              <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
-              <style>
-                .rotate-scale-up {
-                  animation: rotate-scale-up 0.3s linear both;
-                }
+              "text": [
+                {
+                  "{{#if $global.spinsLeft == 10}}": "<html>
+                  <head>
+                  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+                  <style>
+                    .rotate-scale-up {
+                      animation: rotate-scale-up 0.3s linear both;
+                    }
 
-                @keyframes rotate-scale-up {
-                  0% {
-                    transform: scale(3) rotateZ(0);
+                    @keyframes rotate-scale-up {
+                      0% {
+                        transform: scale(3) rotateZ(0);
+                      }
+                      50% {
+                        transform: scale(2) rotateZ(180deg);
+                      }
+                      100% {
+                        transform: scale(1) rotateZ(360deg);
+                      }
+                    }
+
+                    .center {
+                      width:100%;
+                      margin:0;
+                      padding:0;
+                    }
+
+                    body {
+                      background:#111111;margin:0;height:100%;
+                    }
+
+                    .num {
+                      color:green;
+                    }
+
+                    .tracking-in-expand-fwd {
+                      left:0;
+                      animation: tracking-in-expand-fwd 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s both;
+                      width:100%;
+                      text-align:center;
+                      color:#111111;
+                      font-size:10vw;
+                      margin:0;
+                      padding:3% 0;
+                    }
+
+                    @keyframes tracking-in-expand-fwd {
+                    0% {
+                      letter-spacing:-0.5em;
+                      transform: translateZ(-700px);
+                      opacity: 0;
+                    }
+                    50% {
+                      transform: translateZ(0);
+                      opacity: 1;
+                    }
+                    100% {
+                      transform: translateZ(-700px);
+                      opacity: 0;
+                    }
                   }
-                  50% {
-                    transform: scale(2) rotateZ(180deg);
+
+                  .buttons {
+                    width:100%;
+                    height:12%;
+                    margin-top:6%;
+                    color:#fff;
+                    padding:0;
+                    font-size:6vw;
+                    text-align:center;
                   }
-                  100% {
-                    transform: scale(1) rotateZ(360deg);
+
+                  .spin-again {
+                    display:inline-block;float:left;width:48%;height:100%;background:#34495e;border-radius:0px 35px 35px 0px;
                   }
-                }
 
-                .center {
-                  width:100%;
-                  margin:0;
-                  padding:0;
-                }
+                  .collect-meme {
+                    display:inline-block;float:right;width:48%;height:100%;background:#3b9fdf;border-radius:35px 0px 0px 35px;
+                  }
 
-                body {
-                  background:#111111;margin:0;height:100%;
-                }
+                  .centered-text {
+                    display: table;
+                      height: 100%;
+                      width: 100%;
+                  }
 
-                .num {
-                  color:green;
-                }
+                  .centered-text span {
+                    display: table-cell;
+                      vertical-align: middle;
+                  }
 
-                .tracking-in-expand-fwd {
-                  left:0;
-                  animation: tracking-in-expand-fwd 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s both;
+                  .box {
+                  display: flex;
+                  width: 100%;
+                  height: 8px;
+                  margin: 0px 0px 0px 0px;
+                  }
+
+                  .box-sm {
+                  height: 8px;
+                  margin: 0;
+                  flex-grow: 1;
+                  transition: all .8s ease-in-out;
+                  cursor: pointer;
+                  }
+                  .out {
+                  background-color: #57bbfb;
+                  }
+
+                  .mid {
+                  background-color: #3b9fdf;
+                  }
+
+                  .centerb {
+                  background-color: #1a7ebe;
+                  }
+                  .info {
                   width:100%;
                   text-align:center;
+                  display:table;
+                  margin:20px 10px;
+                  padding:0;
+                  height:60px;
                   color:#111111;
-                  font-size:10vw;
-                  margin:0;
-                  padding:3% 0;
-                }
+                  }
+                  .section-right {
+                  display:table-cell;
+                  width:16%;
+                  background:#111111;
+                  vertical-align:middle;
+                  padding:4px;
+                  font-size:20px;
+                  }
 
-                @keyframes tracking-in-expand-fwd {
-                0% {
-                  letter-spacing:-0.5em;
-                  transform: translateZ(-700px);
-                  opacity: 0;
-                }
-                50% {
-                  transform: translateZ(0);
-                  opacity: 1;
-                }
-                100% {
-                  transform: translateZ(-700px);
-                  opacity: 0;
-                }
-              }
+                  .section-middle {
+                  display:table-cell;
+                  width:68%;
+                  background:#0f0f0f;
+                  color:white;
+                  font-size:20px;
+                  vertical-align:middle;
+                  }
 
-              .buttons {
-                width:100%;
-                height:12%;
-                margin-top:6%;
-                color:#fff;
-                padding:0;
-                font-size:6vw;
-                text-align:center;
-              }
-
-              .spin-again {
-                display:inline-block;float:left;width:48%;height:100%;background:#34495e;border-radius:0px 35px 35px 0px;
-              }
-
-              .collect-meme {
-                display:inline-block;float:right;width:48%;height:100%;background:#3b9fdf;border-radius:35px 0px 0px 35px;
-              }
-
-              .centered-text {
-                display: table;
-                  height: 100%;
-                  width: 100%;
-              }
-
-              .centered-text span {
-                display: table-cell;
-                  vertical-align: middle;
-              }
-
-.box {
-  display: flex;
-  width: 100%;
-  height: 8px;
-  margin: 0px 0px 0px 0px;
-}
-
-.box-sm {
-  height: 8px;
-  margin: 0;
-  flex-grow: 1;
-  transition: all .8s ease-in-out;
-  cursor: pointer;
-}
-.out {
-  background-color: #57bbfb;
-}
-
-.mid {
-  background-color: #3b9fdf;
-}
-
-.centerb {
-  background-color: #1a7ebe;
-}
-.info {
-  width:100%;
-  text-align:center;
-  display:table;
-  margin:20px 10px;
-  padding:0;
-  height:60px;
-  color:#111111;
-}
-.section-right {
-  display:table-cell;
-  width:16%;
-  background:#111111;
-  vertical-align:middle;
-  padding:4px;
-  font-size:20px;
-}
-
-.section-middle {
-  display:table-cell;
-  width:68%;
-  background:#0f0f0f;
-  color:white;
-  font-size:20px;
-  vertical-align:middle;
-}
-
-.section-left {
-  display:table-cell;
-  width:16%;
-  background:#111111;
-  color:white;
-  border:3px solid #FAB657;
-  vertical-align:middle;
-  padding:4px;
-  font-size:16px;
-}
-.source {
-  font-size:15px;
-}
-              </style>
-              </head>
-              <body>
-              <div class='info'>
-                <div class='section-left'>
-                  <div class='inner'>Rank:
-                  #307</div>
-                </div>
-                <div class='section-middle'>
-                  <div class='title'>Doot Doot.</div>
-                  <div class='source'>
-                    reddit - unknown
+                  .section-left {
+                  display:table-cell;
+                  width:16%;
+                  background:#111111;
+                  color:white;
+                  border:3px solid #FAB657;
+                  vertical-align:middle;
+                  padding:4px;
+                  font-size:16px;
+                  }
+                  .source {
+                  font-size:15px;
+                  }
+                  .img {
+                  width:80%;
+                  margin:auto;
+                  }
+                  </style>
+                  </head>
+                  <body>
+                  <div class='info'>
+                    <div class='section-middle'>
+                      <div class='title'>{{$cache.current.title}}</div>
+                    </div>
+                    <div class='section-right'>
+                      <div class='inner'></div>
+                    </div>
                   </div>
-                </div>
-                <div class='section-right'>
-                  <div class='inner'></div>
-                </div>
-              </div>
-              <div class='box'>
-                <div class='box-sm out'></div>
-                <div class='box-sm mid'></div>
-                <div class='box-sm centerb'></div>
-                <div class='box-sm centerb'></div>
-                <div class='box-sm mid'></div>
-                <div class='box-sm out'></div>
-              </div>
-              <img class='rotate-scale-up center child' src='https://i.redd.it/tdwbxvaxf5v31.jpg'>
-              <div class='box'>
-              <div class='box-sm out'></div>
-              <div class='box-sm mid'></div>
-              <div class='box-sm centerb'></div>
-              <div class='box-sm centerb'></div>
-              <div class='box-sm mid'></div>
-              <div class='box-sm out'></div>
-</div>
-              <script>
-              var cw = $('.child').width();
-              $('.child').css({'height':cw+'px'});
-              </script>
-              </body></html>"
+                  <div class='img'>
+                    <img class='rotate-scale-up center child' src='{{$cache.current.image}}'>
+                  </div>
+                  <script>
+                  var cw = $('.child').width();
+                  $('.child').css({'height':cw+'px'});
+                  </script>
+                  </body></html>"
+                },
+                {
+                  "{{#else}}": "<html>
+                  <head>
+                  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+                  <style>
+                    .rotate-scale-up {
+                      animation: rotate-scale-up 0.3s linear both;
+                    }
+
+                    @keyframes rotate-scale-up {
+                      0% {
+                        transform: scale(3) rotateZ(0);
+                      }
+                      50% {
+                        transform: scale(2) rotateZ(180deg);
+                      }
+                      100% {
+                        transform: scale(1) rotateZ(360deg);
+                      }
+                    }
+
+                    .center {
+                      width:100%;
+                      margin:0;
+                      padding:0;
+                    }
+
+                    body {
+                      background:#111111;margin:0;height:100%;
+                    }
+
+                    .num {
+                      color:green;
+                    }
+
+                    .tracking-in-expand-fwd {
+                      left:0;
+                      animation: tracking-in-expand-fwd 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s both;
+                      width:100%;
+                      text-align:center;
+                      color:#111111;
+                      font-size:10vw;
+                      margin:0;
+                      padding:3% 0;
+                    }
+
+                    @keyframes tracking-in-expand-fwd {
+                    0% {
+                      letter-spacing:-0.5em;
+                      transform: translateZ(-700px);
+                      opacity: 0;
+                    }
+                    50% {
+                      transform: translateZ(0);
+                      opacity: 1;
+                    }
+                    100% {
+                      transform: translateZ(-700px);
+                      opacity: 0;
+                    }
+                  }
+
+                  .buttons {
+                    width:100%;
+                    height:12%;
+                    margin-top:6%;
+                    color:#fff;
+                    padding:0;
+                    font-size:6vw;
+                    text-align:center;
+                  }
+
+                  .spin-again {
+                    display:inline-block;float:left;width:48%;height:100%;background:#34495e;border-radius:0px 35px 35px 0px;
+                  }
+
+                  .collect-meme {
+                    display:inline-block;float:right;width:48%;height:100%;background:#3b9fdf;border-radius:35px 0px 0px 35px;
+                  }
+
+                  .centered-text {
+                    display: table;
+                      height: 100%;
+                      width: 100%;
+                  }
+
+                  .centered-text span {
+                    display: table-cell;
+                      vertical-align: middle;
+                  }
+
+                  .box {
+                  display: flex;
+                  width: 100%;
+                  height: 8px;
+                  margin: 0px 0px 0px 0px;
+                  }
+
+                  .box-sm {
+                  height: 8px;
+                  margin: 0;
+                  flex-grow: 1;
+                  transition: all .8s ease-in-out;
+                  cursor: pointer;
+                  }
+                  .out {
+                  background-color: #57bbfb;
+                  }
+
+                  .mid {
+                  background-color: #3b9fdf;
+                  }
+
+                  .centerb {
+                  background-color: #1a7ebe;
+                  }
+                  .info {
+                  width:100%;
+                  text-align:center;
+                  display:table;
+                  margin:20px 10px;
+                  padding:0;
+                  height:60px;
+                  color:#111111;
+                  }
+                  .section-right {
+                  display:table-cell;
+                  width:16%;
+                  background:#111111;
+                  vertical-align:middle;
+                  padding:4px;
+                  font-size:20px;
+                  }
+
+                  .section-middle {
+                  display:table-cell;
+                  width:68%;
+                  background:#0f0f0f;
+                  color:white;
+                  font-size:20px;
+                  vertical-align:middle;
+                  }
+
+                  .section-left {
+                  display:table-cell;
+                  width:16%;
+                  background:#111111;
+                  color:white;
+                  border:3px solid #FAB657;
+                  vertical-align:middle;
+                  padding:4px;
+                  font-size:16px;
+                  }
+                  .source {
+                  font-size:15px;
+                  }
+                  .img {
+                  width:80%;
+                  margin:auto;
+                  }
+                  </style>
+                  </head>
+                  <body>
+                  <div class='info'>
+                    <div class='section-left'>
+                      <div class='inner'>Rank:
+                      #307</div>
+                    </div>
+                    <div class='section-middle'>
+                      <div class='title'>{{$cache.current.title}}</div>
+                      <div class='source'>
+                        {{$cache.current.source}} - {{$cache.current.creator}}
+                      </div>
+                    </div>
+                    <div class='section-right'>
+                      <div class='inner'></div>
+                    </div>
+                  </div>
+                  <div class='img'>
+                    <img class='rotate-scale-up center child' src='{{$cache.current.image}}'>
+                  </div>
+                  <script>
+                  var cw = $('.child').width();
+                  $('.child').css({'height':cw+'px'});
+                  </script>
+                  </body></html>"
+                }
+              ]
             }
           },
           "header": {
@@ -479,42 +706,80 @@
             },
             {
               "type": "label",
-              "text": "Spin Again",
+              "text": "Spin",
               "style": {
                 "width": "47%",
                 "height": "8%",
                 "align": "center",
-                "top": "74%+50",
+                "top": "61%+50",
                 "left": "2%",
                 "background": "#34495e",
                 "color": "#ffffff",
                 "size": "22",
                 "corner_radius": "25"
               },
-              "href": {
-                "url": "https://collectmemes.com/views/collect.json",
-                "transition": "push",
-                "loading": "true"
-              }
-            },
-            {
-              "type": "label",
-              "text": [
+              "action": [
                 {
-                  "{{#if 1}}": "10 spins left"
+                  "{{#if $cache.spinStatus == 1}}": {
+                    "trigger": "onSpin"
+                  }
                 },
                 {
+                  "{{#else}}": {
+                    "type": "$util.banner",
+                    "options": {
+                      "title": "Out of Spins",
+                      "text": "We know it's fun... spin some more after 15 minutes!",
+                      "type": "info"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "html",
+              "text": [
+                {
+                  "{{#if $global.spinsLeft !== 0}}": "<span style='color:#0CE84A;font-size:25px;'>{{$global.spinsLeft}} spins left</span>"
+                },
+                {
+                  "{{$else}}": "<p id='demo' style='color:#ffffff;font-size:25px;'></p>
 
+                  <script>
+                  // Set the date we're counting down to
+                  var countDownDate = {{$cache.nextSpin}};
+
+                  // Update the count down every 1 second
+                  var x = setInterval(function() {
+
+                    // Get today's date and time
+                    var now = new Date().getTime() / 1000;
+
+                    // Find the distance between now and the count down date
+                    var distance = countDownDate - now;
+
+                    // Time calculations for days, hours, minutes and seconds
+                    var minutes = Math.floor((distance % (60 * 60)) / (60));
+                    var seconds = Math.floor((distance % (60)));
+
+                    // Output the result in an element with id='demo'
+                    document.getElementById('demo').innerHTML = minutes + 'm ' + seconds + 's ';
+
+                    // If the count down is over, write some text
+                    if (distance < 0) {
+                      clearInterval(x);
+                      document.getElementById('demo').innerHTML = 'EXPIRED';
+                    }
+                  }, 1000);
+                  </script>"
                 }
                 ],
               "style": {
                 "width": "47%",
                 "height": "8%",
                 "align": "center",
-                "top": "81%+55",
-                "left": "2%";
-                "color": "#0CE84A",
-                "size": "25"
+                "top": "68%+55",
+                "left": "2%"
               }
             },
             {
@@ -524,16 +789,39 @@
                 "width": "47%",
                 "height": "8%",
                 "align": "center",
-                "top": "74%+50",
+                "top": "61%+50",
                 "left": "51%";
                 "background": "#319CDE",
                 "color": "#ffffff",
                 "size": "22",
                 "corner_radius": "25"
               },
-              "href": {
-                "url": "https://collectmemes.com/views/vault.json",
-                "transition": "push"
+              "action": [
+                {
+                  "{{#if $cache.collectStatus == 1}}": {
+                    "trigger": "onCollect"
+                  }
+                },
+                {
+                  "{{#else}}": {
+                    "type": "$util.banner",
+                    "options": {
+                      "title": "Whoa there!",
+                      "text": "You can only collect every 15 minutes! Make each meme count.",
+                      "type": "info"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/vault2.png",
+              "style": {
+                "width": "64",
+                "height": "64",
+                "right": "5%",
+                "bottom": "3%"
               }
             }
           ]

@@ -5,32 +5,23 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['username']) and isset($_GET['password']) and isset($_GET['email'])) {
+if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['email'])) {
 
   // Clean + define variables.
-  $user = $con->real_escape_string($_GET['username']);
-  $password = crypt($con->real_escape_string($_GET['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
-  $email = $con->real_escape_string($_GET['email']);
-  $collection = "";
-  $lastRoll = date("Y-m-d H:i:s",time() - 1810);
-  $curAttempts = 10;
+  $user = $con->real_escape_string($_POST['username']);
+  $password = crypt($con->real_escape_string($_POST['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
+  $email = $con->real_escape_string($_POST['email']);
 
   // Email the user with a welcome email.
 
   // Insert user into database.
-  $query = "INSERT INTO users (username,password,email,collection,lastRoll,curAttempts) VALUES (?, ?, ?, ?, ?, ?)";
+  $query = "INSERT INTO users (username,password,email) VALUES (?, ?, ?)";
 
   if ($stmt = $con->prepare($query)) {
 
-    $rc = $stmt->bind_param("sssssd", $user, $password, $email, $collection, $lastRoll, $curAttempts);
+    $stmt->bind_param("ssssd", $user, $password, $email);
 
-    $rc = $stmt->execute();
-
-    if ($stmt == false or $rc == false) {
-
-      die(htmlspecialchars($con->error));
-
-    }
+    $stmt->execute();
 
     $response['success'] = 1;
 
@@ -60,7 +51,7 @@ if (isset($_GET['username']) and isset($_GET['password']) and isset($_GET['email
 } else {
 
   $response['success'] = 0;
-  
+
 }
 
 

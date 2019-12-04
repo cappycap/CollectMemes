@@ -1,0 +1,7 @@
+in logout:
+remove userKey from global
+
+set $global.logout == 1
+
+in login:
+if global logout exists, set firstloaddone to 1, else set to 0

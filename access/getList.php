@@ -99,6 +99,14 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
 
     }
 
+    $begin = array();
+
+    $begin['id'] = $id;
+    $begin['title'] = "Spin to get started!";
+    $begin['image'] = "https://collectmemes.com/img/empty.png";
+
+    $list[$count] = $begin;
+
     $response = $list;
 
   }

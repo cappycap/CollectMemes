@@ -5,12 +5,12 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId']) and isset($_GET['memeId'])) {
+if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
-  $userId = $con->real_escape_string($_GET['userId']);
-  $memeId = $con->real_escape_string($_GET['memeId']);
+  $userId = $con->real_escape_string($_POST['userId']);
+  $memeId = $con->real_escape_string($_POST['memeId']);
 
-  $queryMemeInfo = "SELECT rank,totalOwned,likes FROM memes WHERE id=?";
+  $queryMemeInfo = "SELECT rank,totalOwned,owners FROM memes WHERE id=?";
 
   if ($stmtMeme = $con->prepare($queryMemeInfo)) {
 
@@ -18,20 +18,21 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
     $stmtMeme->execute();
 
-    $stmtMeme->bind_result($rank,$totalOwned,$likes);
+    $stmtMeme->bind_result($rank,$totalOwned,$likes,$owners);
 
     if ($stmtMeme->fetch()) {
 
       $newTotalOwned = $totalOwned + 1;
-      $newLikes = $likes + 1;
+      $userIdStr = (string) $userId;
+      $owners .= "," . $userIdStr;
 
       $response['rank'] = $rank;
       $stmtMeme->close();
 
-      $queryUpdateMeme = "UPDATE memes SET totalOwned=?, likes=? WHERE id=?";
+      $queryUpdateMeme = "UPDATE memes SET totalOwned=?, owners=? WHERE id=?";
       if ($stmtUpdateMeme = $con->prepare($queryUpdateMeme)) {
 
-        $stmtUpdateMeme->bind_param("iii",$newTotalOwned,$newLikes,$memeId);
+        $stmtUpdateMeme->bind_param("isi",$newTotalOwned,$owners,$memeId);
 
         $stmtUpdateMeme->execute();
 
@@ -57,7 +58,7 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
   }
 
-  $queryUserInfo = "SELECT collection,collectionSize,collectionSum FROM users WHERE id=?";
+  $queryUserInfo = "SELECT collectionSize,collectionSum FROM users WHERE id=?";
 
   if ($stmtUser = $con->prepare($queryUserInfo)) {
 
@@ -65,7 +66,7 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
     $stmtUser->execute();
 
-    $stmtUser->bind_result($collection,$collectionSize,$collectionSum);
+    $stmtUser->bind_result($collectionSize,$collectionSum);
 
     if ($stmtUser->fetch()) {
 
@@ -75,12 +76,10 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
       if ($collectionSize == 0) {
 
-        $newCollection = $memeId;
         $newUserAvgRank = $rank;
 
       } else {
 
-        $newCollection = $collection . "," . $memeId;
         $newUserAvgRank = $newCollectionSum / $newCollectionSize;
 
       }
@@ -89,11 +88,11 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
       $stmtUser->close();
 
-      $queryUpdateUser = "UPDATE users SET collection=?, avgRank=?, collectionSize=?, collectionSum=? WHERE id=?";
+      $queryUpdateUser = "UPDATE users SET avgRank=?, collectionSize=?, collectionSum=? WHERE id=?";
 
       if ($stmtUpdateUser = $con->prepare($queryUpdateUser)) {
 
-        $stmtUpdateUser->bind_param("siiii",$newCollection,$newUserAvgRank,$newCollectionSize,$newCollectionSum,$userId);
+        $stmtUpdateUser->bind_param("iiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$userId);
 
         $stmtUpdateUser->execute();
 

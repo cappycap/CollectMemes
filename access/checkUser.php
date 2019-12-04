@@ -8,8 +8,8 @@ $response = array();
 if (isset($_POST['password']) and isset($_POST['username'])) {
 
   // Clean variables.
-  $pwd = crypt($con->real_escape_string($_GET['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
-  $user = $con->real_escape_string($_GET['username']);
+  $pwd = crypt($con->real_escape_string($_POST['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
+  $user = $con->real_escape_string($_POST['username']);
 
   // Prepare and execute query.
   $query = "SELECT id,password FROM users WHERE username=?";

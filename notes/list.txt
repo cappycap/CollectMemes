@@ -5,8 +5,8 @@ $global needs:
 		- set on profile creation
 		
 	spinsLeft :
-	  - 0 through 9
-	  - set to 9 on profile creation
+	  - 0 through 9 are memes, 10 is empty png
+	  - set to 10 on profile creation
 		- use as index of list
 
 	firstLoadDone :
@@ -17,8 +17,8 @@ $cache on collect:
 	list :
 	  - 10 element list of memes
 
-	lastCollect :
-	  - timestamp of last collect
+	nextSpin :
+	  - timestamp of when next spin is allowed (updated either on last spin or on collect)
 
 	spinStatus :
 	  - 0/user can't spin
@@ -29,7 +29,8 @@ $cache on collect:
           - 1/user can collect
 
 	current :
-		- current meme's id
+		- current meme array
+
 
 
 --
@@ -44,13 +45,15 @@ make memes a list (of 10 or 15 spins)
 on load:
 
 	if (!firstLoadDone) :
-	  - collectstatus = 1, spinStatus = 1, populate new list, lastCollect = 901 seconds ago, firstLoadDone = 1, update current
+	  {{ set by reg: firstLoadDone, spinsLeft }}
+	  {{ set by login: 
+	  - collectstatus = 1, spinStatus = 1, populate new list, nextSpin == now - 1, firstLoadDone = 1, update current
 	else :
 		if (collectStatus == 1) :
 		  - render view
 		elseif (collectStatus == 0)
 		 1. network request for currentTime
-		 2. if (currentTime - 900 > lastCollect) :
+		 2. if (currentTime > nextSpin) :
 		  - user has waited long enough and collectStatus should be 1.
 		  - collectStatus == 1, populate a new list, render view, set current
 		3. else :
@@ -66,17 +69,16 @@ on load:
 	- allow spin button to be used, else not
 	- if (collectStatus == 1)
 	- allow collect button to be used, else not
-	- if (collectStatus == 0)
+	- if (spinsLeft == 0)
 	- display javascript timer
 
 on spin:
 	- minus spinsLeft by 1
-	- if spinsLeft == 0, set spinStatus to 0
+	- if spinsLeft == 0, set spinStatus to 0, set nextSpin to now + 900
 	- refresh view
 
 on collect:
-	- update lastCollect with currentTime
-	- set collectStatus == 0
+	- set collectStatus == 0, spinStatus == 0, nextSpin == currentTime + 900
 	- add meme to user's collection
 	- update meme's collects and likes by 1
 	- maybe a util alert or something else saying congrats youve collected a meme, etc.
