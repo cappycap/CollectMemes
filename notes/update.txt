@@ -1,0 +1,3 @@
+i may want to consider setting  current equal to the html generating by php with the meme values.
+
+a similar process could be supplied for spinsLeft, and lets say spinsLeftDisplay (which is html)

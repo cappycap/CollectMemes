@@ -9,12 +9,27 @@
       "title": "Empty",
       "actions": {
         "$show": {
-          "type": "$cache.set",
+          "type": "$global.set",
           "options": {
-            "test": "hello"
+            "test": "bla"
           },
           "success": {
-            "type": "$render"
+            "type": "$cache.set",
+            "options": [
+              {
+                "{{#if 'test' in $global}}": {
+                  "test": "test in global"
+                }
+              },
+              {
+                "{{#else}}": {
+                  "test": "test not in global"
+                }
+              }
+            ],
+            "success": {
+              "type": "$render"
+            }
           }
         }
       },

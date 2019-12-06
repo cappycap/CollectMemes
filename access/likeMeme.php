@@ -11,10 +11,10 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId']) and isset($_GET['memeId'])) {
+if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
-  $userId = $con->real_escape_string($_GET['userId']);
-  $memeId = $con->real_escape_string($_GET['memeId']);
+  $userId = $con->real_escape_string($_POST['userId']);
+  $memeId = $con->real_escape_string($_POST['memeId']);
 
   // Update meme.
   $queryUpdateMeme = "UPDATE memes SET likes = likes + 1 WHERE id=?";
@@ -31,6 +31,44 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
       $response['updateMemeSuccess'] = 0;
       $response['updateMemeError'] = $con->error;
+
+    }
+
+  }
+
+  // Update likes table. First, let's grab some necessary info from DB.
+  $memeInfoQuery = "SELECT rank,dateAdded FROM memes WHERE id=?";
+
+  if ($memeInfoStmt = $con->prepare($memeInfoQuery)) {
+
+    $memeInfoStmt->bind_param("i",$memeId);
+    $memeInfoStmt->execute();
+
+    $memeInfoStmt->bind_result($memeRank,$memeDateAdded);
+
+    if ($memeInfoStmt->fetch()) {
+
+      $memeInfoStmt->close();
+
+      $ins = "INSERT INTO likes (userId, memeId, dateAdded, rank) VALUES (?, ?, ?, ?)";
+
+      if ($insStmt = $con->prepare($ins)) {
+
+        $insStmt->bind_param("iiii",$userId,$memeId,$memeDateAdded,$memeRank);
+
+        if ($insStmt->execute()) {
+
+          $reponse['insLikeSuccess'] = 1;
+
+        } else {
+
+          $reponse['insLikeSuccess'] = 0;
+
+        }
+
+        $insStmt->close();
+
+      }
 
     }
 

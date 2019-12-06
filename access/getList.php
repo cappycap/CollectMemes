@@ -76,6 +76,7 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
 
             $meme = array();
 
+            $meme['count'] = $count;
             $meme['id'] = $id;
             $meme['title'] = $title;
             $meme['image'] = $image;
@@ -101,6 +102,7 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
 
     $begin = array();
 
+    $begin['count'] = $count;
     $begin['id'] = $id;
     $begin['title'] = "Spin to get started!";
     $begin['image'] = "https://collectmemes.com/img/empty.png";

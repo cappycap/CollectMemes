@@ -55,8 +55,6 @@ $response = array();
 
                 $insStmt->bind_param("ssiiiisss", $title, $image, $rating, $score, $rank, $edition, $source, $creator, $dateAdded);
 
-
-
                 if ($insStmt->execute()) {
 
                   $response['success'] = 1;

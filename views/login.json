@@ -167,7 +167,8 @@
                     "{{#else}}": {
                       "type": "$global.set",
                       "options": {
-                        "firstLoadDone": "0"
+                        "firstLoadDone": "0",
+                        "spinsLeft": "10"
                       },
                       "success": {
                         "type": "$href",

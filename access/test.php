@@ -1,3 +1,8 @@
 <?php
-echo crypt("jinhin420", '$2a$07$5jh843257hquiyo7ghfkgi$');
+include 'db.php';
+
+$rank = 12;
+
+echo json_encode(getRankInfo($rank, $con));
+
 ?>

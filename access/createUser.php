@@ -19,7 +19,7 @@ if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['em
 
   if ($stmt = $con->prepare($query)) {
 
-    $stmt->bind_param("ssssd", $user, $password, $email);
+    $stmt->bind_param("sss", $user, $password, $email);
 
     $stmt->execute();
 

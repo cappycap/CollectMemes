@@ -1,0 +1,5 @@
+ok, turns out i need a collection list in user's profile, so i need to re-implement that
+in add to collection, so that i can check if a random meme is in that collection in getMeme
+
+also i need to implement getMeme, where spinsLeft is posted to it. if spinsLeft == 10, supply
+begin. otherwise, supply a random meme. redesign collect to work on a one-meme-at-a-time basis.

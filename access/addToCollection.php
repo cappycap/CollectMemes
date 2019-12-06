@@ -10,7 +10,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
   $userId = $con->real_escape_string($_POST['userId']);
   $memeId = $con->real_escape_string($_POST['memeId']);
 
-  $queryMemeInfo = "SELECT rank,totalOwned,owners FROM memes WHERE id=?";
+  $queryMemeInfo = "SELECT rank,totalOwned,dateAdded FROM memes WHERE id=?";
 
   if ($stmtMeme = $con->prepare($queryMemeInfo)) {
 
@@ -18,21 +18,21 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
     $stmtMeme->execute();
 
-    $stmtMeme->bind_result($rank,$totalOwned,$likes,$owners);
+    $stmtMeme->bind_result($rank,$totalOwned,$dateAdded);
 
     if ($stmtMeme->fetch()) {
 
       $newTotalOwned = $totalOwned + 1;
       $userIdStr = (string) $userId;
-      $owners .= "," . $userIdStr;
 
       $response['rank'] = $rank;
       $stmtMeme->close();
 
-      $queryUpdateMeme = "UPDATE memes SET totalOwned=?, owners=? WHERE id=?";
+      $queryUpdateMeme = "UPDATE memes SET totalOwned=? WHERE id=?";
+
       if ($stmtUpdateMeme = $con->prepare($queryUpdateMeme)) {
 
-        $stmtUpdateMeme->bind_param("isi",$newTotalOwned,$owners,$memeId);
+        $stmtUpdateMeme->bind_param("ii",$newTotalOwned,$memeId);
 
         $stmtUpdateMeme->execute();
 
@@ -43,6 +43,26 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
         $response['successMeme'] = "0-2";
         echo $con->error;
+
+      }
+
+      $ins = "INSERT INTO owns (userId, memeId, dateAdded, rank) VALUES (?, ?, ?, ?)";
+
+      if ($insStmt = $con->prepare($ins)) {
+
+        $insStmt->bind_param("iiii",$userId,$memeId,$dateAdded,$rank);
+
+        if ($insStmt->execute()) {
+
+          $reponse['insOwnSuccess'] = 1;
+
+        } else {
+
+          $reponse['insOwnSuccess'] = 0;
+
+        }
+
+        $insStmt->close();
 
       }
 
@@ -76,15 +96,13 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
       if ($collectionSize == 0) {
 
-        $newUserAvgRank = $rank;
+        $newUserAvgRank = $response['rank'];
 
       } else {
 
         $newUserAvgRank = $newCollectionSum / $newCollectionSize;
 
       }
-
-
 
       $stmtUser->close();
 

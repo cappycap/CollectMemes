@@ -1,4 +1,6 @@
 --
+MAKE TITLED LIMITED TO 20 CHARS
+
 $global needs:
 	userKey :
 	  - tells whether or not user is logged in. is userId from database.
@@ -14,8 +16,6 @@ $global needs:
 		- set to zero on profile creation
 
 $cache on collect:
-	list :
-	  - 10 element list of memes
 
 	nextSpin :
 	  - timestamp of when next spin is allowed (updated either on last spin or on collect)
@@ -31,6 +31,10 @@ $cache on collect:
 	current :
 		- current meme array
 
+	currentSpinMessage :
+		
+		- html: either "x spins left" or javascript countdown
+
 
 
 --
@@ -45,20 +49,28 @@ make memes a list (of 10 or 15 spins)
 on load:
 
 	if (!firstLoadDone) :
+
 	  {{ set by reg: firstLoadDone, spinsLeft }}
 	  {{ set by login: 
-	  - collectstatus = 1, spinStatus = 1, populate new list, nextSpin == now - 1, firstLoadDone = 1, update current
+	  - collectstatus = 1, spinStatus = 1, populate new current, nextSpin == now - 1, firstLoadDone = 1, populate currentSpinMessage, set liked = 0
+
 	else :
+
 		if (collectStatus == 1) :
+
 		  - render view
+
 		elseif (collectStatus == 0)
+
 		 1. network request for currentTime
 		 2. if (currentTime > nextSpin) :
+
 		  - user has waited long enough and collectStatus should be 1.
-		  - collectStatus == 1, populate a new list, render view, set current
+		  - collectStatus == 1, populate a new current, update currentSpinMessage, render view, set liked = 0
+
 		3. else :
 		  - create timer with interval = to time left until spin
-			+ action to execute is update cache
+			+ action to execute is update cache, set liked = 0
 			  - on success refresh
 
 	in html:
@@ -73,7 +85,7 @@ on load:
 	- display javascript timer
 
 on spin:
-	- minus spinsLeft by 1
+	- minus spinsLeft by 1, grab new meme for next iteration, update currentSpinMessage, set liked = 0
 	- if spinsLeft == 0, set spinStatus to 0, set nextSpin to now + 900
 	- refresh view
 

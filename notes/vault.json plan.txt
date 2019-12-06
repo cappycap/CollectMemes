@@ -20,3 +20,7 @@ SELECT bla FROM memes WHERE CONTAINS(owners, userKey) ORDER BY oCalc OFFSET cur-
 
 getMemeById not utilized in vault!
 
+do this instead: 
+
+owns table
+id | userId | memeId | dateAdded | rank
