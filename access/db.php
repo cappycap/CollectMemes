@@ -51,8 +51,6 @@ function getRankInfo($memeRank, $con) {
 	$ratio = (float) intval($memeRank) / (float) getMemeCount($con);
 	$info = array();
 
-
-
 	if ($ratio <= 0.07) {
 
 		// Meme is Legendary.

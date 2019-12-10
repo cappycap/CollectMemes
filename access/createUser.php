@@ -11,15 +11,16 @@ if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['em
   $user = $con->real_escape_string($_POST['username']);
   $password = crypt($con->real_escape_string($_POST['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
   $email = $con->real_escape_string($_POST['email']);
+  $time = time();
 
   // Email the user with a welcome email.
 
   // Insert user into database.
-  $query = "INSERT INTO users (username,password,email) VALUES (?, ?, ?)";
+  $query = "INSERT INTO users (username,password,email,dateRegistered,lastPassChange) VALUES (?, ?, ?, ?,?)";
 
   if ($stmt = $con->prepare($query)) {
 
-    $stmt->bind_param("sss", $user, $password, $email);
+    $stmt->bind_param("sssi", $user, $password, $email, $time, $time);
 
     $stmt->execute();
 

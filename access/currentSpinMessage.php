@@ -33,10 +33,14 @@ if (isset($_POST['spinsLeft']) and isset($_POST['nextSpin']) and isset($_POST['c
 
       // If the count down is over, write some text
       if (distance < 0) {
+
         clearInterval(x);
-        document.getElementById('demo').innerHTML = 'EXPIRED';
+        document.getElementById('demo').innerHTML = 'Reboot App To Collect';
+
       }
+
     }, 1000);
+
     </script>";
 
   } else {

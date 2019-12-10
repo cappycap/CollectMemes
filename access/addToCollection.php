@@ -9,6 +9,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $memeId = $con->real_escape_string($_POST['memeId']);
+  $time = time();
 
   $queryMemeInfo = "SELECT rank,totalOwned,dateAdded FROM memes WHERE id=?";
 
@@ -50,7 +51,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
       if ($insStmt = $con->prepare($ins)) {
 
-        $insStmt->bind_param("iiii",$userId,$memeId,$dateAdded,$rank);
+        $insStmt->bind_param("iiii",$userId,$memeId,$time,$rank);
 
         if ($insStmt->execute()) {
 
@@ -90,7 +91,6 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
     if ($stmtUser->fetch()) {
 
-      // Update user's collection.
       $newCollectionSize = intval($collectionSize) + 1;
       $newCollectionSum = intval($collectionSum) + intval($response['rank']);
 

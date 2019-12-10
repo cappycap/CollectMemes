@@ -15,6 +15,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $memeId = $con->real_escape_string($_POST['memeId']);
+  $time = time();
 
   // Update meme.
   $queryUpdateMeme = "UPDATE memes SET likes = likes + 1 WHERE id=?";
@@ -37,14 +38,14 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
   }
 
   // Update likes table. First, let's grab some necessary info from DB.
-  $memeInfoQuery = "SELECT rank,dateAdded FROM memes WHERE id=?";
+  $memeInfoQuery = "SELECT rank FROM memes WHERE id=?";
 
   if ($memeInfoStmt = $con->prepare($memeInfoQuery)) {
 
     $memeInfoStmt->bind_param("i",$memeId);
     $memeInfoStmt->execute();
 
-    $memeInfoStmt->bind_result($memeRank,$memeDateAdded);
+    $memeInfoStmt->bind_result($memeRank);
 
     if ($memeInfoStmt->fetch()) {
 
@@ -54,7 +55,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
       if ($insStmt = $con->prepare($ins)) {
 
-        $insStmt->bind_param("iiii",$userId,$memeId,$memeDateAdded,$memeRank);
+        $insStmt->bind_param("iiii",$userId,$memeId,$time,$memeRank);
 
         if ($insStmt->execute()) {
 

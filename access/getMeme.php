@@ -23,6 +23,19 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
 
       $userId = $con->real_escape_string($_POST['userId']);
 
+      // update totalSpins.
+      $uTSQ = "UPDATE users SET totalSpins = totalSpins+1 WHERE id=?";
+
+      if ($uTSQS = $con->prepare($uTSQ)) {
+
+        $uTSQS->bind_param("i",$userId);
+
+        $uTSQS->execute();
+
+        $uTSQS->close();
+
+      }
+
       while ($count < 1) {
 
         $rank = (int) generateRank($con);
@@ -33,6 +46,8 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
         if ($checkS = $con->prepare($checkQ)) {
 
           $checkS->bind_param("ii",$rank,$userId);
+
+          $checkS->execute();
 
           $checkS->store_result();
 
@@ -74,11 +89,43 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
 
               $count = $count + 1;
 
+              $stmt->free_result();
+
+              $stmt->close();
+
+              $checkLike = "SELECT memeId FROM likes WHERE rank=? AND userId=?";
+
+              if ($like = $con->prepare($checkLike)) {
+
+                $like->bind_param("ii",$rank,$userId);
+
+                $like->execute();
+
+                $like->store_result();
+
+                if ($like->num_rows == 0) {
+
+                  $response['liked'] = 0;
+
+                } else {
+
+                  $response['liked'] = 1;
+
+                }
+
+                $like->free_result();
+
+                $like->close();
+
+              }
+
+            } else {
+
+              $stmt->free_result();
+
+              $stmt->close();
+
             }
-
-            $stmt->free_result();
-
-            $stmt->close();
 
           }
 
@@ -94,21 +141,6 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
       <head>
       <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
       <style>
-        .rotate-scale-up {
-          animation: rotate-scale-up 0.3s linear both;
-        }
-
-        @keyframes rotate-scale-up {
-          0% {
-            transform: scale(3) rotateZ(0);
-          }
-          50% {
-            transform: scale(2) rotateZ(180deg);
-          }
-          100% {
-            transform: scale(1) rotateZ(360deg);
-          }
-        }
 
         .center {
           width:100%;
@@ -123,33 +155,6 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
         .num {
           color:green;
         }
-
-        .tracking-in-expand-fwd {
-          left:0;
-          animation: tracking-in-expand-fwd 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) 0.1s both;
-          width:100%;
-          text-align:center;
-          color:#111111;
-          font-size:10vw;
-          margin:0;
-          padding:3% 0;
-        }
-
-        @keyframes tracking-in-expand-fwd {
-        0% {
-          letter-spacing:-0.5em;
-          transform: translateZ(-700px);
-          opacity: 0;
-        }
-        50% {
-          transform: translateZ(0);
-          opacity: 1;
-        }
-        100% {
-          transform: translateZ(-700px);
-          opacity: 0;
-        }
-      }
 
       .buttons {
         width:100%;

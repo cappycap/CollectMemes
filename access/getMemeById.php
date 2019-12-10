@@ -6,19 +6,14 @@ require 'db.php';
 $meme = array();
 $response = array();
 
-// Start by checking they got the access key right.
-if (isset($_GET['key'])) {
-
-  if ($_GET['key'] == "askkilfefuy8or62463ufsdmnkbflu4iy532457896terugh") {
-
-    // Password is correct. Now, let's check if they supplied an ID.
-    if (isset($_GET['id'])) {
+    if (isset($_POST['id']) and isset($_POST['userKey'])) {
 
       // Clean ID.
-      $id = $con->real_escape_string($_GET['id']);
+      $id = $con->real_escape_string($_POST['id']);
+      $u = $con->real_escape_string($_POST['userKey']);
 
       // Prepare and execute query.
-      $query = "SELECT * FROM memes WHERE id=?";
+      $query = "SELECT title,image,totalOwned,likes,rank,source,creator FROM memes WHERE id=?";
       if ($stmt = $con->prepare($query)) {
 
         // Bind ID to parameter in query.
@@ -26,24 +21,21 @@ if (isset($_GET['key'])) {
         $stmt->execute();
 
         // Bind fetched results to variables.
-        $stmt->bind_result($id,$title,$image,$totalOwned,$rank,$inRotation,$edition,$source,$creator,$dateAdded);
+        $stmt->bind_result($title,$image,$totalOwned,$likes,$rank,$source,$creator);
 
         // Check for results.
         if ($stmt->fetch()) {
 
           // Populate meme array.
-          $meme["id"] = $id;
-          $meme["title"] = $title; //
-          $meme["image"] = $image; //
+          $meme["title"] = $title;
+          $meme["image"] = $image;
           $meme["totalOwned"] = $totalOwned;
+          $meme['likes'] = $likes;
           $meme["rank"] = $rank;
-          $meme["inRotation"] = $inRotation;
-          $meme["edition"] = $edition; //
-          $meme["source"] = $source; //
-          $meme["creator"] = $creator; //
-          $meme["dateAdded"] = $dateAdded;
-          $response["success"] = 1;
-          $response["message"] = $meme;
+          $meme["source"] = $source;
+          $meme["creator"] = $creator;
+
+          $response["meme"] = $meme;
 
         } else {
 
@@ -52,34 +44,38 @@ if (isset($_GET['key'])) {
           $response["message"] = "E-00040";
         }
 
+        $stmt->close();
+
+      }
+
+      $q = "SELECT dateAdded FROM owns WHERE userId=? AND memeId=?";
+
+      if ($s = $con->prepare($q)) {
+
+        $s->bind_param("ii",$u,$id);
+
+        $s->execute();
+
+        $s->bind_result($date);
+
+        if ($s->fetch()) {
+
+          $response['dateCollected'] = date("d M, Y", $date);
+
+        }
+
+        $s->close();
+        
       }
 
 
     } else {
 
       // Did not supply ID.
-      $response["success"] = 1;
+      $response["success"] = 0;
       $response[" message"] = "E-0003";
 
     }
-
-
-
-
-  } else {
-
-    // Password is wrong.
-    $response["success"] = 0;
-    $response["message"] = "E-0002";
-
-  }
-
-} else {
-
-  // Did not supply password.
-  $response["success"] = 0;
-  $response["message"] = "E-0001";
-}
 
 echo json_encode($response);
 
