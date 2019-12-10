@@ -16,7 +16,7 @@ Instead, I need to create an 'owners' column within memes table, then for vault 
 
 oCalc is the necessary column value to carry out sort supplied by client
 
-SELECT bla FROM memes WHERE CONTAINS(owners, userKey) ORDER BY oCalc OFFSET cur-1 ASC/DESC LIMIT 9
+SELECT memeId FROM owns WHERE userId=2 ORDER by rank ASC LIMIT 9 OFFSET 1
 
 getMemeById not utilized in vault!
 

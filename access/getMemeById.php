@@ -26,16 +26,20 @@ $response = array();
         // Check for results.
         if ($stmt->fetch()) {
 
+          $stmt->close();
+
+          $info = getRankInfo($rank, $con);
+
           // Populate meme array.
           $meme["title"] = $title;
           $meme["image"] = $image;
-          $meme["totalOwned"] = $totalOwned;
-          $meme['likes'] = $likes;
-          $meme["rank"] = $rank;
-          $meme["source"] = $source;
+          $meme["totalOwned"] = number_format($totalOwned);
+          $meme['likes'] = number_format($likes);
           $meme["creator"] = $creator;
 
-          $response["meme"] = $meme;
+
+          $meme["rank"] = "<html><body style='font-size:22px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span></body></html>";
+
 
         } else {
 
@@ -44,7 +48,6 @@ $response = array();
           $response["message"] = "E-00040";
         }
 
-        $stmt->close();
 
       }
 
@@ -60,14 +63,15 @@ $response = array();
 
         if ($s->fetch()) {
 
-          $response['dateCollected'] = date("d M, Y", $date);
+          $meme['dateCollected'] = date("d M, Y", $date);
 
         }
 
         $s->close();
-        
+
       }
 
+      $response["meme"] = $meme;
 
     } else {
 

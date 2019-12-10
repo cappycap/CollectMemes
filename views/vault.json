@@ -28,10 +28,44 @@
             }
           }
         ],
+        "deletedCheck": [
+          {
+            "{{#if 'memeRemoved' in $global}}": [
+              {
+                "{{#if $global.memeRemoved == 0}}": {
+                  "trigger": "mainLoad"
+                }
+              },
+              {
+                "{{#else}}": {
+                  "type": "$util.banner",
+                  "options": {
+                    "title": "Attention:",
+                    "description": "Meme removed from collection!"
+                  },
+                  "success": {
+                    "type": "$global.set",
+                    "options": {
+                      "memeRemoved": "0"
+                    },
+                    "success": {
+                      "trigger": "mainLoad"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "{{#else}}": {
+              "trigger": "mainLoad"
+            }
+          }
+        ],
         "$load": [
           {
             "{{#if 'userKey' in $global}}": {
-              "trigger": "mainLoad"
+              "trigger": "deletedCheck"
             }
           },
           {
@@ -545,8 +579,10 @@
                                 "{{#if 'memeId' in $cache.components[0].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[0].components[0].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[0].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -563,8 +599,10 @@
                                 "{{#if 'memeId' in $cache.components[0].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[0].components[1].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[1].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -581,8 +619,10 @@
                                 "{{#if 'memeId' in $cache.components[0].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[0].components[2].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[2].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -608,8 +648,10 @@
                                 "{{#if 'memeId' in $cache.components[1].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[1].components[0].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[0].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -626,8 +668,10 @@
                                 "{{#if 'memeId' in $cache.components[1].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[1].components[1].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[1].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -644,8 +688,10 @@
                                 "{{#if 'memeId' in $cache.components[1].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[1].components[2].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[2].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -671,8 +717,10 @@
                                 "{{#if 'memeId' in $cache.components[2].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[2].components[0].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[0].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -689,8 +737,10 @@
                                 "{{#if 'memeId' in $cache.components[2].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[2].components[1].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[1].memeId}}"
+                                    }
                                   }
                                 }
                               }
@@ -707,8 +757,10 @@
                                 "{{#if 'memeId' in $cache.components[2].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/viewVaultMeme.json",
-                                    "memeId": "{{$cache.components[2].components[2].memeId}}"
+                                    "url": "https://collectmemes.com/views/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[2].memeId}}"
+                                    }
                                   }
                                 }
                               }

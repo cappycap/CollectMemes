@@ -449,7 +449,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
         <div class='section-middle'>
           <div class='title'>" . $meme['title'] . "</div>
           <div class='source'>
-            " . $meme['source'] . " - " . $meme['creator'] . "
+            by " . $meme['creator'] . "
           </div>
         </div>
         <div class='section-right'>
