@@ -1,0 +1,195 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Empty",
+      "actions": {
+        "mainLoad": {
+          "type": "$cache.set",
+          "options": {
+            "memeId": "{{$params.memeId}}"
+          },
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/access/getMemeById.php",
+              "method": "post",
+              "data": {
+                "id": "{{$cache.memeId}}",
+                "userKey": "{{$global.userKey}}",
+                "liked": "x"
+              }
+            },
+            "success": {
+              "type": "$cache.set",
+              "options": {
+                "meme": "{{$jason.meme}}"
+              },
+              "success": {
+                "type": "$render"
+              }
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0' && 'memeId' in $params}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/views/vault.json"
+              }
+            }
+          }
+        ],
+        "onRemove": {
+          "type": "$util.alert",
+          "options": {
+            "title": "Unlike Meme?",
+            "description": "Are you sure you want to remove this meme from your likes? Press OK to continue."
+          },
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/access/removeFromLikes.php",
+              "method": "post",
+              "data": {
+                "userId": "{{$global.userKey}}",
+                "memeId": "{{$cache.memeId}}"
+              }
+            },
+            "success": {
+              "type": "$global.set",
+              "options": {
+                "likeMemeRemoved": "1"
+              },
+              "success": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/likes.json",
+                  "transition": "push"
+                }
+              }
+            }
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "#111111",
+          "header": {
+            "style": {
+              "background": "#ffffff"
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            },
+            "menu": {
+              "image": "https://collectmemes.com/img/trash.png",
+              "action": {
+                "trigger": "onRemove"
+              }
+            }
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/back.png",
+              "style": {
+                "align": "left",
+                "left": "2%",
+                "width": "7%",
+                "top": "2%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/likes.json",
+                  "transition": "push"
+                }
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/memetop.png",
+              "style": {
+                "width": "100%",
+                "top": "57"
+              }
+            },
+            {
+              "type": "label",
+              "text": "\"{{$cache.meme.title}}\"",
+              "style": {
+                "size": "25",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "10%"
+              }
+            },
+            {
+              "type": "label",
+              "text": "by {{$cache.meme.creator}}",
+              "style": {
+                "size": "19",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "10%+30"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.meme.likes}} likes - {{$cache.meme.totalOwned}} collects",
+              "style": {
+                "size": "15",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "10%+54"
+              }
+            },
+            {
+              "type": "html",
+              "text": "{{$cache.meme.rank}}",
+              "style": {
+                "size": "15",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "25%+5"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.meme.image}}",
+              "style": {
+                "align": "center",
+                "left": "2%",
+                "width": "96%",
+                "top": "34%"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

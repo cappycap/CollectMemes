@@ -36,7 +36,7 @@
         },
         "$load": [
           {
-            "{{#if 'userKey' in $global && 'memeId' in $params}}": {
+            "{{#if $global.userKey != '0' && 'memeId' in $params}}": {
               "trigger": "mainLoad"
             }
           },
@@ -49,9 +49,6 @@
             }
           }
         ],
-        "onShare": {
-          "type": "$util.share"
-        },
         "onRemove": {
           "type": "$util.alert",
           "options": {
@@ -65,7 +62,8 @@
               "method": "post",
               "data": {
                 "userId": "{{$global.userKey}}",
-                "memeId": "{{$cache.memeId}}"
+                "memeId": "{{$cache.memeId}}",
+                "rank": "{{$cache.meme.rank}}"
               }
             },
             "success": {
@@ -98,6 +96,12 @@
                 "height": "27"
               },
               "url": "https://collectmemes.com/img/logo.png"
+            },
+            "menu": {
+              "image": "https://collectmemes.com/img/trash.png",
+              "action": {
+                "trigger": "onRemove"
+              }
             }
           },
           "layers": [
@@ -181,24 +185,6 @@
                 "left": "2%",
                 "width": "96%",
                 "top": "32%"
-              }
-            },
-            {
-              "type": "button",
-              "text": "Share",
-              "style": {
-                "width": "60%",
-                "bottom": "3%",
-                "left": "20%",
-                "align": "center",
-                "color": "#ffffff",
-                "size": "22",
-                "corner_radius": "25",
-                "background": "#319CDE",
-                "padding": "5"
-              },
-              "action": {
-                "trigger": "onShare"
               }
             }
           ]

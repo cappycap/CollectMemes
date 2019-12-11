@@ -64,7 +64,7 @@
         ],
         "$load": [
           {
-            "{{#if 'userKey' in $global}}": {
+            "{{#if $global.userKey != '0'}}": {
               "trigger": "deletedCheck"
             }
           },
@@ -169,7 +169,7 @@
               "action": {
                 "type": "$href",
                 "options": {
-                  "url": "https://collectmemes.com/views/welcome.json",
+                  "url": "https://collectmemes.com/views/collect.json",
                   "transition": "push"
                 }
               }

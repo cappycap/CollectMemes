@@ -16,15 +16,32 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
   $dir = "";
 
-  if ($d == 1) {
+  if ($s == 'rank') {
 
-    $dir = "ASC";
+    if ($d == 1) {
+
+      $dir = "ASC";
+
+    } else {
+
+      $dir = "DESC";
+
+    }
 
   } else {
 
-    $dir = "DESC";
+    if ($d == 1) {
+
+      $dir = "DESC";
+
+    } else {
+
+      $dir = "ASC";
+
+    }
 
   }
+
 
   $q = "SELECT memeId FROM owns WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 9" . " OFFSET " . $c;
 
@@ -172,7 +189,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
     if ($stmt->fetch()) {
 
-      $response['size'] = $size;
+      $response['size'] = number_format($size);
       $response['avgRank'] = $avgRank;
       $response['curAdd'] = $c + 9;
 

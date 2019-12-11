@@ -12,6 +12,7 @@ $response = array();
       $id = $con->real_escape_string($_POST['id']);
       $u = $con->real_escape_string($_POST['userKey']);
 
+
       // Prepare and execute query.
       $query = "SELECT title,image,totalOwned,likes,rank,source,creator FROM memes WHERE id=?";
       if ($stmt = $con->prepare($query)) {
@@ -36,9 +37,14 @@ $response = array();
           $meme["totalOwned"] = number_format($totalOwned);
           $meme['likes'] = number_format($likes);
           $meme["creator"] = $creator;
+          $meme['rank'] = $rank;
 
+          if (isset($_POST['liked'])) {
+            $meme["rank"] = "<html><body style='font-size:18px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span><br><span style='font-size:15px;'>Not owned!</span></body></html>";
+          } else {
+            $meme["rank"] = "<html><body style='font-size:22px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span></body></html>";
+          }
 
-          $meme["rank"] = "<html><body style='font-size:22px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span></body></html>";
 
 
         } else {

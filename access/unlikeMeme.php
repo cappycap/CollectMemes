@@ -42,7 +42,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
   if ($con->query($deleteQ) === TRUE) {
 
     $response['delSucc'] = 1;
-    echo $deleteQ;
+
   } else {
 
     $response['delSucc'] = 0;

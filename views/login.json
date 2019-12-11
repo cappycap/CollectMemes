@@ -48,7 +48,7 @@
         ],
         "$load": [
           {
-            "{{#if 'userKey' in $global}}": {
+            "{{#if $global.userKey != '0'}}": {
               "type": "$href",
               "options": {
                 "url": "https://collectmemes.com/views/collect.json"

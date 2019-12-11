@@ -32,9 +32,9 @@
             }
           }
         },
-        "$load": [
+        "mainLoad": [
           {
-            "{{#if 'userKey' in $global}}": {
+            "{{#if $global.userKey != '0'}}": {
               "trigger": "updateProfileInfo"
             }
           },
@@ -46,7 +46,103 @@
               }
             }
           }
-        ]
+        ],
+        "$load": [
+          {
+            "{{#if 'profUpdated' in $global}}": [
+              {
+                "{{#if $global.profUpdated == '1'}}": {
+                  "type": "$util.banner",
+                  "options": {
+                    "title": "Nice...",
+                    "description": "Email updated successfully!"
+                  },
+                  "success": {
+                    "type": "$global.set",
+                    "options": {
+                      "profUpdated": "0"
+                    },
+                    "success": {
+                      "trigger": "mainLoad"
+                    }
+                  }
+                }
+              },
+              {
+                "{{#elseif $global.profUpdated == '2'}}": {
+                  "type": "$util.banner",
+                  "options": {
+                    "title": "Nice...",
+                    "description": "Email updated successfully!"
+                  },
+                  "success": {
+                    "type": "$global.set",
+                    "options": {
+                      "profUpdated": "0"
+                    },
+                    "success": {
+                      "trigger": "mainLoad"
+                    }
+                  }
+                }
+              },
+              {
+                "{{#else}}": {
+                  "trigger": "mainLoad"
+                }
+              }
+            ]
+          },
+          {
+            "{{#else}}": {
+              "trigger": "mainLoad"
+            }
+          }
+        ],
+        "logout": {
+          "type": "$global.set",
+          "options": {
+            "userKey": "0"
+          },
+          "success": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/views/welcome.json",
+              "transition": "push"
+            }
+          }
+        },
+        "deleteAccount": {
+          "type": "$util.alert",
+          "options": {
+            "title": "Delete Account?",
+            "description": "Are you sure you want to delete your account? All collected memes and likes will be lost. Press OK if you're chill with that."
+          },
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/access/deleteUser.php",
+              "method": "post",
+              "data": {
+                "userId": "{{$global.userKey}}",
+                "pw": "i987hbn2v23hjkg7vgbgk3hbAHRJ198"
+              }
+            },
+            "success": {
+              "type": "$global.set",
+              "options": {
+                "userKey": "0"
+              },
+              "success": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/welcome.json",
+                  "transition": "push"
+                }
+              }
+            }
+          }
+        }
       },
       "templates": {
         "body": {
@@ -124,16 +220,34 @@
               }
             },
             {
+              "type": "button",
+              "text": "Log Out",
+              "style": {
+                "width": "50%",
+                "height": "6%",
+                "align": "center",
+                "top": "17%+165",
+                "left": "25%",
+                "background": "#319CDE",
+                "color": "#ffffff",
+                "size": "17",
+                "corner_radius": "25"
+              },
+              "action": {
+                "trigger": "logout"
+              }
+            },
+            {
               "type": "label",
               "text": "Email",
               "style": {
                 "width": "400",
-                "height": "30",
+                "height": "25",
                 "align": "center",
-                "top": "42%",
+                "top": "47%",
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
-                "size": "25",
+                "size": "20",
                 "color": "#ffffff"
               }
             },
@@ -142,12 +256,12 @@
               "text": "{{$cache.email}}",
               "style": {
                 "width": "400",
-                "height": "30",
+                "height": "25",
                 "align": "center",
-                "top": "42%+30",
+                "top": "47%+25",
                 "left": "50%-200",
                 "font": "HelveticaNeue-Normal",
-                "size": "20",
+                "size": "18",
                 "color": "#ffffff"
               }
             },
@@ -155,15 +269,22 @@
               "type": "button",
               "text": "Update Email",
               "style": {
-                "width": "60%",
-                "height": "8%",
+                "width": "50%",
+                "height": "6%",
                 "align": "center",
-                "top": "42%+62",
-                "left": "20%",
+                "top": "47%+57",
+                "left": "25%",
                 "background": "#319CDE",
                 "color": "#ffffff",
-                "size": "20",
+                "size": "17",
                 "corner_radius": "25"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/update-email.json",
+                  "transition": "push"
+                }
               }
             },
             {
@@ -173,10 +294,10 @@
                 "width": "400",
                 "height": "30",
                 "align": "center",
-                "top": "53%+72",
+                "top": "54%+72",
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
-                "size": "25",
+                "size": "20",
                 "color": "#ffffff"
               }
             },
@@ -187,10 +308,10 @@
                 "width": "400",
                 "height": "30",
                 "align": "center",
-                "top": "53%+102",
+                "top": "54%+102",
                 "left": "50%-200",
                 "font": "HelveticaNeue-Normal",
-                "size": "20",
+                "size": "18",
                 "color": "#ffffff"
               }
             },
@@ -198,14 +319,14 @@
               "type": "button",
               "text": "Update Password",
               "style": {
-                "width": "60%",
-                "height": "8%",
+                "width": "50%",
+                "height": "6%",
                 "align": "center",
-                "top": "53%+134",
-                "left": "20%",
+                "top": "54%+134",
+                "left": "25%",
                 "background": "#319CDE",
                 "color": "#ffffff",
-                "size": "20",
+                "size": "17",
                 "corner_radius": "25"
               },
               "action": {
@@ -229,6 +350,9 @@
                 "color": "#ffffff",
                 "size": "17",
                 "corner_radius": "25"
+              },
+              "action": {
+                "trigger": "deleteAccount"
               }
             },
             {

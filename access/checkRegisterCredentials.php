@@ -15,6 +15,7 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
   $eFailed = 0;
   $pFailed = 0;
   $eFilterFailed = 0;
+  $uLengthFailed = 0;
 
   // Check username.
   $uQ = "SELECT id FROM users WHERE username=?";
@@ -62,10 +63,15 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
 
   }
 
-  // Check p.
   if (strlen($p) < 8 or !preg_match('/[A-Z]/', $p)) {
 
     $pFailed = 1;
+
+  }
+
+  if (strlen($username) < 3 or strlen($username) > 12) {
+
+    $uLengthFailed = 1;
 
   }
 
@@ -110,6 +116,17 @@ if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['passw
   } else if ($eFilterFailed) {
 
     $response['failed'] .= " And be sure to supply a valid email.";
+
+  }
+
+  if ($uLengthFailed and $response['success'] == 1) {
+
+    $response['success'] = 0;
+    $response['failed'] = "Username needs to be between 3 and 12 chars.";
+
+  } else if ($uLengthFailed) {
+
+    $response['failed'] .= " Username needs to be between 3 and 12 chars.";
 
   }
 

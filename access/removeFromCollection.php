@@ -5,12 +5,26 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId']) and isset($_GET['memeId'])) {
+if (isset($_POST['userId']) and isset($_POST['memeId']) and isset($_POST['rank'])) {
 
-  $userId = $con->real_escape_string($_GET['userId']);
-  $memeId = $con->real_escape_string($_GET['memeId']);
+  $userId = $con->real_escape_string($_POST['userId']);
+  $memeId = $con->real_escape_string($_POST['memeId']);
+  $r = (int)$con->real_escape_string($_POST['rank']);
 
-  $selectQuery = "SELECT collection,collectionSize FROM users WHERE id=?";
+  // Remove from owns table.
+  $deleteQ = "DELETE FROM owns WHERE userId=" . $userId . " AND memeId=" . $memeId;
+
+  if ($con->query($deleteQ) === TRUE) {
+
+    $response['delSucc'] = 1;
+
+  } else {
+
+    $response['delSucc'] = 0;
+
+  }
+
+  $selectQuery = "SELECT collectionSize,collectionSum FROM users WHERE id=?";
 
   if ($selectStmt = $con->prepare($selectQuery)) {
 
@@ -18,31 +32,29 @@ if (isset($_GET['userId']) and isset($_GET['memeId'])) {
 
     $selectStmt->execute();
 
-    $selectStmt->bind_result($collection,$collectionSize);
+    $selectStmt->bind_result($collectionSize,$collectionSum);
 
     if ($selectStmt->fetch()) {
 
-      $newestCollection = "";
-
       if ($collectionSize != 1) {
 
-        // Attempt to remove as 1,(2),3 -> 1,,,3 or (2),1,3 -> ,,1,3
-        $newCollection = str_replace(strval($memeId), ",", $collection);
+        $newCollectionSum = $collectionSum - $r;
+        $newAvgRank = ($newCollectionSum) / ($collectionSize - 1);
 
-        // Another replace to handle the broken commas
-        // 1,,,3 -> 1,3
-        // ,,1,3 -> 1,3
-        $newestCollection = str_replace(",,", "", $newCollection);
+      } else {
 
+        $newCollectionSum = 0;
+        $newAvgRank = 0;
+        
       }
 
       $selectStmt->close();
 
-      $updateQuery = "UPDATE users SET collection=?,collectionSize=collectionSize-1 WHERE id=?";
+      $updateQuery = "UPDATE users SET avgRank=?collectionSum=?,collectionSize=collectionSize-1 WHERE id=?";
 
       if ($updateStmt = $con->prepare($updateQuery)) {
 
-        $updateStmt->bind_param("si",$newestCollection,$userId);
+        $updateStmt->bind_param("iii",$newAvgRank,$newCollectionSum,$userId);
 
         if ($updateStmt->execute()) {
 

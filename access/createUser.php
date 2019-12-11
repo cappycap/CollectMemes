@@ -20,7 +20,7 @@ if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['em
 
   if ($stmt = $con->prepare($query)) {
 
-    $stmt->bind_param("sssi", $user, $password, $email, $time, $time);
+    $stmt->bind_param("sssii", $user, $password, $email, $time, $time);
 
     $stmt->execute();
 

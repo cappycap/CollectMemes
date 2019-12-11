@@ -7,75 +7,136 @@ $response = array();
 $list = array();
 $components = array();
 
-if (isset($_POST['userId']) and isset($_POST['cur'])) {
+if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir'])) {
 
   $u = $con->real_escape_string($_POST['userId']);
   $c = (int)$con->real_escape_string($_POST['cur']) - 1;
+  $s = $con->real_escape_string($_POST['sort']);
+  $d = (int)$con->real_escape_string($_POST['sortDir']);
 
-  $q = "SELECT id,image FROM memes WHERE CONTAINS(likers, ?) ORDER BY dateAdded OFFSET " . $c . " DESC LIMIT 9";
+  $dir = "";
+
+  if ($s == 'likes') {
+
+    if ($d == 1) {
+
+      $dir = "ASC";
+
+    } else {
+
+      $dir = "DESC";
+
+    }
+
+  } else {
+
+    if ($d == 1) {
+
+      $dir = "DESC";
+
+    } else {
+
+      $dir = "ASC";
+
+    }
+
+  }
+
+
+  $q = "SELECT memeId FROM likes WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 9" . " OFFSET " . $c;
 
   if ($stmt = $con->prepare($q)) {
 
-    $stmt->bind_param("s", $u);
+    $stmt->bind_param("i", $u);
     $stmt->execute();
 
-    $result = $stmt->get_result();
+    $stmt->store_result();
+    $stmt->bind_result($memeId);
 
-    $stmt->close();
+    if ($stmt->num_rows > 0) {
 
-    if ($result->num_rows > 0) {
+      $counter1 = 0;
+      $results = array();
 
-      $counter = 0;
+      while ($stmt->fetch()) {
 
-      while ($data = $result->fetch_assoc()) {
+        $item = array();
 
-        $list[$counter] = array("type":"html","text":"<html>
-        <head>
-        <style>
-        body {
-            background-color: #111111;
-            width:100%;
-            margin:0;
-            height:130px;
-        }
+        $item['memeId'] = $memeId;
 
-        .image {
-          background-image:    url(" . $data['image'] . ");
-          background-size:     cover;                      /* <------ */
-          background-repeat:   no-repeat;
-          background-position: center center;              /* optional, center the image */
-          width:100%;
-          height:130px;
-          margin:0;
-          font-size:30px;
-        }
+        $results[$counter1] = $item;
 
-
-        </style>
-        </head>
-        <body>
-        <div class='image'>
-
-        </div>
-        </body>
-        </html>","style":array("height":"130"),
-        "action":array("type":"\$href","options":array("url":"https://collectmemes.com/views/viewLikedMeme.json","memeId":$data['id'])));
-
-        $counter++;
+        $counter1++;
 
       }
 
-      while ($counter < 9) {
+      $stmt->close();
 
-        $list[$counter] = array("type":"html","text":"<html>
+      $counter2 = 0;
+
+      foreach($results as $data) {
+
+        $iQ = "SELECT image FROM memes WHERE id=?";
+
+        if ($iQS = $con->prepare($iQ)) {
+
+          $iQS->bind_param("i",$data['memeId']);
+
+          $iQS->execute();
+
+          $iQS->bind_result($image);
+
+          if ($iQS->fetch()) {
+
+            $iQS->close();
+
+            $list[$counter2] = array("text"=>"<html>
+            <head>
+            <style>
+            body {
+                background-color: #111111;
+                margin:0;
+                height:130px;
+            }
+
+            .image {
+              background-image:    url(" . $image . ");
+              background-size:     cover;
+              background-repeat:   no-repeat;
+              background-position: center center;
+              width:100%;
+              height:130px;
+              margin:0;
+            }
+
+            </style>
+            </head>
+            <body>
+            <div class='image'></div>
+            </div>
+            </body>
+            </html>",
+            "memeId"=>$data['memeId']);
+
+          }
+
+        }
+
+        $counter2++;
+
+      }
+
+      while ($counter2 < 9) {
+
+        $list[$counter2] = array("text"=>"<html>
         <head>
         <style>
         body {
-            background-image:    url(https://collectmemes.com/img/empty.png);
+            background-image:    url(https://collectmemes.com/img/empty2.png);
             background-size:     cover;                      /* <------ */
             background-repeat:   no-repeat;
             background-position: center center;              /* optional, center the image */
-            height:100%;
+            height:124px;
             margin:0;
         }
         </style>
@@ -83,14 +144,16 @@ if (isset($_POST['userId']) and isset($_POST['cur'])) {
         <body>
 
         </body>
-        </html>","style":array("height":"130"));
+        </html>");
+
+        $counter2++;
 
       }
 
       // Components to be returned to type vertical
-      $components[0] = array("type":"horizontal","style":array("padding":"0","spacing":"0"),"components":array($list[0],$list[1],$list[2]));
-      $components[1] = array("type":"horizontal","style":array("padding":"0","spacing":"0"),"components":array($list[3],$list[4],$list[5]));
-      $components[2] = array("type":"horizontal","style":array("padding":"0","spacing":"0"),"components":array($list[6],$list[7],$list[8]));
+      $components[0] = array("components"=>array($list[0],$list[1],$list[2]));
+      $components[1] = array("components"=>array($list[3],$list[4],$list[5]));
+      $components[2] = array("components"=>array($list[6],$list[7],$list[8]));
 
     } else {
 
@@ -108,9 +171,10 @@ if (isset($_POST['userId']) and isset($_POST['cur'])) {
     $stmt->execute();
     $stmt->bind_result($size);
 
-    if ($stmt->fetch) {
+    if ($stmt->fetch()) {
 
-      $response['size'] = $size;
+      $response['size'] = number_format($size);
+      $response['curAdd'] = $c + 9;
 
     }
 

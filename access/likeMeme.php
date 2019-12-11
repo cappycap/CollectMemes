@@ -38,24 +38,25 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
   }
 
   // Update likes table. First, let's grab some necessary info from DB.
-  $memeInfoQuery = "SELECT rank FROM memes WHERE id=?";
+  $memeInfoQuery = "SELECT rank,likes FROM memes WHERE id=?";
 
   if ($memeInfoStmt = $con->prepare($memeInfoQuery)) {
 
     $memeInfoStmt->bind_param("i",$memeId);
+
     $memeInfoStmt->execute();
 
-    $memeInfoStmt->bind_result($memeRank);
+    $memeInfoStmt->bind_result($memeRank,$memeLikes);
 
     if ($memeInfoStmt->fetch()) {
 
       $memeInfoStmt->close();
 
-      $ins = "INSERT INTO likes (userId, memeId, dateAdded, rank) VALUES (?, ?, ?, ?)";
+      $ins = "INSERT INTO likes (userId, memeId, dateAdded, rank, likes) VALUES (?, ?, ?, ?, ?)";
 
       if ($insStmt = $con->prepare($ins)) {
 
-        $insStmt->bind_param("iiii",$userId,$memeId,$time,$memeRank);
+        $insStmt->bind_param("iiiii",$userId,$memeId,$time,$memeRank,$memeLikes);
 
         if ($insStmt->execute()) {
 
@@ -76,65 +77,15 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
   }
 
   // Begin to update user. First, let's grab some necessary info from DB.
-  $queryUserInfo = "SELECT likesSize FROM users WHERE id=?";
+  $updateQ = "UPDATE users SET likesSize=likesSize+1 WHERE id=?";
 
-  if ($stmtUser = $con->prepare($queryUserInfo)) {
+  if ($uS = $con->prepare($updateQ)) {
 
-    $stmtUser->bind_param("i",$userId);
+    $uS->bind_param("i",$userId);
 
-    if ($stmtUser->execute()) {
+    $uS->execute();
 
-      $response['queryUserSuccess'] = 1;
-
-    } else {
-
-      $response['queryUserSuccess'] = 0;
-      $response['queryUserError'] = $con->error;
-
-    }
-
-    $stmtUser->bind_result($currentLikesSize);
-
-    if ($stmtUser->fetch()) {
-
-      $stmtUser->close();
-
-      // Determine query to use depending on how many memes the user has already liked.
-      $queryUpdateUser = "";
-      $memeIdFormatted = "";
-
-      if ($currentLikesSize == 0) {
-
-        // Does not need appendation.
-        $queryUpdateUser = "UPDATE users SET likesSize = 1,likes = ? WHERE id = ?";
-        $memeIdFormatted = strval($memeId);
-
-      } else {
-
-        $queryUpdateUser = "UPDATE users SET likesSize = likesSize + 1,likes = concat(likes,?) WHERE id = ?";
-        $memeIdFormatted = "," . strval($memeId);
-
-      }
-
-      if ($stmtUpdateUser = $con->prepare($queryUpdateUser)) {
-
-        $stmtUpdateUser->bind_param("si",$memeIdFormatted,$userId);
-
-        if ($stmtUpdateUser->execute()) {
-
-          $response['updateUserSuccess'] = 1;
-
-        } else {
-
-          $response['updateUserSuccess'] = 0;
-          $response['updateUserError'] = $con->error;
-
-        }
-
-
-      }
-
-    }
+    $uS->close();
 
   }
 
