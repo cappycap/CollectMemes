@@ -26,7 +26,7 @@ if (isset($_GET['key'])) {
         $stmt->execute();
 
         // Bind fetched results to variables.
-        $stmt->bind_result($id,$title,$image,$totalOwned,$rank,$inRotation,$edition,$source,$creator,$dateAdded);
+        $stmt->bind_result($id,$title,$image,$totalOwned,$rank,$inRotation,$edition,$creator,$dateAdded);
 
         // Check for results.
         if ($stmt->fetch()) {
@@ -39,7 +39,6 @@ if (isset($_GET['key'])) {
           $meme["rank"] = $rank;
           $meme["inRotation"] = $inRotation;
           $meme["edition"] = $edition; //
-          $meme["source"] = $source; //
           $meme["creator"] = $creator; //
           $meme["dateAdded"] = $dateAdded;
           $response["success"] = 1;

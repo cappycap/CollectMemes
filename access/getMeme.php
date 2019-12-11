@@ -66,7 +66,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
         if ($check) {
 
           // We good, query meme.
-          $memeQuery = "SELECT id,title,image,source,creator FROM memes WHERE rank = ?";
+          $memeQuery = "SELECT id,title,image,creator FROM memes WHERE rank = ?";
 
           if ($stmt = $con->prepare($memeQuery)) {
 
@@ -74,7 +74,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
 
             $stmt->execute();
 
-            $stmt->bind_result($id,$title,$image,$source,$creator);
+            $stmt->bind_result($id,$title,$image,$creator);
 
             if ($stmt->fetch()) {
 
@@ -84,7 +84,6 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
               $meme['title'] = $title;
               $meme['image'] = $image;
               $meme['rank'] = $rank;
-              $meme['source'] = $source;
               $meme['creator'] = $creator;
 
               $count = $count + 1;

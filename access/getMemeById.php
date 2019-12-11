@@ -14,7 +14,7 @@ $response = array();
 
 
       // Prepare and execute query.
-      $query = "SELECT title,image,totalOwned,likes,rank,source,creator FROM memes WHERE id=?";
+      $query = "SELECT title,image,totalOwned,likes,rank,creator FROM memes WHERE id=?";
       if ($stmt = $con->prepare($query)) {
 
         // Bind ID to parameter in query.
@@ -22,7 +22,7 @@ $response = array();
         $stmt->execute();
 
         // Bind fetched results to variables.
-        $stmt->bind_result($title,$image,$totalOwned,$likes,$rank,$source,$creator);
+        $stmt->bind_result($title,$image,$totalOwned,$likes,$rank,$creator);
 
         // Check for results.
         if ($stmt->fetch()) {

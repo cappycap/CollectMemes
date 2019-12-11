@@ -356,7 +356,7 @@
               "action": {
                 "type": "$href",
                 "options": {
-                  "url": "https://collectmemes.com/views/login.json",
+                  "url": "https://collectmemes.com/views/forgot-password.json",
                   "transition": "push"
                 }
               }

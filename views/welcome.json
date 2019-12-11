@@ -70,7 +70,7 @@
                 "width": "300",
                 "height": "55",
                 "size": "17",
-                "top": "80%",
+                "top": "77%",
                 "left": "50%-150",
                 "background": "#2d91d1",
                 "color": "#ffffff",
@@ -91,7 +91,7 @@
               "style": {
                 "width": "300",
                 "height": "100",
-                "top": "80%+35",
+                "top": "78%+35",
                 "left": "50%-150",
                 "color": "#2d91d1",
                 "align": "center",
