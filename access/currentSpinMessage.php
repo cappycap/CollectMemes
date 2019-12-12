@@ -35,7 +35,7 @@ if (isset($_POST['spinsLeft']) and isset($_POST['nextSpin']) and isset($_POST['c
       if (distance < 0) {
 
         clearInterval(x);
-        document.getElementById('demo').innerHTML = 'Reboot App To Collect';
+        document.getElementById('demo').innerHTML = 'Refresh Page';
 
       }
 

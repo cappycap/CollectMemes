@@ -38,12 +38,37 @@ $response = array();
           $meme['likes'] = number_format($likes);
           $meme["creator"] = $creator;
           $meme['rank'] = $rank;
+          $meme['rarity'] = $info['rarity'];
+          $meme['color'] = $info['color'];
+          $meme['file'] = $info['file'];
+          $meme['fontSizeView'] = $info['font-size-view'];
 
-          if (isset($_POST['liked'])) {
-            $meme["rank"] = "<html><body style='font-size:18px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span><br><span style='font-size:15px;'>Not owned!</span></body></html>";
-          } else {
-            $meme["rank"] = "<html><body style='font-size:22px;background:#111111;color:#fff;text-align:center;'>Rank: #" . $rank . " <span style='color:" . $info['color'] . ";'>(" . $info['rarity'] . ")</span></body></html>";
+          $cQ = "SELECT memeId FROM owns WHERE userId=?";
+
+          $owned = "Not owned!";
+
+          if ($c = $con->prepare($cQ)) {
+
+            $c->bind_param("i",$u);
+
+            $c->execute();
+
+            $c->bind_result($memeId);
+
+            while ($c->fetch()) {
+
+              if ($memeId == $id) {
+
+                $owned = "Collected!";
+
+              }
+
+            }
+
           }
+
+          $meme['owned'] = $owned;
+
 
 
 

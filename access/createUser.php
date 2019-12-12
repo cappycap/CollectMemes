@@ -1,4 +1,10 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 
 require 'db.php';
 
@@ -25,6 +31,20 @@ if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['em
     $stmt->execute();
 
     $response['success'] = 1;
+
+    $new = new PHPMailer;
+
+    $new->setFrom('noreply@collectmemes.com', 'CollectMemes');
+
+    $new->addReplyTo('support@collectmemes.com', 'CollectMemes');
+
+    $new->addAddress($email);
+
+    $new->Subject = 'Welcome to CollectMemes!';
+
+    $new->msgHTML("Thanks for signing up with us, we hope you enjoy collecting memes! <br>Please note: CollectMemes is currently in alpha. Any feedback would be greatly appreciated, just send an email to feedback@collectmemes.com!");
+
+    $new->send();
 
     $stmt->close();
 

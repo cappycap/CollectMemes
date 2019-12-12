@@ -57,6 +57,8 @@ function getRankInfo($memeRank, $con) {
 		$info['color'] = "#e74c3c";
 		$info['rarity'] = "Legendary";
 		$info['font-size'] = "2vw";
+		$info['font-size-view'] = "18";
+		$info['file'] = "file://legendary.png";
 
 	} else if ($ratio > 0.07 and $ratio <= 0.19) {
 
@@ -64,6 +66,8 @@ function getRankInfo($memeRank, $con) {
 		$info['color'] = "#FAB657";
 		$info['rarity'] = "Epic";
 		$info['font-size'] = "3vw";
+		$info['font-size-view'] = "22";
+		$info['file'] = "file://epic.png";
 
 	} else if ($ratio > 0.19 and $ratio <= 0.28) {
 
@@ -71,20 +75,26 @@ function getRankInfo($memeRank, $con) {
 		$info['color'] = "#8e44ad";
 		$info['rarity'] = "Rare";
 		$info['font-size'] = "3vw";
+		$info['font-size-view'] = "22";
+		$info['file'] = "file://rare.png";
 
 	} else if ($ratio > 0.28 and $ratio <= 0.58) {
 
 		// Meme is Uncommon.
-		$info['color'] = "#3498db";
+		$info['color'] = "#a3ffb9";
 		$info['rarity'] = "Uncommon";
 		$info['font-size'] = "2vw";
+		$info['font-size-view'] = "18";
+		$info['file'] = "file://uncommon.png";
 
 	} else if ($ratio > 0.58 and $ratio <= 1) {
 
 		// Meme is Common.
-		$info['color'] = "#bdc3c7";
+		$info['color'] = "#ffffff";
 		$info['rarity'] = "Common";
 		$info['font-size'] = "3vw";
+		$info['font-size-view'] = "18";
+		$info['file'] = "file://common.png";
 
 	}
 

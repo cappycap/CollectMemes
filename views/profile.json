@@ -116,7 +116,15 @@
           "type": "$util.alert",
           "options": {
             "title": "Delete Account?",
-            "description": "Are you sure you want to delete your account? All collected memes and likes will be lost. Press OK if you're chill with that."
+            "description": "Are you sure you want to delete your account? All collected memes and likes will be lost. Enter your password and press OK if you're chill with that.",
+            "form": [
+              {
+                "name": "pw",
+                "placeholder": "account password...",
+                "type": "secure",
+                "align": "center"
+              }
+            ]
           },
           "success": {
             "type": "$network.request",
@@ -125,22 +133,35 @@
               "method": "post",
               "data": {
                 "userId": "{{$global.userKey}}",
-                "pw": "i987hbn2v23hjkg7vgbgk3hbAHRJ198"
+                "pw": "{{$jason.pw}}"
               }
             },
-            "success": {
-              "type": "$global.set",
-              "options": {
-                "userKey": "0"
+            "success": [
+              {
+                "{{#if $jason.success == 1}}": {
+                  "type": "$global.set",
+                  "options": {
+                    "userKey": "0"
+                  },
+                  "success": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/views/welcome.json",
+                      "transition": "push"
+                    }
+                  }
+                }
               },
-              "success": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/views/welcome.json",
-                  "transition": "push"
+              {
+                "{{#else}}": {
+                  "type": "$util.alert",
+                  "options": {
+                    "title": "Password Incorrect",
+                    "description": "Sorry, that wasn't your password!"
+                  }
                 }
               }
-            }
+            ]
           }
         }
       },
@@ -150,41 +171,23 @@
           "style": {
             "border": "none"
           },
-          "sections": [
-            {
-              "items": [
-                {
-                  "type": "html",
-                  "text": "<html>
-                  <head>
-                    <style>
-                      body {
-                        background:#111111;
-                        margin:0;
-                      }
-                    </style>
-                  </head>
-                  <body>
-                    <img style='width:100%;position:relative;top:-20px;' src='https://collectmemes.com/img/profiletop.png'>
-                  </body>
-                  </html>",
-                  "style": {
-                    "width": "100%",
-                    "height": "50%"
-                  }
-                }
-              ]
-            }
-          ],
           "layers": [
+            {
+              "type": "image",
+              "url": "file://profiletop.png",
+              "style": {
+                "width": "100%",
+                "top": "0"
+              }
+            },
             {
               "type": "label",
               "text": "{{$cache.username}}",
               "style": {
-                "width": "150",
+                "width": "70%",
                 "height": "50",
                 "top": "7%",
-                "left": "50%-75",
+                "left": "15%",
                 "align": "center",
                 "font": "HelveticaNeue-Bold",
                 "size": "30",

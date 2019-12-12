@@ -124,10 +124,10 @@
               "type": "label",
               "text": "{{$cache.username}}",
               "style": {
-                "width": "150",
+                "width": "70%",
                 "height": "50",
                 "top": "7%",
-                "left": "50%-75",
+                "left": "15%",
                 "align": "center",
                 "font": "HelveticaNeue-Bold",
                 "size": "30",

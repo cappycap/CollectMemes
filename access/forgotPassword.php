@@ -11,61 +11,118 @@ require 'db.php';
 if (isset($_POST['email'])) {
 
   $e = $con->real_escape_string($_POST['email']);
+  $i = "";
 
-  $q = "SELECT id FROM users WHERE email=?";
+  $q = "SELECT id FROM users WHERE email='" . $e . "'";
 
   if ($s = $con->prepare($q)) {
 
-    $s->bind_param("s",$e);
-
     $s->execute();
 
-    $s->bind_result($i);
+    $s->bind_result($uId);
 
     $s->store_result();
 
-    if ($s->num_rows > 0) {
+    if ($s->fetch()) {
 
-      $s->close();
+      $i = $uId;
 
-      $resetCode = substr(md5(uniqid(rand(), true)), 16, 16);
-      $time = time();
+      if ($s->num_rows > 0) {
 
-      $insQ = "INSERT INTO resetRequests (userId, resetCode, time) VALUES (?, ?, ?)";
+        $s->close();
 
-      if ($ins = $con->prepare($insQ)) {
+        $resC = "SELECT id FROM resetRequests WHERE userId=?";
 
-        $ins->bind_param("isi",$i,$resetCode,$time);
+        if ($sC = $con->prepare($resC)) {
 
-        if ($ins->execute()) {
+          $sC->bind_param("i",$i);
 
-          $ins->close();
-          
-          $m = new PHPMailer;
+          $sC->execute();
 
-          $m->setFrom('noreply@collectmemes.com', 'CollectMemes');
+          $sC->store_result();
 
-          $m->addReplyTo('support@collectmemes.com', 'CollectMemes');
+          $resetCode = substr(md5(uniqid(rand(), true)), 16, 16);
+          $time = time();
 
-          $m->addAddress($n);
+          if ($sC->num_rows == 0) {
 
-          $m->Subject = 'CollectMemes Password Reset Request';
+            $sC->close();
 
-          $m->msgHTML("Thank you for submitting a password reset request. <a href='https://collectmemes.com/reset?v=" . $resetCode . "'>Set a new password by clicking here.</a> This reset request will be valid for 24 hours.");
+            $insQ = "INSERT INTO resetRequests (userId, resetCode, time) VALUES (?, ?, ?)";
 
-          $m->send();
+            if ($ins = $con->prepare($insQ)) {
+
+              $ins->bind_param("isi",$i,$resetCode,$time);
+
+              if ($ins->execute()) {
+
+                $ins->close();
+
+                $m = new PHPMailer;
+
+                $m->setFrom('noreply@collectmemes.com', 'CollectMemes');
+
+                $m->addReplyTo('support@collectmemes.com', 'CollectMemes');
+
+                $m->addAddress($e);
+
+                $m->Subject = 'CollectMemes Password Reset Request';
+
+                $m->msgHTML("Thank you for submitting a password reset request. <a href='https://collectmemes.com/reset?v=" . $resetCode . "'>Set a new password by clicking here.</a> This reset request will be valid for 24 hours.");
+
+                $m->send();
+
+              }
+
+            }
+
+          } else {
+
+            $sC->close();
+
+            $uQ = "UPDATE resetRequests SET resetCode=?,time=? WHERE userId=?";
+
+            if ($uS = $con->prepare($uQ)) {
+
+              $uS->bind_param("sii",$resetCode,$time,$i);
+
+              if ($uS->execute()) {
+
+                $uS->close();
+
+                $m = new PHPMailer;
+
+                $m->setFrom('noreply@collectmemes.com', 'CollectMemes');
+
+                $m->addReplyTo('support@collectmemes.com', 'CollectMemes');
+
+                $m->addAddress($e);
+
+                $m->Subject = 'CollectMemes Password Reset Request';
+
+                $m->msgHTML("Thank you for submitting a password reset request. <a href='https://collectmemes.com/reset?v=" . $resetCode . "'>Set a new password by clicking here.</a> This reset request will be valid for 24 hours.");
+
+                $m->send();
+
+              } else {
+
+                $uS->close();
+
+              }
+
+            }
+
+          }
 
         }
 
+      } else {
+
+        $s->close();
+
       }
 
-    } else {
-
-      $s->close();
-
     }
-
-
 
   }
 
