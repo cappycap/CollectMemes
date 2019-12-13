@@ -43,7 +43,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
   }
 
 
-  $q = "SELECT memeId FROM likes WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 9" . " OFFSET " . $c;
+  $q = "SELECT memeId FROM likes WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 12" . " OFFSET " . $c;
 
   if ($stmt = $con->prepare($q)) {
 
@@ -96,7 +96,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
             body {
                 background-color: #111111;
                 margin:0;
-                height:130px;
+                width:100%;
             }
 
             .image {
@@ -105,14 +105,20 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
               background-repeat:   no-repeat;
               background-position: center center;
               width:100%;
-              height:130px;
               margin:0;
             }
 
             </style>
             </head>
-            <body>
-            <div class='image'></div>
+            <body class='child'>
+            <div class='image child'></div>
+            <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.2.js'></script>
+            <script>
+              var cw = $('.child').width();
+              $('.child').css({
+              'height': cw + 'px'
+              });
+            </script>
             </div>
             </body>
             </html>",
@@ -126,17 +132,14 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
       }
 
-      while ($counter2 < 9) {
+      while ($counter2 < 12) {
 
         $list[$counter2] = array("text"=>"<html>
         <head>
         <style>
         body {
-            background-image:    url(https://collectmemes.com/img/empty2.png);
-            background-size:     cover;                      /* <------ */
-            background-repeat:   no-repeat;
-            background-position: center center;              /* optional, center the image */
-            height:124px;
+            width:100%;
+            padding-top:100%;
             margin:0;
         }
         </style>
@@ -154,6 +157,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $components[0] = array("components"=>array($list[0],$list[1],$list[2]));
       $components[1] = array("components"=>array($list[3],$list[4],$list[5]));
       $components[2] = array("components"=>array($list[6],$list[7],$list[8]));
+      $components[3] = array("components"=>array($list[9],$list[10],$list[11]));
 
     } else {
 
@@ -174,7 +178,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
     if ($stmt->fetch()) {
 
       $response['size'] = number_format($size);
-      $response['curAdd'] = $c + 9;
+      $response['curAdd'] = $c + 13;
 
     }
 

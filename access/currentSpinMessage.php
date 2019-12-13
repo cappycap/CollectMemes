@@ -9,7 +9,7 @@ if (isset($_POST['spinsLeft']) and isset($_POST['nextSpin']) and isset($_POST['c
 
   if ((int)$_POST['spinsLeft'] == 0 or (int)$_POST['collectStatus'] == 0) {
 
-    $response['html'] = "<html><body style='background:#111111;margin:0;height:100%;'><p id='demo' style='margin-top:10px;color:#ffffff;font-size:20px;text-align:center;width:100%;'></p><body></html>
+    $response['html'] = "<html><body style='border:1px solid #111111;margin:0;height:100%;'><p id='demo' style='margin-top:10px;color:#111111;font-size:20px;text-align:center;width:100%;'></p><body></html>
 
     <script>
     // Set the date we're counting down to
@@ -45,7 +45,7 @@ if (isset($_POST['spinsLeft']) and isset($_POST['nextSpin']) and isset($_POST['c
 
   } else {
 
-    $response['html'] = "<html><body style='text-align:center;background:#111111;margin-top:15px;height:100%;'><span style='color:#0CE84A;font-size:20px;text-align:center;width:100%;'>" . $_POST['spinsLeft'] . " spins left</span></body></html>";
+    $response['html'] = "<html><body style='text-align:center;border:1px solid #111111;;margin-top:15px;height:100%;'><span style='color:#0CE84A;font-size:20px;text-align:center;width:100%;'>" . $_POST['spinsLeft'] . " spins left</span></body></html>";
 
   }
 

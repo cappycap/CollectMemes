@@ -3,31 +3,6 @@
     "head": {
       "title": "Collect",
       "actions": {
-        "newSpinMessage": {
-          "type": "$network.request",
-          "options": {
-            "url": "https://collectmemes.com/access/currentSpinMessage.php",
-            "method": "post",
-            "data": {
-              "spinsLeft": "{{$global.spinsLeft}}",
-              "nextSpin": "{{$cache.nextSpin}}",
-              "collectStatus": "{{$cache.collectStatus}}"
-            }
-          },
-          "success": {
-            "type": "$cache.set",
-            "options": {
-              "currentSpinMessage": "{{$jason}}"
-            },
-            "success": {
-              "type": "$href",
-              "options": {
-                "url": "https://collectmemes.com/views/collect.json",
-                "transition": "push"
-              }
-            }
-          }
-        },
         "mainLoad": [{
           "{{#if $global.firstLoadDone == 0}}": {
             "type": "$cache.set",
@@ -50,7 +25,8 @@
                 "type": "$cache.set",
                 "options": {
                   "current": "{{$jason}}",
-                  "liked": "{{$jason.liked}}"
+                  "liked": "{{$jason.liked}}",
+                  "failedSpin": "0"
                 },
                 "success": {
                   "type": "$cache.set",
@@ -77,7 +53,7 @@
                           "firstLoadDone": "1"
                         },
                         "success": {
-                          "trigger": "newSpinMessage"
+                          "type": "$render"
                         }
                       }
                     }
@@ -106,197 +82,87 @@
                       "collectStatus": "1"
                     },
                     "success": {
-                        "type": "$cache.set",
+                      "type": "$cache.set",
+                      "options": {
+                        "spinStatus": "1",
+                        "current": {
+                          "id": "-1",
+                          "title": "Spin to get started!",
+                          "image": "file://start.png",
+                          "top": "file://c-common-top.png",
+                          "bot": "file://c-common-bot.png"
+                        }
+                      },
+                      "success": {
+                        "type": "$global.set",
                         "options": {
-                          "current": {
-                            "html": "<html>
-                            <head>
-                            <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
-                            <style>
-                              .center {
-                                width:100%;
-                                margin:0;
-                                padding:0;
-                              }
-
-                              body {
-                                background:#111111;margin:0;height:100%;
-                              }
-
-                              .num {
-                                color:green;
-                              }
-                            .buttons {
-                              width:100%;
-                              height:12%;
-                              margin-top:6%;
-                              color:#fff;
-                              padding:0;
-                              font-size:6vw;
-                              text-align:center;
-                            }
-
-                            .spin-again {
-                              display:inline-block;float:left;width:48%;height:100%;background:#34495e;border-radius:0px 35px 35px 0px;
-                            }
-
-                            .collect-meme {
-                              display:inline-block;float:right;width:48%;height:100%;background:#3b9fdf;border-radius:35px 0px 0px 35px;
-                            }
-
-                            .centered-text {
-                              display: table;
-                                height: 100%;
-                                width: 100%;
-                            }
-
-                            .centered-text span {
-                              display: table-cell;
-                                vertical-align: middle;
-                            }
-
-                            .box {
-                            display: flex;
-                            width: 100%;
-                            height: 8px;
-                            margin: 0px 0px 0px 0px;
-                            }
-
-                            .box-sm {
-                            height: 8px;
-                            margin: 0;
-                            flex-grow: 1;
-                            transition: all .8s ease-in-out;
-                            cursor: pointer;
-                            }
-                            .out {
-                            background-color: #57bbfb;
-                            }
-
-                            .mid {
-                            background-color: #3b9fdf;
-                            }
-
-                            .centerb {
-                            background-color: #1a7ebe;
-                            }
-                            .info {
-                            width:100%;
-                            text-align:center;
-                            display:table;
-                            margin:20px 0px;
-                            padding:0;
-                            height:60px;
-                            color:#111111;
-                            }
-                            .section-right {
-                            display:table-cell;
-                            width:16%;
-                            background:#111111;
-                            vertical-align:middle;
-                            padding:4px;
-                            font-size:20px;
-                            }
-
-                            .section-middle {
-                            display:table-cell;
-                            width:68%;
-                            background:#0f0f0f;
-                            color:white;
-                            font-size:20px;
-                            vertical-align:middle;
-                            }
-
-                            .section-left {
-                            display:table-cell;
-                            width:16%;
-                            background:#111111;
-                            color:white;
-                            vertical-align:middle;
-                            padding:4px;
-                            font-size:16px;
-                            }
-                            .source {
-                            font-size:15px;
-                            }
-                            .img {
-                            width:80%;
-                            margin:auto;
-                            }
-                            </style>
-                            </head>
-                            <body>
-                            <div class='info'>
-                              <div class='section-left'>
-                                <div class='inner'></div>
-                              </div>
-                              <div class='section-middle'>
-                                <div class='title'>Spin to get started!</div>
-                              </div>
-                              <div class='section-right'>
-                                <div class='inner'></div>
-                              </div>
-                            </div>
-                            <div class='img'>
-                              <img class='rotate-scale-up center child' src='https://collectmemes.com/img/start.png'>
-                            </div>
-                            <script>
-                            var cw = $('.child').width();
-                            $('.child').css({'height':cw+'px'});
-                            </script>
-                            </body></html>"
-                          }
+                          "spinsLeft": "10"
+                        },
+                        "success": {
+                          "type": "$render"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "{{#else}}": [
+                    {
+                      "{{#if $cache.collected == 1}}": {
+                        "type": "$util.banner",
+                        "options": {
+                          "title": "Congrats!",
+                          "description": "Meme collected. Check your Vault!"
                         },
                         "success": {
                           "type": "$cache.set",
                           "options": {
-                            "spinStatus": "1"
+                            "collected": "0"
                           },
                           "success": {
-                            "type": "$global.set",
-                            "options": {
-                              "spinsLeft": "10"
-                            },
-                            "success": {
-                              "trigger": "newSpinMessage"
-                            }
+                            "type": "$render"
                           }
                         }
                       }
-                  }
-                },
-                {
-                  "{{#else}}": {
-                    "type": "$network.request",
-                    "options": {
-                      "url": "https://collectmemes.com/access/checkTime.php"
                     },
-                    "success": [
-                      {
-                        "{{#if $cache.collected == 1}}": {
-                          "type": "$util.banner",
-                          "options": {
-                            "title": "Congrats!",
-                            "description": "Meme collected. Check your Vault!"
-                          },
-                          "success": {
-                            "type": "$cache.set",
+                    {
+                      "{{#else}}": [
+                        {
+                          "{{#if $cache.failedSpin == 1}}": {
+                            "type": "$network.request",
                             "options": {
-                              "collected": "0"
+                              "url": "https://collectmemes.com/access/failedSpin.php",
+                              "method": "post",
+                              "data": {
+                                "nextSpin": "{{$cache.nextSpin}}"
+                              }
                             },
                             "success": {
-                              "type": "$render"
+                              "type": "$util.banner",
+                              "options": {
+                                "title": "Wait a bit longer...",
+                                "description": "{{$jason.message}}"
+                              },
+                              "success": {
+                                "type": "$cache.set",
+                                "options": {
+                                  "failedSpin": "0"
+                                },
+                                "success": {
+                                  "type": "$render"
+                                }
+                              }
                             }
                           }
+                        },
+                        {
+                          "{{#else}}": {
+                            "type": "$render"
+                          }
                         }
-                      },
-                      {
-                        "{{#else}}": {
-                          "type": "$render"
-                        }
-                      }
-                    ]
-                  }
+                      ]
+                    }
+                  ]
                 }
                 ]
               }
@@ -380,7 +246,7 @@
                           "nextSpin": "{{$jason.time}}"
                         },
                         "success": {
-                          "trigger": "newSpinMessage"
+                          "type": "$render"
                         }
                       }
                     }
@@ -388,7 +254,7 @@
                 },
                 {
                   "{{#else}}": {
-                    "trigger": "newSpinMessage"
+                    "type": "$render"
                   }
                 }
               ]
@@ -428,7 +294,13 @@
                   "collected": "1"
                 },
                 "success": {
-                  "trigger": "newSpinMessage"
+                  "type": "$global.set",
+                  "options": {
+                    "spinsLeft": "0"
+                  },
+                  "success": {
+                    "type": "$reload"
+                  }
                 }
               }
             }
@@ -477,81 +349,154 @@
       },
       "templates": {
         "body": {
-          "style": {
-            "background": {
-              "type": "html",
-              "text": [
-                {
-                  "{{#if $global.firstLoadDone == 1}}": "{{$cache.current.html}}"
-                },
-                {
-                  "{{#else}}": "UwU"
-                }
-              ]
-            }
-          },
-          "header": {
-            "style": {
-              "background": "#ffffff"
-            },
-            "title": {
-              "type": "image",
-              "style": {
-                "width": "94",
-                "height": "27"
-              },
-              "url": "https://collectmemes.com/img/logo.png"
-            },
-            "menu": {
-              "image": "https://collectmemes.com/img/menu2.png",
-              "href": {
-                "url": "https://collectmemes.com/views/profile.json",
-                "transition": "push"
-              }
-            }
-          },
+          "background": "#ffffff",
           "layers": [
             {
               "type": "image",
-              "url": [
+              "url": "{{$cache.current.top}}",
+              "style": {
+                "width": "100%",
+                "top": "-60"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.current.bot}}",
+              "style": {
+                "width": "100%",
+                "bottom": "-35"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.current.title}}",
+              "style": {
+                "size": "30",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "2%-7",
+                "padding": "0"
+              }
+            },
+            {
+              "type": "label",
+              "text": "by {{$cache.current.creator}}",
+              "style": {
+                "size": "22",
+                "color": "#ffffff",
+                "align": "center",
+                "width": [
+                  {
+                    "{{#if $global.spinsLeft == 10}}": "0"
+                  },
+                  {
+                    "{{#else}}": "80%"
+                  }
+                ],
+                "left": "10%",
+                "top": "2%+27"
+              }
+            },
+            {
+              "type": "label",
+              "text": [
                 {
-                  "{{#if $global.spinsLeft == 10}}": "https://collectmemes.com/img/empty.png"
+                  "{{#if $global.spinsLeft == 0}}": "0 spins left"
                 },
                 {
-                  "{{#elseif $cache.liked == 1}}": "https://collectmemes.com/img/heart-full.png"
-                },
-                {
-                  "{{#else}}": "https://collectmemes.com/img/heart-white.png"
+                  "{{#else}}": "{{$global.spinsLeft}} spins left"
                 }
               ],
               "style": {
+                "width": "40%",
+                "align": "center",
+                "top": "2%+57",
+                "left": "30%",
+                "size": "22",
+                "color": [
+                  {
+                    "{{#if $global.spinsLeft == 0}}": "#e74c3c"
+                  },
+                  {
+                    "{{#else}}": "#097a29"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.current.image}}",
+              "style": {
+                "width": "80%",
+                "height": "300",
+                "top": "48%-150",
+                "left": "10%"
+              }
+            },
+            {
+              "type": "label",
+              "text": "#{{$cache.current.rank}}",
+              "style": {
+                "color": "#ffffff",
+                "bottom": "17%",
+                "left": "30%",
+                "width": [
+                  {
+                    "{{#if $global.spinsLeft == 10}}": "0"
+                  },
+                  {
+                    "{{#else}}": "40%"
+                  }
+                ],
+                "align": "center",
+                "size": "25"
+              }
+            },
+            {
+              "type": "label",
+              "text": "({{$cache.current.rarity}})",
+              "style": {
+                "color": "{{$cache.current.color}}",
+                "bottom": "13%",
+                "left": "30%",
+                "align": "center",
+                "width": [
+                  {
+                    "{{#if $global.spinsLeft == 10}}": "0"
+                  },
+                  {
+                    "{{#else}}": "40%"
+                  }
+                ],
+                "size": "20"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://menu.png",
+              "style": {
                 "width": "40",
-                "height": "40",
-                "top": "86",
-                "left": "86%-8"
+                "top": "1%",
+                "right": "3%"
               },
-              "action": [
-                {
-                  "{{#if $global.spinsLeft !== 10 && $cache.liked == 0}}": {
-                    "trigger": "likeMeme"
-                  }
-                },
-                {
-                  "{{#elseif $cache.liked == 1}}": {
-                    "trigger": "unlikeMeme"
-                  }
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/profile.json"
                 }
-              ]
+              }
             },
             {
               "type": "button",
               "text": "Spin",
               "style": {
-                "width": "47%",
+                "width": "44%",
                 "height": "8%",
                 "align": "center",
-                "top": "61%+50",
-                "left": "2%",
+                "bottom": "3%",
+                "left": "5%",
                 "background": [
                   {
                     "{{#if $cache.spinStatus == 1}}": "#34495e"
@@ -572,35 +517,26 @@
                 },
                 {
                   "{{#else}}": {
-                    "type": "$util.banner",
+                    "type": "$cache.set",
                     "options": {
-                      "title": "Out of Spins:",
-                      "description": "We know it's fun... spin some more after 15 min!"
+                      "failedSpin": "1"
+                    },
+                    "success": {
+                      "type": "$reload"
                     }
                   }
                 }
               ]
             },
             {
-              "type": "html",
-              "text": "{{$cache.currentSpinMessage.html}}",
-              "style": {
-                "width": "47%",
-                "height": "8%",
-                "align": "center",
-                "top": "68%+55",
-                "left": "2%"
-              }
-            },
-            {
               "type": "button",
               "text": "Collect!",
               "style": {
-                "width": "47%",
+                "width": "44%",
                 "height": "8%",
                 "align": "center",
-                "top": "61%+50",
-                "left": "51%",
+                "bottom": "3%",
+                "right": "5%",
                 "background": [
                   {
                     "{{#if $cache.collectStatus == 1}}": "#319CDE"
@@ -634,10 +570,12 @@
                 },
                 {
                   "{{#else}}": {
-                    "type": "$util.banner",
+                    "type": "$cache.set",
                     "options": {
-                      "title": "Nice one...",
-                      "description": "Make each meme count! Collect again in 15 min."
+                      "failedSpin": "1"
+                    },
+                    "success": {
+                      "type": "$reload"
                     }
                   }
                 }
@@ -645,12 +583,44 @@
             },
             {
               "type": "image",
-              "url": "https://collectmemes.com/img/vault2.png",
+              "url": [
+                {
+                  "{{#if $global.spinsLeft == 10}}": "file://heart-white.png"
+                },
+                {
+                  "{{#elseif $cache.liked == 1}}": "file://heart-full.png"
+                },
+                {
+                  "{{#else}}": "file://heart-empty.png"
+                }
+              ],
               "style": {
-                "width": "64",
-                "height": "64",
-                "right": "5%",
-                "bottom": "3%"
+                "width": "40",
+                "height": "40",
+                "top": "15%+5",
+                "left": "3%"
+              },
+              "action": [
+                {
+                  "{{#if $global.spinsLeft !== 10 && $cache.liked == 0}}": {
+                    "trigger": "likeMeme"
+                  }
+                },
+                {
+                  "{{#elseif $cache.liked == 1}}": {
+                    "trigger": "unlikeMeme"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "url": "file://vault.png",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "right": "3%",
+                "top": "15%+5"
               },
               "action": {
                 "type": "$href",

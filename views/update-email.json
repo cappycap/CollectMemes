@@ -108,7 +108,7 @@
                     </style>
                   </head>
                   <body>
-                    <img style='width:100%;position:relative;top:-20px;' src='https://collectmemes.com/img/profiletop.png'>
+                    <img style='width:100%;position:relative;top:-20px;' src='file://profiletop.png'>
                   </body>
                   </html>",
                   "style": {

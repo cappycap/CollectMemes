@@ -49,7 +49,13 @@
                       "likeMemeRemoved": "0"
                     },
                     "success": {
-                      "trigger": "mainLoad"
+                      "type": "$cache.set",
+                      "options": {
+                        "cur": "1"
+                      },
+                      "success": {
+                        "trigger": "mainLoad"
+                      }
                     }
                   }
                 }
@@ -65,7 +71,25 @@
         "$load": [
           {
             "{{#if $global.userKey != '0'}}": {
-              "trigger": "deletedCheck"
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/access/math.php",
+                "method": "post",
+                "data": {
+                  "x": "{{$env.device.width}}",
+                  "y": "3",
+                  "div": "true"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "memeHeight": "{{$jason.ret}}"
+                },
+                "success": {
+                  "trigger": "deletedCheck"
+                }
+              }
             }
           },
           {
@@ -139,24 +163,49 @@
       },
       "templates": {
         "body": {
-          "background": "#111111",
+          "background": "file://bg.png",
           "style": {
             "border": "none"
           },
-          "header": {
-            "style": {
-              "background": "#ffffff"
-            },
-            "title": {
-              "type": "image",
-              "style": {
-                "width": "94",
-                "height": "27"
-              },
-              "url": "https://collectmemes.com/img/logo.png"
-            }
-          },
           "layers": [
+            {
+              "type": "label",
+              "text": "Liked",
+              "style": {
+                "color": "#ffffff",
+                "left": "20%",
+                "top": "1%",
+                "align": "center",
+                "size": "30",
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "60%"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.size}} memes",
+              "style": {
+                "color": "#ffffff",
+                "left": "20%",
+                "top": "7%-7",
+                "align": "center",
+                "size": "21",
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "60%"
+                  }
+                ]
+              }
+            },
             {
               "type": "image",
               "url": "https://collectmemes.com/img/back.png",
@@ -195,7 +244,7 @@
                     "{{#else}}": "51%"
                   }
                 ],
-                "top": "123",
+                "top": "9%+20",
                 "background": "#dedede",
                 "color": "#dedede"
               }
@@ -228,7 +277,7 @@
                     "{{#else}}": "51%+5"
                   }
                 ],
-                "top": "128"
+                "top": "9%+25"
               },
               "action": {
                 "trigger": "onSort"
@@ -258,7 +307,7 @@
                     "{{#else}}": "2%"
                   }
                   ],
-                "top": "123",
+                "top": "9%+20",
                 "align": "center",
                 "background": [
                   {
@@ -303,7 +352,7 @@
                     "{{#else}}": "51%"
                   }
                 ],
-                "top": "123",
+                "top": "9%+20",
                 "align": "center",
                 "background": [
                   {
@@ -323,122 +372,6 @@
                   }
                 }
               ]
-            },
-            {
-              "type": "label",
-              "text": ".",
-              "style": {
-                "width": [
-                  {
-                    "{{#if $cache.cur >= 10}}": "30"
-                  },
-                  {
-                    "{{#else}}": "0"
-                  }
-                ],
-                "height": "30",
-                "left": "2%",
-                "top": "82%+3",
-                "background": "#dedede",
-                "color": "#dedede",
-                "corner_radius": "15"
-              }
-            },
-            {
-              "type": "image",
-              "url": "https://collectmemes.com/img/left.png",
-              "style": {
-                "width": [
-                  {
-                    "{{#if $cache.cur >= 10}}": "20"
-                  },
-                  {
-                    "{{#else}}": "0"
-                  }
-                ],
-                "height": "20",
-                "left": "2%+5",
-                "top": "82%+8"
-              },
-              "action": {
-                "type": "$network.request",
-                "options": {
-                  "url": "https://collectmemes.com/access/math.php",
-                  "method": "post",
-                  "data": {
-                    "x": "{{$cache.cur}}",
-                    "y": "9",
-                    "sub": "true"
-                  }
-                },
-                "success": {
-                  "type": "$cache.set",
-                  "options": {
-                    "cur": "{{$jason.ret}}"
-                  },
-                  "success": {
-                    "type": "$reload"
-                  }
-                }
-              }
-            },
-            {
-              "type": "label",
-              "text": ".",
-              "style": {
-                "width": [
-                  {
-                    "{{#if $cache.curAdd <= $cache.size}}": "30"
-                  },
-                  {
-                    "{{#else}}": "0"
-                  }
-                ],
-                "height": "30",
-                "left": "98%-30",
-                "top": "82%+3",
-                "background": "#dedede",
-                "color": "#dedede",
-                "corner_radius": "15"
-              }
-            },
-            {
-              "type": "image",
-              "url": "https://collectmemes.com/img/right.png",
-              "style": {
-                "width": [
-                  {
-                    "{{#if $cache.curAdd <= $cache.size}}": "20"
-                  },
-                  {
-                    "{{#else}}": "0"
-                  }
-                ],
-                "height": "20",
-                "left": "98%-25",
-                "top": "82%+8"
-              },
-              "action": {
-                "type": "$network.request",
-                "options": {
-                  "url": "https://collectmemes.com/access/math.php",
-                  "method": "post",
-                  "data": {
-                    "x": "{{$cache.cur}}",
-                    "y": "9",
-                    "add": "true"
-                  }
-                },
-                "success": {
-                  "type": "$cache.set",
-                  "options": {
-                    "cur": "{{$jason.ret}}"
-                  },
-                  "success": {
-                    "type": "$reload"
-                  }
-                }
-              }
             }
           ],
           "sections": [{
@@ -460,91 +393,11 @@
               {
                 "{{#else}}": [
                   {
-                    "type": "html",
-                    "text": "<html>
-                    <head>
-                      <style>
-                        body {
-                          background:#111111;
-                          margin:0;
-                        }
-                        span {
-                          font-size:40px;
-                          color:white;
-                        }
-                        .title {
-                          padding:10px;
-                          margin-bottom:60px;
-                        }
-                        .box {
-                          display: flex;
-                          width: 100%;
-                          height: 8px;
-                          margin: 0px 0px 0px 0px;
-                        }
-
-                        .box-sm {
-                          height: 8px;
-                          margin: 0;
-                          flex-grow: 1;
-                          transition: all .8s ease-in-out;
-                          cursor: pointer;
-                        }
-                        .update {
-                          background-color:#FA5341;
-                        }
-
-                        .orange {
-                          background-color: #E74C3C;
-                        }
-
-                        .yellow {
-                          background-color: #BA3E30;
-                        }
-
-                        .green {
-                          background-color: #BA3E30;
-                        }
-
-                        .blue {
-                          background-color: #E74C3C;
-                        }
-
-                        .purple {
-                          background-color: #FA5341;
-                        }
-
-                        .stats {
-                            position: absolute;
-                            color: #c3c3c3;
-                            top: 27px;
-                            left: 255px;
-                            font-size: 16px;
-                            font-style: italic;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      <div class='title'>
-                        <span>Liked Memes</span>
-
-                      </div>
-                      <div class='stats'>
-                        {{$cache.size}} memes
-                      </div>
-                      <div class='box'>
-                        <div class='box-sm update'></div>
-                        <div class='box-sm orange'></div>
-                        <div class='box-sm yellow'></div>
-                        <div class='box-sm green'></div>
-                        <div class='box-sm blue'></div>
-                        <div class='box-sm update'></div>
-                      </div>
-                    </body>
-                    </html>",
+                    "type": "image",
+                    "url": "file://flattop2.png",
                     "style": {
                       "width": "100%",
-                      "height": "133"
+                      "padding": "0"
                     }
                   },
                   {
@@ -558,15 +411,13 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0"
+                    			"spacing": "0",
+                          "height": "{{$cache.memeHeight}}"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[0].components[0].text}}",
-                            "style": {
-                              "height": "130"
-                            },
                             "action": [
                               {
                                 "{{#if 'memeId' in $cache.components[0].components[0]}}": {
@@ -584,9 +435,6 @@
                           {
                             "type": "html",
                             "text": "{{$cache.components[0].components[1].text}}",
-                            "style": {
-                              "height": "130"
-                            },
                             "action": [
                               {
                                 "{{#if 'memeId' in $cache.components[0].components[1]}}": {
@@ -604,9 +452,6 @@
                           {
                             "type": "html",
                             "text": "{{$cache.components[0].components[2].text}}",
-                            "style": {
-                              "height": "130"
-                            },
                             "action": [
                               {
                                 "{{#if 'memeId' in $cache.components[0].components[2]}}": {
@@ -627,14 +472,15 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0"
+                    			"spacing": "0",
+                          "height": "{{$cache.memeHeight}}"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[1].components[0].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -654,7 +500,7 @@
                             "type": "html",
                             "text": "{{$cache.components[1].components[1].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -674,7 +520,7 @@
                             "type": "html",
                             "text": "{{$cache.components[1].components[2].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -696,14 +542,15 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0"
+                    			"spacing": "0",
+                          "height": "{{$cache.memeHeight}}"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[2].components[0].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -723,7 +570,7 @@
                             "type": "html",
                             "text": "{{$cache.components[2].components[1].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -743,7 +590,7 @@
                             "type": "html",
                             "text": "{{$cache.components[2].components[2].text}}",
                             "style": {
-                              "height": "130"
+                              "padding": "0"
                             },
                             "action": [
                               {
@@ -760,72 +607,172 @@
                             ]
                           }
                         ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0",
+                          "height": "{{$cache.memeHeight}}"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[0].text}}",
+                            "style": {
+                              "padding": "0"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/views/viewLikedMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[1].text}}",
+                            "style": {
+                              "padding": "0"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/views/viewLikedMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[2].text}}",
+                            "style": {
+                              "padding": "0"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/views/viewLikedMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "padding": "0",
+                          "spacing": "0"
+                        },
+                        "components": [
+                          {
+                            "type": "button",
+                            "url": [
+                              {
+                                "{{#if $cache.cur >= 13}}": "file://left-active.png"
+                              },
+                              {
+                                "{{#else}}": "file://left-empty.png"
+                              }
+                            ],
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.cur >= 13}}": {
+                                  "type": "$network.request",
+                                  "options": {
+                                    "url": "https://collectmemes.com/access/math.php",
+                                    "method": "post",
+                                    "data": {
+                                      "x": "{{$cache.cur}}",
+                                      "y": "12",
+                                      "sub": "true"
+                                    }
+                                  },
+                                  "success": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "cur": "{{$jason.ret}}"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "image",
+                            "url": "file://mid.png",
+                            "style": {
+                              "width": "76%"
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "url": [
+                              {
+                                "{{#if $cache.curAdd <= $cache.size}}": "file://right-active.png"
+                              },
+                              {
+                                "{{#else}}": "file://right-empty.png"
+                              }
+                            ],
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.curAdd <= $cache.size}}": {
+                                  "type": "$network.request",
+                                  "options": {
+                                    "url": "https://collectmemes.com/access/math.php",
+                                    "method": "post",
+                                    "data": {
+                                      "x": "{{$cache.cur}}",
+                                      "y": "12",
+                                      "add": "true"
+                                    }
+                                  },
+                                  "success": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "cur": "{{$jason.ret}}"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
-                  },
-                  {
-                    "type": "html",
-                    "text": "<html>
-                    <head>
-                      <style>
-                        body {
-                          background:#fff;
-                          margin:0;
-                        }
-                        .box {
-                          display: flex;
-                          width: 100%;
-                          height: 8px;
-                          margin: 0px 0px 0px 0px;
-                        }
-
-                        .box-sm {
-                          height: 8px;
-                          margin: 0;
-                          flex-grow: 1;
-                          transition: all .8s ease-in-out;
-                          cursor: pointer;
-                        }
-                        .update {
-                          background-color:#FA5341;
-                        }
-
-                        .orange {
-                          background-color: #E74C3C;
-                        }
-
-                        .yellow {
-                          background-color: #BA3E30;
-                        }
-
-                        .green {
-                          background-color: #BA3E30;
-                        }
-
-                        .blue {
-                          background-color: #E74C3C;
-                        }
-
-                        .purple {
-                          background-color: #FA5341;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      <div class='box'>
-                        <div class='box-sm update'></div>
-                        <div class='box-sm orange'></div>
-                        <div class='box-sm yellow'></div>
-                        <div class='box-sm green'></div>
-                        <div class='box-sm blue'></div>
-                        <div class='box-sm update'></div>
-                      </div>
-                    </body>
-                    </html>",
-                    "style": {
-                      "width": "100%",
-                      "height": "8"
-                    }
                   }
                 ]
               }

@@ -84,35 +84,57 @@
       },
       "templates": {
         "body": {
-          "background": "#111111",
-          "header": {
-            "style": {
-              "background": "#ffffff"
-            },
-            "title": {
+          "background": "#ffffff",
+          "layers": [
+            {
               "type": "image",
+              "url": "file://flattop2.png",
               "style": {
-                "width": "94",
-                "height": "27"
-              },
-              "url": "https://collectmemes.com/img/logo.png"
+                "width": "100%",
+                "top": "0"
+              }
             },
-            "menu": {
-              "image": "https://collectmemes.com/img/trash.png",
+            {
+              "type": "image",
+              "url": "file://profilebot.png",
+              "style": {
+                "width": "100%",
+                "bottom": "0",
+                "z_index": "1"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.meme.file}}",
+              "style": {
+                "width": "20%",
+                "left": "40%",
+                "bottom": "2%"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/trash.png",
+              "style": {
+                "align": "left",
+                "right": "3%",
+                "width": "7%",
+                "top": "3%",
+                "z_index": "1"
+              },
               "action": {
                 "trigger": "onRemove"
               }
-            }
-          },
-          "layers": [
+            },
             {
               "type": "image",
               "url": "https://collectmemes.com/img/back.png",
               "style": {
                 "align": "left",
-                "left": "2%",
+                "left": "3%",
                 "width": "7%",
-                "top": "2%"
+                "top": "3%",
+                "z_index": "2"
               },
               "action": {
                 "type": "$href",
@@ -123,58 +145,76 @@
               }
             },
             {
-              "type": "image",
-              "url": "https://collectmemes.com/img/memetop.png",
-              "style": {
-                "width": "100%",
-                "top": "57"
-              }
-            },
-            {
               "type": "label",
               "text": "\"{{$cache.meme.title}}\"",
               "style": {
-                "size": "25",
+                "size": "30",
                 "color": "#ffffff",
                 "align": "center",
                 "width": "80%",
                 "left": "10%",
-                "top": "10%"
+                "top": "2%",
+                "padding": "0"
               }
             },
             {
               "type": "label",
               "text": "by {{$cache.meme.creator}}",
               "style": {
-                "size": "19",
+                "size": "22",
                 "color": "#ffffff",
                 "align": "center",
                 "width": "80%",
                 "left": "10%",
-                "top": "10%+30"
+                "top": "2%+35"
               }
             },
             {
               "type": "label",
               "text": "{{$cache.meme.likes}} likes - {{$cache.meme.totalOwned}} collects",
               "style": {
-                "size": "15",
+                "size": "18",
                 "color": "#ffffff",
                 "align": "center",
                 "width": "80%",
                 "left": "10%",
-                "top": "10%+54"
+                "top": "2%+65"
               }
             },
             {
-              "type": "html",
-              "text": "{{$cache.meme.rank}}",
+              "type": "label",
+              "text": "#{{$cache.meme.rank}}",
               "style": {
+                "left": "5%",
+                "bottom": "3%",
+                "size": "22",
+                "width": "45%",
+                "align": "left",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "label",
+              "text": "({{$cache.meme.rarity}})",
+              "style": {
+                "left": "55%",
+                "bottom": "3%",
+                "size": "{{$cache.meme.fontSizeView}}",
+                "width": "40%",
+                "align": "right",
+                "color": "{{$cache.meme.color}}"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.meme.owned}}",
+              "style": {
+                "left": "55%",
+                "bottom": "7%",
                 "size": "15",
-                "align": "center",
-                "width": "80%",
-                "left": "10%",
-                "top": "25%+5"
+                "width": "40%",
+                "align": "right",
+                "color": "#ffffff"
               }
             },
             {
@@ -184,7 +224,7 @@
                 "align": "center",
                 "left": "2%",
                 "width": "96%",
-                "top": "32%"
+                "top": "20%"
               }
             }
           ]
