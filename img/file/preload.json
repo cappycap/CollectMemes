@@ -9,6 +9,16 @@
         "top": "30%-100",
         "left": "50%-150"
       }
+    },
+    {
+      "type": "image",
+      "url": "file://infinit.gif",
+      "style": {
+        "width": "200",
+        "height": "100",
+        "top": "50%-50",
+        "left": "50%-100"
+      }
     }
   ]
 }

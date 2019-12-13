@@ -97,28 +97,23 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
                 background-color: #111111;
                 margin:0;
                 width:100%;
+                height:100%;
             }
 
             .image {
-              background-image:    url(" . $image . ");
+              background-image:    url('" . $image . "');
               background-size:     cover;
               background-repeat:   no-repeat;
               background-position: center center;
               width:100%;
+              height:100%;
               margin:0;
             }
 
             </style>
             </head>
-            <body class='child'>
-            <div class='image child'></div>
-            <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.2.js'></script>
-            <script>
-              var cw = $('.child').width();
-              $('.child').css({
-              'height': cw + 'px'
-              });
-            </script>
+            <body>
+            <div class='image'></div>
             </div>
             </body>
             </html>",
@@ -189,7 +184,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
   $response['components'] = $components;
 
 }
-echo json_encode($response);
+echo json_encode($response, JSON_UNESCAPED_SLASHES);
 
 $con->close();
 ?>

@@ -95,48 +95,56 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
             $list[$counter2] = array("text"=>"<html>
             <head>
             <style>
+            html {
+              margin:0;
+              padding:0;
+              height:90%;
+              width:100%;
+              overflow:hidden;
+              display:block;
+              box-sizing: border-box;
+            }
             body {
                 background-color: #111111;
                 margin:0;
-                line-height:124px;
+                padding:0;
+                height:97%;
+                width:100%;
                 text-align:center;
                 border:3px solid " . $info['color'] . ";
+                overflow:hidden;
+                display:block;
+                box-sizing:border-box;
+                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(" . $image . ");
+                background-size:     cover;
+                background-repeat:   no-repeat;
+                background-position: center center;
             }
-
-            .image {
-              background-image:    url(" . $image . ");
-              background-size:     cover;
-              background-repeat:   no-repeat;
-              background-position: center center;
-              opacity: 0.6;
-              width:100%;
-              height:100%;
-              margin:0;
-            }
+            .main {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+.wrapper {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+}
 
             .text {
               text-align:center;
               font-size:30px;
               color:#fff;
-              position:absolute;
-              width:100%;
-              top:0px;
             }
 
             </style>
             </head>
             <body class='child'>
-
-            <div class='image'></div>
-            <div class='text'>#" . $rank . "
-            </div>
-            <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.2.js'></script>
-            <script>
-              var cw = $('.child').width();
-              $('.child').css({
-              'height': cw + 'px'
-              });
-            </script>
+              <div class='main'>
+                <div class='wrapper'>
+                  <div class='text'>#" . $rank . "</div>
+                </div>
+              </div>
             </body>
             </html>",
             "memeId"=>$data['memeId']);
@@ -207,7 +215,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
   $response['components'] = $components;
 
 }
-echo json_encode($response);
+echo json_encode($response, JSON_UNESCAPED_SLASHES);
 
 $con->close();
 ?>

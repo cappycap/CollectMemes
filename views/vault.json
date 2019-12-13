@@ -220,7 +220,7 @@
                     "{{#else}}": "51%"
                   }
                 ],
-                "top": "9%+20",
+                "top": "9%+15",
                 "background": "#dedede",
                 "color": "#dedede"
               }
@@ -253,7 +253,7 @@
                     "{{#else}}": "51%+5"
                   }
                 ],
-                "top": "9%+25"
+                "top": "9%+20"
               },
               "action": {
                 "trigger": "onSort"
@@ -283,7 +283,7 @@
                     "{{#else}}": "2%"
                   }
                   ],
-                "top": "9%+20",
+                "top": "9%+15",
                 "align": "center",
                 "background": [
                   {
@@ -328,7 +328,7 @@
                     "{{#else}}": "51%"
                   }
                 ],
-                "top": "9%+20",
+                "top": "9%+15",
                 "align": "center",
                 "background": [
                   {
@@ -425,15 +425,14 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0",
-                          "height": "{{$cache.memeHeight}}"
+                    			"spacing": "0"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[0].components[0].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -453,7 +452,7 @@
                             "type": "html",
                             "text": "{{$cache.components[0].components[1].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -473,7 +472,7 @@
                             "type": "html",
                             "text": "{{$cache.components[0].components[2].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -495,15 +494,14 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0",
-                          "height": "{{$cache.memeHeight}}"
+                    			"spacing": "0"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[1].components[0].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -523,7 +521,7 @@
                             "type": "html",
                             "text": "{{$cache.components[1].components[1].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -543,7 +541,7 @@
                             "type": "html",
                             "text": "{{$cache.components[1].components[2].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -565,15 +563,14 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0",
-                          "height": "{{$cache.memeHeight}}"
+                    			"spacing": "0"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[2].components[0].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -593,7 +590,7 @@
                             "type": "html",
                             "text": "{{$cache.components[2].components[1].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -613,7 +610,7 @@
                             "type": "html",
                             "text": "{{$cache.components[2].components[2].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -635,15 +632,14 @@
                         "type": "horizontal",
                         "style": {
                     			"padding": "0",
-                    			"spacing": "0",
-                          "height": "{{$cache.memeHeight}}"
+                    			"spacing": "0"
                     		},
                         "components": [
                           {
                             "type": "html",
                             "text": "{{$cache.components[3].components[0].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -663,7 +659,7 @@
                             "type": "html",
                             "text": "{{$cache.components[3].components[1].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
@@ -683,7 +679,7 @@
                             "type": "html",
                             "text": "{{$cache.components[3].components[2].text}}",
                             "style": {
-                              "padding": "0"
+                              "height": "{{$cache.memeHeight}}"
                             },
                             "action": [
                               {
