@@ -4,12 +4,12 @@ function calc() {
 
 	// First and max level.
 	$c = 1;
-	$m = 99;
+	$m = 100;
 
 	// Base XP for level 1.
 	$b = 100;
 
-	while ($c <= 99) {
+	while ($c <= $m) {
 
 		$a = (($c*($c+1)) / 2) * $b;
 		$i = ((($c*($c+1)) / 2) * $b) - ((($c*($c-1)) / 2) * $b);
