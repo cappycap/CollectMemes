@@ -1,3 +1,0 @@
-1. a function calculates a ranking decimal value 0-1 one-by-one throughout whole list
-	- using 
-2. recalculation php loops through entire database ORDER BY ranking, counter assigns new rank to display

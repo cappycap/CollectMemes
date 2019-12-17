@@ -1,7 +1,0 @@
-Phrases to say when user is out of spins:
-	? as images to interface with html ?
-	Memes are fun, but let's take it easy for a little bit!
-	You're out of spins! Next time use the Collect button.
-or has collected:
-	Nice job, view your meme in the vault! \n {vault image} \n Check back in a bit to spin again.
-	
