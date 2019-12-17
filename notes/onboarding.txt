@@ -1,0 +1,25 @@
+It's important that when users first register, they are brought through an onboarding process. 
+
+I want to redesign welcome.json with a fun character that welcomes users, and asks whether or not they want to sign in or sign up.
+"Hi, my name is Memey, the CollectMemes diamond!" Eyes open, big smile.
+"Welcome to the app! Is this your first time, or do you want to sign in?" Eyes closed, cute smile.
+
+Sign up:
+Memey says "Let's begin by choosing a username, which will show up on the Leaderboard and be used to identify you to others. Pick something unique!"
+
+Be sure to put text under email: "In case you forget your password!"
+
+Register success: 
+Memey standing central, says "Nice, you're all set up, {{username}}! Just for you, I'm going to cover the basics of the app."
+
+Memey disappears, highlight certain parts of the main page -
+
+"These are the Spin and Collect buttons."
+"Use the Spin to discover new memes, and Collect to add your favorites to your Vault. You get 10 spins and 1 collect per hour."
+"You don't need to collect every meme you love! Use the Like button to save memes you don't want to affect your average rank."
+
+"Tap here to view your Vault."
+
+"Tap here to view the leaderboard, challenges, achievements, and more!"
+
+"Lastly, tap here to add friends, view your level, and manage your account!"

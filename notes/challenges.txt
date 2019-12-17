@@ -1,0 +1,9 @@
+two types of challenges: collections and achievements
+
+collections - groupings of memes, where collection titles are viewable on challenges page, and upon tapping on a specific collection, users are brought to a view that shows collection progress. if they've collected a meme, it is displayed under its title. if they havent, the title is displayed with a ? beneath it. collections reward xp and and/or an achievement.
+
+collectionsProgress - table holding collectionsProgress for every user. created for each user during createUser process, depending on the collections currently within the collections table. each collectionsProgress entry contains userId, collectionId, and memes column (string with 1/0 to denote collected/not, that when paired with the memes string for a particular entry can be used to track collection process.) also contains a completed 0/1
+
+achievements - each has an achievementId tied to achievement info, which represents the index+1 of the achievementsProgress string for each user. each also has a stage number, which represents the value at that index. ex. 0-not acquired, 1-bronze, 2-silver, 3-gold icons/titles to display as the user attains each.
+
+achievementsProgress - table holding progress for every user. creating on creation based on total number of unique achievementId's in achievements table.

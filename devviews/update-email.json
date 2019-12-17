@@ -1,0 +1,249 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Empty",
+      "actions": {
+        "updateProfileInfo": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/getUserProfileInfo.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "username": "{{$jason.username}}",
+              "email": "{{$jason.email}}",
+              "avatar": "{{$jason.avatar}}",
+              "date": "{{$jason.date}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "updateProfileInfo"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/views/welcome.json"
+              }
+            }
+          }
+        ],
+        "update": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/updateEmail.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "oldEmail": "{{$cache.email}}",
+              "newEmail": "{{$get.newEmail}}",
+              "password": "{{$get.password}}"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 1}}": {
+                "type": "$global.set",
+                "options": {
+                  "profUpdated": "1"
+                },
+                "success": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/views/profile.json"
+                  }
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Whoops!",
+                  "description": "{{$jason.message}}"
+                },
+                "success": {
+                  "type": "$reload"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "#111111",
+          "style": {
+            "border": "none"
+          },
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "html",
+                  "text": "<html>
+                  <head>
+                    <style>
+                      body {
+                        background:#111111;
+                        margin:0;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <img style='width:100%;position:relative;top:-20px;' src='file://profiletop.png'>
+                  </body>
+                  </html>",
+                  "style": {
+                    "width": "100%",
+                    "height": "50%"
+                  }
+                }
+              ]
+            }
+          ],
+          "layers": [
+            {
+              "type": "label",
+              "text": "{{$cache.username}}",
+              "style": {
+                "width": "70%",
+                "height": "50",
+                "top": "7%",
+                "left": "15%",
+                "align": "center",
+                "font": "HelveticaNeue-Bold",
+                "size": "30",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Registered {{$cache.date}}",
+              "style": {
+                "width": "400",
+                "height": "30",
+                "align": "center",
+                "top": "7%+36",
+                "left": "50%-200",
+                "font": "HelveticaNeue-Bold",
+                "size": "15",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Update Email",
+              "style": {
+                "width": "400",
+                "height": "30",
+                "align": "center",
+                "top": "34%",
+                "left": "50%-200",
+                "font": "HelveticaNeue-Bold",
+                "size": "25",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "textfield",
+              "name": "newEmail",
+              "placeholder": "new email...",
+              "style": {
+                "font": "Roboto",
+                "size": "20",
+                "color": "#111111",
+                "background": "#eff0f2",
+                "padding": "20",
+                "top": "34%+45",
+                "width": "80%",
+                "left": "10%",
+                "corner_radius": "30"
+              }
+            },
+            {
+              "type": "textfield",
+              "name": "password",
+              "placeholder": "current password...",
+              "style": {
+                "font": "Roboto",
+                "size": "20",
+                "color": "#111111",
+                "background": "#eff0f2",
+                "padding": "20",
+                "top": "34%+125",
+                "width": "80%",
+                "left": "10%",
+                "corner_radius": "30",
+                "secure": "true"
+              }
+            },
+            {
+              "type": "button",
+              "text": "Update Email",
+              "style": {
+                "width": "50%",
+                "height": "6%",
+                "align": "center",
+                "top": "32%+220",
+                "left": "25%",
+                "background": "#319CDE",
+                "color": "#ffffff",
+                "size": "17",
+                "corner_radius": "25"
+              },
+              "action": {
+                "trigger": "update"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.avatar}}",
+              "style": {
+                "width": "120",
+                "height": "120",
+                "top": "17%",
+                "corner_radius": "70",
+                "left": "50%-60"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/back.png",
+              "style": {
+                "align": "left",
+                "left": "2%",
+                "width": "7%",
+                "top": "2%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/profile.json",
+                  "transition": "push"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
