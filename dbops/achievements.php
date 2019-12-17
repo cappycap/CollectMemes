@@ -1,10 +1,11 @@
 <?php
+header('Content-Type: application/json');
 
 require 'db.php';
 
 function getAchievementArray($string, $con) {
 
-	$achievementCount = 1;
+	$achievementCount = 15;
 
 	$achievements = array();
 
@@ -16,7 +17,7 @@ function getAchievementArray($string, $con) {
 
 		$currentStage = $achievementsNum[$currentAchievementId];
 
-		$q = "SELECT isFinal,isStaged,title,reqs,image,xp FROM achievements WHERE achievementId=? AND stage=?";
+		$q = "SELECT isFinal,isStaged,stageMsg,title,reqs,image,xpNext FROM achievements WHERE achievementId=? AND stage=?";
 
 		if ($s = $con->prepare($q)) {
 
@@ -24,7 +25,7 @@ function getAchievementArray($string, $con) {
 
 			$s->execute();
 
-			$s->bind_result($isFinal,$isStaged,$title,$reqs,$image,$xp);
+			$s->bind_result($isFinal,$isStaged,$stageMsg,$title,$reqs,$image,$xp);
 
 			if ($s->fetch()) {
 
@@ -32,10 +33,13 @@ function getAchievementArray($string, $con) {
 
 				$a['isFinal'] = $isFinal;
 				$a['isStaged'] = $isStaged;
+				if ($isStaged) {
+					$a['stageMsg'] = $stageMsg;
+				}
 				$a['title'] = $title;
 				$a['reqs'] = $reqs;
 				$a['image'] = $image;
-				$a['xp'] = $xp;
+				$a['xpNext'] = "+" . number_format($xp) . " XP";
 
 				$achievements[] = $a;
 
@@ -53,6 +57,6 @@ function getAchievementArray($string, $con) {
 
 }
 
-echo json_encode(getAchievementArray("0",$con), JSON_UNESCAPED_SLASHES);
+echo json_encode(getAchievementArray("2,1,1,1,1,0,0,0,0,0,0,0,0,0,0",$con), JSON_UNESCAPED_SLASHES);
 
 ?>

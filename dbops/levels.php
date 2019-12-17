@@ -7,7 +7,7 @@ function calc() {
 	$m = 100;
 
 	// Base XP for level 1.
-	$b = 100;
+	$b = 150;
 
 	while ($c <= $m) {
 
@@ -27,12 +27,12 @@ function calc() {
 }
 ?>
 
-Spin - 5 XP each (10 per hour, 15 for Pro users), one-time $5 payment for Pro<br>
-Collect - 50 XP<br>
-Upload - 500 XP (per 50 spins, you get 1 upload token)<br>
-Challenges - 100-500 XP (depending on difficulty)<br>
-Achievements - 100 XP each<br>
-Add Friend - 500 XP<br>
+Spin - 20 XP each (10 per hour, 15 for Pro users), one-time $5 payment for Pro<br>
+Collect - 10 XP<br>
+Upload - 1000 XP (per 50 spins, you get 1 upload token)<br>
+Challenges - 500-1000 XP (depending on difficulty)<br>
+Achievements - varying<br>
+Add Friend - 1000 XP<br>
 <br>
 
 <?php
