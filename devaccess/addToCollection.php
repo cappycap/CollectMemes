@@ -2,6 +2,117 @@
 
 require 'db.php';
 
+function isMemePartofChallenges($m, $con) {
+
+	$check = array();
+	$check['id'] = -1;
+
+	$q = "SELECT id,title,memes FROM collections";
+
+	if ($s = $con->prepare($q)) {
+
+		$s->execute();
+
+		$s->bind_param($id,$title,$memesStr);
+
+		while ($s->fetch()) {
+
+			$memes = explode(",",$memesStr);
+
+			if (in_array($m,$memes)) {
+
+				$check['id'] = $id;
+				$check['title'] = $title;
+
+			}
+
+		}
+
+		$s->close();
+
+	}
+
+	return $check;
+
+}
+
+function updateUserProgress($c, $m, $u, $con) {
+
+	$ret = 0;
+
+	$q = "SELECT id,memes,totalOwned FROM collectionsProgress WHERE collectionId=? AND userId=?";
+
+	if ($s = $con->prepare($q)) {
+
+		$s->bind_param("ii",$c,$u);
+
+		$s->execute();
+
+		$s->bind_param($id,$memesStr,$to);
+
+		if ($s->fetch()) {
+
+			$memes = explode(",",$memesStr);
+
+			if (!in_array($m,$memes)) {
+
+				$updateQ = "UPDATE collections SET memes=?,totalOwned=? WHERE id=?";
+
+				$newMemes = "";
+				if ($to == 0) {
+
+					$newMemes = $m;
+
+				} else {
+
+					$newMemes = $memesStr . "," . $m;
+
+				}
+
+				$newTO = $to + 1;
+
+				if ($uS = $con->prepare($updateQ)) {
+
+					$uS->bind_param("sii",$newMemes,$newTO,$id);
+
+					if ($uS->execute()) {
+
+						$ret = 1;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		$s->close();
+
+	}
+
+}
+function updateChallenges($memeId, $userId, $con) {
+
+	$ret = "Check your Vault.";
+
+	$m = $con->real_escape_string($memeId);
+	$u = $con->real_escape_string($userId);
+
+	$check = isMemePartofChallenges($m, $con);
+
+	if ($check['id'] != -1) {
+
+		if (updateUserProgress($check['id'], $m, $u, $con)) {
+
+			$ret = "Challenge updated: " . $check['title'];
+
+		}
+
+	}
+
+}
+
 // Function for updating user's achievementProgress if necessary.
 function achievementCheck($u, $m, $s) {
 
@@ -170,12 +281,12 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
         $response['achievementTitle'] = $achTitle;
         $response['achievementImage'] = $achImage;
         $response['achievementReqs'] = $achReqs;
-        $response['achievementXP'] = $achXP;
+        $response['achievementXP'] = "+" . number_format($achXP) . " XP";
 
       }
 
       $ach->close();
-      
+
     }
 
   } else {
@@ -183,6 +294,9 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
     $response['achievement'] = -1;
 
   }
+
+  // See if user completed any challenges.
+  $response['bannerDescription'] = updateChallenges($memeId, $userId, $con);
 
 } else {
 

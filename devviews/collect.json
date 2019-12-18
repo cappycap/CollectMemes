@@ -114,8 +114,8 @@
                       "{{#if $cache.collected == 1}}": {
                         "type": "$util.banner",
                         "options": {
-                          "title": "Congrats!",
-                          "description": "Meme collected. Check your Vault!"
+                          "title": "Meme Collected!",
+                          "description": "{{$cache.bannerDescription}}"
                         },
                         "success": {
                           "type": "$cache.set",
@@ -291,21 +291,50 @@
                   "spinsLeft": "{{$global.spinsLeft}}"
                 }
               },
-              "success": {
-                "type": "$cache.set",
-                "options": {
-                  "collected": "1"
+              "success": [
+                {
+                  "{{#if $jason.achievement == -1}}": {
+                    "type": "$cache.set",
+                    "options": {
+                      "collected": "1",
+                      "bannerDescription": "{{$jason.bannerDescription}}",
+                      "achievement": "-1"
+                    },
+                    "success": {
+                      "type": "$global.set",
+                      "options": {
+                        "spinsLeft": "0"
+                      },
+                      "success": {
+                        "type": "$reload"
+                      }
+                    }
+                  }
                 },
-                "success": {
-                  "type": "$global.set",
-                  "options": {
-                    "spinsLeft": "0"
-                  },
-                  "success": {
-                    "type": "$reload"
+                {
+                  "{{#else}}": {
+                    "type": "$cache.set",
+                    "options": {
+                      "collected": "1",
+                      "bannerDescription": "{{$jason.bannerDescription}}",
+                      "achievement": "{{$jason.achievement}}",
+                      "achievementTitle": "{{$jason.achievementTitle}}",
+                      "achievementImage": "{{$jason.achievementImage}}",
+                      "achievementReqs": "{{$jason.achievementReqs}}",
+                      "achievementXP": "{{$jason.achievementXP}}"
+                    },
+                    "success": {
+                      "type": "$global.set",
+                      "options": {
+                        "spinsLeft": "0"
+                      },
+                      "success": {
+                        "type": "$reload"
+                      }
+                    }
                   }
                 }
-              }
+              ]
             }
           }
         },
