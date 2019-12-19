@@ -122,9 +122,21 @@
                           "options": {
                             "collected": "0"
                           },
-                          "success": {
-                            "type": "$render"
-                          }
+                          "success": [
+                            {
+                              "{{#if $cache.achievement == -1}}": {
+                                "type": "$render"
+                              }
+                            },
+                            {
+                              "{{#else}}": {
+                                "type": "$render",
+                                "options": {
+                                  "template": "achievement"
+                                }
+                              }
+                            }
+                          ]
                         }
                       }
                     },
@@ -264,64 +276,39 @@
             }
           }
         },
-        "onCollect": {
-          "type": "$network.request",
-          "options": {
-            "url": "https://collectmemes.com/access/checkTime.php",
-            "method": "post",
-            "data": {
-              "add": "3599"
-            }
-          },
-          "success": {
-            "type": "$cache.set",
-            "options": {
-              "nextSpin": "{{$jason.time}}",
-              "collectStatus": "0",
-              "spinStatus": "0"
-            },
-            "success": {
+        "onCollect": [
+          {
+            "{{#if $cache.collectStatus == 1}}": {
               "type": "$network.request",
               "options": {
-                "url": "https://collectmemes.com/access/addToCollection.php",
+                "url": "https://collectmemes.com/access/checkTime.php",
                 "method": "post",
                 "data": {
-                  "userId": "{{$global.userKey}}",
-                  "memeId": "{{$cache.current.id}}",
-                  "spinsLeft": "{{$global.spinsLeft}}"
+                  "add": "3599"
                 }
               },
-              "success": [
-                {
-                  "{{#if $jason.achievement == -1}}": {
-                    "type": "$cache.set",
-                    "options": {
-                      "collected": "1",
-                      "bannerDescription": "{{$jason.bannerDescription}}",
-                      "achievement": "-1"
-                    },
-                    "success": {
-                      "type": "$global.set",
-                      "options": {
-                        "spinsLeft": "0"
-                      },
-                      "success": {
-                        "type": "$reload"
-                      }
-                    }
-                  }
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "nextSpin": "{{$jason.time}}",
+                  "collectStatus": "0",
+                  "spinStatus": "0"
                 },
-                {
-                  "{{#else}}": {
+                "success": {
+                  "type": "$network.request",
+                  "options": {
+                    "url": "https://collectmemes.com/access/addToCollection.php",
+                    "method": "post",
+                    "data": {
+                      "userId": "{{$global.userKey}}",
+                      "memeId": "{{$cache.current.id}}",
+                      "spinsLeft": "{{$global.spinsLeft}}"
+                    }
+                  },
+                  "success": {
                     "type": "$cache.set",
                     "options": {
-                      "collected": "1",
-                      "bannerDescription": "{{$jason.bannerDescription}}",
-                      "achievement": "{{$jason.achievement}}",
-                      "achievementTitle": "{{$jason.achievementTitle}}",
-                      "achievementImage": "{{$jason.achievementImage}}",
-                      "achievementReqs": "{{$jason.achievementReqs}}",
-                      "achievementXP": "{{$jason.achievementXP}}"
+                      "collected": "1"
                     },
                     "success": {
                       "type": "$global.set",
@@ -334,10 +321,10 @@
                     }
                   }
                 }
-              ]
+              }
             }
           }
-        },
+        ],
         "likeMeme": {
           "type": "$network.request",
           "options": {
@@ -430,7 +417,7 @@
               }
             },
             { "type": "label",
-              "text": "Click to start!",
+              "text": "Tap to start!",
               "action": {
                 "type": "$href",
                 "options": {
@@ -443,6 +430,66 @@
                 "height": "55",
                 "size": "17",
                 "top": "30%+300",
+                "left": "50%-150",
+                "background": "#2d91d1",
+                "color": "#ffffff",
+                "padding": "2",
+                "corner_radius": "50",
+                "align": "center"
+              }
+            }
+          ]
+        },
+        "achievement": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "label",
+              "text": "Achievement Acquired:",
+              "style": {
+                "align": "center",
+                "color": "#111111",
+                "width": "100%",
+                "top": "20%",
+                "left": "0",
+                "size": "25"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.achievementTitle}}",
+              "style": {
+                "align": "center",
+                "color": "#111111",
+                "width": "100%",
+                "top": "20%+30",
+                "left": "0",
+                "size": "22"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.achievementImage}}",
+              "style": {
+                "top": "20%+60",
+                "width": "80%",
+                "height": "{{$cache.env80}}",
+              }
+            },
+            { "type": "label",
+              "text": "OK!",
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/views/collect.json",
+                  "transition": "push"
+                }
+              },
+              "style": {
+                "width": "300",
+                "height": "55",
+                "size": "17",
+                "top": "60%",
                 "left": "50%-150",
                 "background": "#2d91d1",
                 "color": "#ffffff",

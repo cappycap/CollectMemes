@@ -70,6 +70,67 @@ if (isset($_POST['submit'])) {
   $dateAdded = time();
   $display = 1;
 
+  $challenge = $con->real_escape_string($_POST['collection']);
+
+  if ($challenge != 0) {
+
+    $selQ = "SELECT memes,totalMemes,xpReward FROM collections where id=?";
+
+    if ($selS = $con->prepare($selQ)) {
+
+      $selS->bind_param("i",$challenge);
+
+      $selS->execute();
+
+      $selS->bind_result($memesStr,$totalMemes,$xpReward);
+
+      if ($selS->fetch()) {
+
+        $selS->close();
+
+        $colQ = "UPDATE collections SET memes=?,totalMemes=?,xpReward=? WHERE id=?";
+
+        $memeId = getMemeCount($con) + 1;
+
+        if ($colS = $con->prepare($colQ)) {
+
+          $newMemesStr = "";
+
+          if ($totalMemes == 0) {
+
+            $newMemesStr = $memeId;
+
+          } else {
+
+            $newMemesStr = $memesStr . "," . $memeId;
+
+          }
+
+          $newTotalMemes = $totalMemes + 1;
+          $newXpReward = $xpReward + 1000;
+
+          $colS->bind_param("siii",$newMemesStr,$newTotalMemes,$newXpReward,$challenge);
+
+          if ($colS->execute()) {
+
+            echo 'collection updated.<br>';
+
+          } else {
+
+            echo $colS->error;
+
+          }
+
+          $colS->close();
+
+        }
+
+      }
+
+    }
+
+  }
+
   $uploadQ = "INSERT INTO memes (title, image, totalOwned, likes, score, rank, inRotation, edition, creator, dateAdded, display)
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   echo 'uploading meme...<br>';
@@ -137,6 +198,26 @@ $directory = 'img/memes';
            <input type='range' min='1' max='100' value='50' class='slider' id='score' name='score'>
            <p>Score: <span id='demo'></span></p>
          </div>
+         Collection:
+         <select name='collection'>
+          <option value='0'>None</option>
+          <option value='1'>Obama</option>
+          <option value='2'>Cone</option>
+          <option value='3'>Music Gang</option>
+          <option value='4'>Loss</option>
+          <option value='5'>Chungus</option>
+          <option value='6'>Wings</option>
+          <option value='7'>Shaggy</option>
+          <option value='8'>Minecraft</option>
+          <option value='9'>Star Wars</option>
+          <option value='10'>The Simpson's</option>
+          <option value='11'>The Office</option>
+          <option value='12'>Cute Animals</option>
+          <option value='13'>:)</option>
+          <option value='14'>Roblox</option>
+          <option value='15'>Spongebob</option>
+          <option value='16'>Halo</option>
+         </select>
          <input type='submit' name='submit' value='submit' id='submit' />
          <script>
 var slider = document.getElementById('score');

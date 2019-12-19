@@ -1,3 +1,4 @@
-i may want to consider setting  current equal to the html generating by php with the meme values.
+when it comes to updates, i should have a variable called loggedIn for every user, that is set to 1 on acct creation/login, and is checked for on the collect page.
+this way, i can set everyone's loggedIn to 0 to force them to logout and set firstLoadDone to 0.
 
-a similar process could be supplied for spinsLeft, and lets say spinsLeftDisplay (which is html)
+implement checking for the db's lastNextSpin and lastSpinsLeft on login

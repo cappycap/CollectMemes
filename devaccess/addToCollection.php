@@ -200,7 +200,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
   }
 
-  $queryUserInfo = "SELECT collectionSize,collectionSum FROM users WHERE id=?";
+  $queryUserInfo = "SELECT collectionSize,collectionSum,isPro FROM users WHERE id=?";
 
   if ($stmtUser = $con->prepare($queryUserInfo)) {
 
@@ -208,7 +208,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
     $stmtUser->execute();
 
-    $stmtUser->bind_result($collectionSize,$collectionSum);
+    $stmtUser->bind_result($collectionSize,$collectionSum,$isPro);
 
     if ($stmtUser->fetch()) {
 
@@ -227,13 +227,25 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
       $stmtUser->close();
 
-      $queryUpdateUser = "UPDATE users SET avgRank=?, collectionSize=?, collectionSum=? WHERE id=?";
+			$time2 = 0;
+
+      if (!$isPro) {
+
+        $time2 = time() + 3599;
+
+      } else {
+
+        $time2 = time() + 1799;
+
+      }
+
+      $queryUpdateUser = "UPDATE users SET avgRank=?, collectionSize=?, collectionSum=? , lastNextSpin=? WHERE id=?";
 
       $achieve['collectionSize'] = $newCollectionSize;
 
       if ($stmtUpdateUser = $con->prepare($queryUpdateUser)) {
 
-        $stmtUpdateUser->bind_param("iiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$userId);
+        $stmtUpdateUser->bind_param("iiiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$time2,$userId);
 
         $stmtUpdateUser->execute();
 
