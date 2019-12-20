@@ -6,6 +6,32 @@ require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 
+function createAchievementsProgress($uid, $con) {
+
+  $ret = 0;
+
+  $progress = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+
+  $q = "INSERT INTO achievementsProgress (userId, progress) VALUES (?, ?)";
+
+  if ($s = $con->prepare($q)) {
+
+    $s->bind_param("is",$uid,$progress);
+
+    if ($s->execute()) {
+
+      $ret = 1;
+
+    }
+
+    $s->close();
+
+  }
+
+  return $ret;
+
+}
+
 function createCollectionsProgress($uid, $con) {
 
   $check = array();
@@ -50,7 +76,7 @@ function createCollectionsProgress($uid, $con) {
       if ($q = $con->prepare($ins)) {
 
         $completed = 0;
-        
+
         $q->bind_param("iisi",$uid,$col['id'],$memes,$completed);
 
         if ($q->execute()) {
@@ -80,22 +106,26 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['email'])) {
+if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['email']) and isset($_POST['device'])) {
 
   // Clean + define variables.
   $user = $con->real_escape_string($_POST['username']);
   $password = crypt($con->real_escape_string($_POST['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
   $email = $con->real_escape_string($_POST['email']);
   $time = time();
+  $device = $con->real_escape_string($_POST['device']);
 
   // Email the user with a welcome email.
 
   // Insert user into database.
-  $query = "INSERT INTO users (username,password,email,dateRegistered,lastPassChange) VALUES (?, ?, ?, ?,?)";
+  $query = "INSERT INTO users (username,password,email,dateRegistered,lastPassChange,lastNextSpin,lastSpinsLeft,lastDevice,lastLogin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   if ($stmt = $con->prepare($query)) {
 
-    $stmt->bind_param("sssii", $user, $password, $email, $time, $time);
+    $lastNextSpin = $time - 3610;
+    $lastSpinsLeft = 10;
+
+    $stmt->bind_param("sssiiiisi", $user, $password, $email, $time, $time, $lastNextSpin, $lastSpinsLeft, $device, $time);
 
     $stmt->execute();
 
@@ -139,6 +169,8 @@ if (isset($_POST['username']) and isset($_POST['password']) and isset($_POST['em
   }
 
   createCollectionsProgress($response['userKey'], $con);
+
+  createAchievementsProgress($response['userKey'], $con);
 
 } else {
 

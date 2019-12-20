@@ -5,14 +5,16 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST['password']) and isset($_POST['username'])) {
+if (isset($_POST['password']) and isset($_POST['username']) and isset($_POST['device'])) {
 
   // Clean variables.
   $pwd = crypt($con->real_escape_string($_POST['password']), '$2a$07$5jh843257hquiyo7ghfkgi$');
   $user = $con->real_escape_string($_POST['username']);
+  $device = $con->real_escape_string($_POST['device']);
+  $time = time();
 
   // Prepare and execute query.
-  $query = "SELECT id,password FROM users WHERE username=?";
+  $query = "SELECT id,password,lastNextSpin,lastSpinsLeft FROM users WHERE username=?";
 
   if ($stmt = $con->prepare($query)) {
 
@@ -21,7 +23,7 @@ if (isset($_POST['password']) and isset($_POST['username'])) {
     $stmt->execute();
 
     // Bind fetched results to variables.
-    $stmt->bind_result($id,$realPwd);
+    $stmt->bind_result($id,$realPwd,$nextSpin,$spinsLeft);
 
     // Check for results.
     if ($stmt->fetch()) {
@@ -37,6 +39,24 @@ if (isset($_POST['password']) and isset($_POST['username'])) {
         // The password matched.
         $response['success'] = 1;
         $response['userKey'] = $id;
+        $response['spinsLeft'] = $spinsLeft;
+        $response['nextSpin'] = $nextSpin;
+
+        $q = "UPDATE users SET lastDevice=?, lastLogin=? WHERE id=?";
+
+        if ($s = $con->prepare($q)) {
+
+          $s->bind_param("sii",$device,$time,$id);
+
+          if ($s->execute()) {
+
+            $response['uUser'] = 1;
+
+          }
+
+          $s->close();
+
+        }
 
       }
 

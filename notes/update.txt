@@ -2,3 +2,5 @@ when it comes to updates, i should have a variable called loggedIn for every use
 this way, i can set everyone's loggedIn to 0 to force them to logout and set firstLoadDone to 0.
 
 implement checking for the db's lastNextSpin and lastSpinsLeft on login
+- checkUser returns the db's value. 
+- need to have collect handle collecting nextSpin (isnt it a cache var?) might want to make it global, and just set it on the network request to check user ret.

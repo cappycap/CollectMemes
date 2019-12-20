@@ -119,8 +119,27 @@ if (1) {
 
 	}
 
+	$q = "INSERT into stats (time, memes, users, xp, spins, likes, owned, pro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+	if ($s = $con->prepare($q)) {
+
+		$s->bind_param("iiiiiiii",$time,$memes,$users,$xp,$spins,$likes,$owned,$pro);
+
+		if ($s->execute()) {
+
+			$response['success'] = 1;
+
+		} else {
+
+			$response['success'] = 0;
+
+		}
+
+	}
+
 }
-json_encode($response);
+
+echo json_encode($response);
 
 $con->close();
 ?>

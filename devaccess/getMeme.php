@@ -24,13 +24,14 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
     } else {
 
       $userId = $con->real_escape_string($_POST['userId']);
+      $spinsLeft = $con->real_escape_string($_POST['spinsLeft']);
 
-      // update totalSpins.
-      $uTSQ = "UPDATE users SET totalSpins = totalSpins+1 WHERE id=?";
+      // update totalSpins and spinsLeft.
+      $uTSQ = "UPDATE users SET totalSpins = totalSpins+1, lastSpinsLeft=? WHERE id=?";
 
       if ($uTSQS = $con->prepare($uTSQ)) {
 
-        $uTSQS->bind_param("i",$userId);
+        $uTSQS->bind_param("ii",$spinsLeft,$userId);
 
         $uTSQS->execute();
 
@@ -145,7 +146,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['spinsLef
       $meme['top'] = $info['top'];
       $meme['bot'] = $info['bot'];
       $meme['fsize'] = $info['font-size-view'];
-      
+
     }
 
     $response = $meme;

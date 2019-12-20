@@ -43,7 +43,7 @@
                       }
                     },
                     "success": {
-                      "type": "$cache.set",
+                      "type": "$global.set",
                       "options": {
                         "nextSpin": "{{$jason.time}}"
                       },
@@ -79,7 +79,7 @@
                   "url": "https://collectmemes.com/access/checkTime.php"
                 },
                 "success": [{
-                  "{{#if $jason.time > $cache.nextSpin}}": {
+                  "{{#if $jason.time > $global.nextSpin}}": {
                     "type": "$cache.set",
                     "options": {
                       "collectStatus": "1"
@@ -149,7 +149,7 @@
                               "url": "https://collectmemes.com/access/failedSpin.php",
                               "method": "post",
                               "data": {
-                                "nextSpin": "{{$cache.nextSpin}}"
+                                "nextSpin": "{{$global.nextSpin}}"
                               }
                             },
                             "success": {
@@ -256,7 +256,7 @@
                         }
                       },
                       "success": {
-                        "type": "$cache.set",
+                        "type": "$global.set",
                         "options": {
                           "nextSpin": "{{$jason.time}}"
                         },
@@ -288,35 +288,40 @@
                 }
               },
               "success": {
-                "type": "$cache.set",
+                "type": "$global.set",
                 "options": {
-                  "nextSpin": "{{$jason.time}}",
-                  "collectStatus": "0",
-                  "spinStatus": "0"
+                  "nextSpin": "{{$jason.time}}"
                 },
                 "success": {
-                  "type": "$network.request",
+                  "type": "$cache.set",
                   "options": {
-                    "url": "https://collectmemes.com/access/addToCollection.php",
-                    "method": "post",
-                    "data": {
-                      "userId": "{{$global.userKey}}",
-                      "memeId": "{{$cache.current.id}}",
-                      "spinsLeft": "{{$global.spinsLeft}}"
-                    }
+                    "collectStatus": "0",
+                    "spinStatus": "0"
                   },
                   "success": {
-                    "type": "$cache.set",
+                    "type": "$network.request",
                     "options": {
-                      "collected": "1"
+                      "url": "https://collectmemes.com/access/addToCollection.php",
+                      "method": "post",
+                      "data": {
+                        "userId": "{{$global.userKey}}",
+                        "memeId": "{{$cache.current.id}}",
+                        "spinsLeft": "{{$global.spinsLeft}}"
+                      }
                     },
                     "success": {
-                      "type": "$global.set",
+                      "type": "$cache.set",
                       "options": {
-                        "spinsLeft": "0"
+                        "collected": "1"
                       },
                       "success": {
-                        "type": "$reload"
+                        "type": "$global.set",
+                        "options": {
+                          "spinsLeft": "0"
+                        },
+                        "success": {
+                          "type": "$reload"
+                        }
                       }
                     }
                   }

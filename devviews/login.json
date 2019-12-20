@@ -138,7 +138,8 @@
             "method": "post",
             "data": {
               "username": "{{$get.username}}",
-              "password": "{{$get.password}}"
+              "password": "{{$get.password}}",
+              "device": "{{$env.device.os.name}}"
             }
           },
           "success": [
@@ -146,7 +147,8 @@
               "{{#if $jason.success == 1}}": {
                 "type": "$global.set",
                 "options": {
-                  "userKey": "{{$jason.userKey}}"
+                  "userKey": "{{$jason.userKey}}",
+                  "spinsLeft": "{{$jason.spinsLeft}}"
                 },
                 "success": [
                   {
