@@ -40,71 +40,137 @@
           "background": "#ffffff",
           "sections": [
             {
-              "header": "Challenges",
               "items": [
                 {
-                  "{{#each $cache.challenges}}": {
-                    "type": "horizontal",
-                    "style": {
-                      "spacing": "10"
+                  "type": "horizontal",
+                  "style": {
+                    "spacing": "10"
+                  }
+                  "items": [
+                    {
+                      "type": "image",
+                      "url": "file://leaderboard.png",
+                      "style": {
+                        "width": "40",
+                        "height": "40",
+                        "spacing": "5"
+                      }
+                      "action": {
+                        "type": "$href",
+                        "options": {
+                          "url": "https://collectmemes.com/views/leaderboard.json"
+                        }
+                      }
                     },
-                    "components": [
-                      {
-                        "type": "label",
-                        "text": "{{$cache.challenges[$index].progress}}",
-                        "style": {
-                          "width": "25%",
-                          "align": "left",
-                          "color": "{{$cache.challenges[$index].progressColor}}"
+                    {
+                      "type": "image",
+                      "url": "file://achievements.png",
+                      "style": {
+                        "width": "40",
+                        "height": "40"
+                      }
+                      "action": {
+                        "type": "$href",
+                        "options": {
+                          "url": "https://collectmemes.com/views/achievements.json"
                         }
-                      },
-                      {
-                        "type": "label",
-                        "text": "{{$cache.challenges[$index].title}}",
-                        "style": {
-                          "width": "50%",
-                          "align": "left"
-                        }
-                      },
-                      {
-                        "type": "horizontal",
-                        "style": {
-                          "spacing": "5"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "items": [
+                        {
+                          "type": "label",
+                          "text": ".",
+                          "style": {
+                            "color": "#ffffff",
+                            "width": "100%-140"
+                          }
                         },
-                        "components": [
-                          {
-                            "type": "label",
-                            "text": "{{$cache.challenges[$index].xp}}",
-                            "style": {
-                              "color": "{{$cache.challenges[$index].xpColor}}",
-                              "width": "15%"
-                            }
+                        {
+                          "type": "image",
+                          "url": "file://back-right.png",
+                          "style": {
+                            "width": "40",
+                            "height": "40"
                           },
-                          {
-                            "type": "button",
-                            "text": "View",
-                            "style": {
-                              "padding": "3",
-                              "color": "#ffffff",
-                              "background": "#1a24fb",
-                              "width": "10%"
-                            },
-                            "action": {
-                              "type": "$href",
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/views/collect.json"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "header": "Challenges",
+              "items": {
+                "{{#each $cache.challenges}}": {
+                  "type": "horizontal",
+                  "style": {
+                    "spacing": "10"
+                  },
+                  "components": [
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenges[$index].progress}}",
+                      "style": {
+                        "width": "25%",
+                        "align": "left",
+                        "color": "{{$cache.challenges[$index].progressColor}}"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenges[$index].title}}",
+                      "style": {
+                        "width": "50%",
+                        "align": "left"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "5"
+                      },
+                      "components": [
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenges[$index].xp}}",
+                          "style": {
+                            "color": "{{$cache.challenges[$index].xpColor}}",
+                            "width": "15%"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "text": "View",
+                          "style": {
+                            "padding": "3",
+                            "color": "#ffffff",
+                            "background": "#1a24fb",
+                            "width": "10%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/views/viewChallenge.json",
                               "options": {
-                                "url": "https://collectmemes.com/views/viewChallenge.json",
-                                "options": {
-                                  "id": "{{$cache.challenges[$index].id}}"
-                                }
+                                "id": "{{$cache.challenges[$index].id}}"
                               }
                             }
                           }
-                        ]
-                      }
-                    ]
-                  }
+                        }
+                      ]
+                    }
+                  ]
                 }
-              ]
+              }
             }
           ],
           "layers": [
