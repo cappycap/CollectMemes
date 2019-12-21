@@ -3,6 +3,7 @@
 require 'db.php';
 
 // Define response array for delivering status.
+// Each lime should have
 $challenges = array();
 
 if (isset($POST['userId']) and isset($_POST[''])) {

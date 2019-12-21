@@ -1,0 +1,75 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$render"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/views/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "sections": [
+            {
+              "header": "Challenges",
+              "items": [
+                {
+                  "{{#each $cache.challenges}}": {
+                    "type": "horizontal",
+                    "style": {
+                      "spacing": "10"
+                    },
+                    "components": [
+                      {
+                        "type": "label",
+                        "text": "{{$cache.challenges[$index].title}}",
+                        "style": {
+                          "width": "50%",
+                          "align": "left"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "{{$cache.challenges[$index].progress}}",
+                        "style": {
+                          "width": "25%",
+                          "align": "left",
+                          "color": "{{$cache.challenges[$index].progressColor}}"
+                        }
+                      },
+                      {
+                        "type": "label",
+                        "text": "{{$cache.challenges[$index].title}}",
+                        "style": {
+                          "width": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "layers": [
+            {
+              "test": "test"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
