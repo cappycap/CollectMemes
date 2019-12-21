@@ -3,10 +3,26 @@
     "head": {
       "title": "Welcome",
       "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/access/getChallenges.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "challenges": "{{$jason}}"
+            }
+          }
+        },
         "$load": [
           {
             "{{#if $global.userKey != '0'}}": {
-              "type": "$render"
+              "type": "mainLoad"
             }
           },
           {
@@ -35,14 +51,6 @@
                     "components": [
                       {
                         "type": "label",
-                        "text": "{{$cache.challenges[$index].title}}",
-                        "style": {
-                          "width": "50%",
-                          "align": "left"
-                        }
-                      },
-                      {
-                        "type": "label",
                         "text": "{{$cache.challenges[$index].progress}}",
                         "style": {
                           "width": "25%",
@@ -54,8 +62,44 @@
                         "type": "label",
                         "text": "{{$cache.challenges[$index].title}}",
                         "style": {
-                          "width": ""
+                          "width": "50%",
+                          "align": "left"
                         }
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "spacing": "5"
+                        },
+                        "components": [
+                          {
+                            "type": "label",
+                            "text": "{{$cache.challenges[$index].xp}}",
+                            "style": {
+                              "color": "{{$cache.challenges[$index].xpColor}}",
+                              "width": "15%"
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "text": "View",
+                            "style": {
+                              "padding": "3",
+                              "color": "#ffffff",
+                              "background": "#1a24fb",
+                              "width": "10%"
+                            },
+                            "action": {
+                              "type": "$href",
+                              "options": {
+                                "url": "https://collectmemes.com/views/viewChallenge.json",
+                                "options": {
+                                  "id": "{{$cache.challenges[$index].id}}"
+                                }
+                              }
+                            }
+                          }
+                        ]
                       }
                     ]
                   }
