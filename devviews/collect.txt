@@ -1,0 +1,3 @@
+1. pass env.width to getMeme, multiply by 0.8 (since width of image is 80% centered in view)
+2. use (newEnvWidth/actualImageWidth)=(?/actualImageHeight) to find the height that the image will be in view.
+3. pass newEnvHeight/2 back to view, and use it to set top = 50%-{{$cache.cur.imageHeight}}
