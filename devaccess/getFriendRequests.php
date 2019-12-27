@@ -5,10 +5,10 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId'])) {
+if (isset($_POST['userId'])) {
 
   // CLean vars.
-  $userId = $con->real_escape_string($_GET['userId']);
+  $userId = $con->real_escape_string($_POST['userId']);
 
   // Create array for storing active requests.
   $users = array();
@@ -29,14 +29,22 @@ if (isset($_GET['userId'])) {
 
       while ($data = $result->fetch_assoc()) {
 
-        $profile = array();
+        $user = array();
+
+        $user['id'] = $data['senderId'];
+
+        $users[] = $user;
+
+      }
+
+      foreach ($users as $user) {
 
         // Grab other info to display to user.
         $userSearch = "SELECT username,avatar FROM users WHERE id=?";
 
         if ($userSearchStmt = $con->prepare($userSearch)) {
 
-          $userSearchStmt->bind_param("i",$data['senderId']);
+          $userSearchStmt->bind_param("i",$user['id']);
 
           $userSearchStmt->execute();
 
@@ -44,11 +52,9 @@ if (isset($_GET['userId'])) {
 
           if ($userSearchStmt->fetch()) {
 
-            $profile['username'] = $username;
+            $user['username'] = $username;
 
-            $profile['avatar'] = $avatar;
-
-            $users[$data['senderId']] = $profile;
+            $user['avatar'] = $avatar;
 
           }
 
@@ -64,7 +70,7 @@ if (isset($_GET['userId'])) {
     } else {
 
       $response['success'] = 0;
-      
+
     }
 
   }

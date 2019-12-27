@@ -84,7 +84,7 @@ function getRankInfo($memeRank, $con) {
 	} else if ($ratio > 0.28 and $ratio <= 0.58) {
 
 		// Meme is Uncommon.
-		$info['color'] = "#a3ffb9";
+		$info['color'] = "#3498db";
 		$info['rarity'] = "Uncommon";
 		$info['font-size-view'] = "18";
 		$info['file'] = "file://uncommon2.png";
