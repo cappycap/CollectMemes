@@ -1,0 +1,34 @@
+getMeme
+
+if (nextSpin < time()) {
+
+	if (spinsLeft == 0) {
+
+		// update spinsLeft=10 in database
+		// add isMeme = 0
+		// add spin to get started info
+		// spinMessage, spinStatus=1, collectStatus=1 to response array.
+
+	} elseif (spinsLeft == 1) {
+
+		// important: return a spin status of 0!
+		// update nextSpin in database 
+		// add isMeme = 1
+		$response = newMeme();
+		// add spinMessage, spinStatus=0, collectStatus=1 to response array.
+
+	} else {
+
+		// minus spinsLeft by 1
+		// add isMeme = 1
+		$response = newMeme();
+		// add spinMessage, spinStatus=1, collectStatus=1 to response array.
+	}
+
+} else {
+
+	// add isMeme = 0
+	// add out of spins info.
+	// add spinMessage=js countdown, spinStatus=0, collectStatus=0 to response array.
+
+}

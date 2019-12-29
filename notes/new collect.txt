@@ -1,0 +1,26 @@
+cache:
+cur: {isMeme, title, author, image, rank, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus}
+#isMeme is for controlling the appearance of: rank section, author
+#title, image, rarityLining are set to a spin to get started variant if user cant spin
+isLiked
+spinStatus
+collectStatus
+
+NOTE: params.call must be passed from login/register.
+
+on load:
+- if params.call, make call to getMeme. this will either return a new meme, spin to get started, or out of spins info. 
+- set cache and render.
+
+in template:
+- if statement controlling appearance of rank section and author based on isMeme. isMeme is 0 for out of spins/spin to start.
+- if statement for isLiked for which heart to display
+- if statement for whether or not to have action on buttons based on collectStatus and spinStatus
+
+on spin:
+- href to collect with params.call = 1
+
+on collect:
+- make call to addToCollection (which updates spinsLeft:0, nextSpin:appropriate<-(compare whether or not nextSpin has been updated by running out of spins already. if it has, don't update it.) in DB)
+- href to collect with params.call = 1
+ 
