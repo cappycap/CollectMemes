@@ -14,14 +14,15 @@ if (nextSpin < time()) {
 		// important: return a spin status of 0!
 		// update nextSpin in database 
 		// add isMeme = 1
-		$response = newMeme();
+		achievementCheck()
+		newMeme($response);
 		// add spinMessage, spinStatus=0, collectStatus=1 to response array.
 
 	} else {
 
 		// minus spinsLeft by 1
 		// add isMeme = 1
-		$response = newMeme();
+		newMeme($response);
 		// add spinMessage, spinStatus=1, collectStatus=1 to response array.
 	}
 

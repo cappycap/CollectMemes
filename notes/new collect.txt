@@ -1,10 +1,9 @@
 cache:
-cur: {isMeme, title, author, image, rank, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus}
+cur: {isMeme, title, author, image, rank, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus, isLiked}
+
 #isMeme is for controlling the appearance of: rank section, author
 #title, image, rarityLining are set to a spin to get started variant if user cant spin
-isLiked
-spinStatus
-collectStatus
+
 
 NOTE: params.call must be passed from login/register.
 
