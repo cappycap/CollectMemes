@@ -94,7 +94,7 @@ function getRankInfo($memeRank, $con) {
 	} else if ($ratio > 0.58 and $ratio <= 1) {
 
 		// Meme is Common.
-		$info['color'] = "#ffffff";
+		$info['color'] = "#a9a9a9";
 		$info['rarity'] = "Common";
 		$info['font-size-view'] = "18";
 		$info['file'] = "file://common.png";
