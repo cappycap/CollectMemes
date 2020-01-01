@@ -54,52 +54,42 @@ function getRankInfo($memeRank, $con) {
 	if ($ratio <= 0.07) {
 
 		// Meme is Legendary.
-		$info['color'] = "#e74c3c";
+		$info['rarityColor'] = "#e74c3c";
 		$info['rarity'] = "Legendary";
-		$info['font-size-view'] = "18";
-		$info['file'] = "file://legendary.png";
-		$info['top'] = "file://c-legendary-top.png";
-		$info['bot'] = "file://c-legendary-bot.png";
+		$info['rarityImage'] = "file://rarities/legendary.png";
+		$info['rarityLining'] = "file://shared/legendaryL.png";
 
 	} else if ($ratio > 0.07 and $ratio <= 0.19) {
 
 		// Meme is Epic.
-		$info['color'] = "#e68800";
+		$info['rarityColor'] = "#e68800";
 		$info['rarity'] = "Epic";
-		$info['font-size-view'] = "18";
-		$info['file'] = "file://epic.png";
-		$info['top'] = "file://c-epic-top.png";
-		$info['bot'] = "file://c-epic-bot.png";
+		$info['rarityImage'] = "file://rarities/epic.png";
+		$info['rarityLining'] = "file://shared/epicL.png";
 
 	} else if ($ratio > 0.19 and $ratio <= 0.28) {
 
 		// Meme is Rare.
-		$info['color'] = "#8e44ad";
+		$info['rarityColor'] = "#8e44ad";
 		$info['rarity'] = "Rare";
-		$info['font-size-view'] = "18";
-		$info['file'] = "file://rare.png";
-		$info['top'] = "file://c-rare-top.png";
-		$info['bot'] = "file://c-rare-bot.png";
+		$info['rarityImage'] = "file://rarities/rare.png";
+		$info['rarityLining'] = "file://shared/rareL.png";
 
 	} else if ($ratio > 0.28 and $ratio <= 0.58) {
 
 		// Meme is Uncommon.
-		$info['color'] = "#3498db";
+		$info['rarityColor'] = "#3498db";
 		$info['rarity'] = "Uncommon";
-		$info['font-size-view'] = "18";
-		$info['file'] = "file://uncommon2.png";
-		$info['top'] = "file://c-uncommon-top.png";
-		$info['bot'] = "file://c-uncommon-bot.png";
+		$info['rarityImage'] = "file://rarities/uncommon.png";
+		$info['rarityLining'] = "file://shared/uncommonL.png";
 
 	} else if ($ratio > 0.58 and $ratio <= 1) {
 
 		// Meme is Common.
-		$info['color'] = "#a9a9a9";
+		$info['rarityColor'] = "#a9a9a9";
 		$info['rarity'] = "Common";
-		$info['font-size-view'] = "18";
-		$info['file'] = "file://common.png";
-		$info['top'] = "file://c-common-top.png";
-		$info['bot'] = "file://c-common-bot.png";
+		$info['rarityImage'] = "file://rarities/common.png";
+		$info['rarityLining'] = "file://shared/commonL.png";
 
 	}
 

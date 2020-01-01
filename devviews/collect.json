@@ -5,23 +5,37 @@
       "actions": {
         "mainLoad": [
           {
-            "{{#if 'call' in $params}}": {
+            "{{#if 'call' in $params || $cache.cur.collectStatus == 0}}": {
               "type": "$network.request",
               "options": {
-                "url": "https://collectmemes.com/access/getMeme.php",
+                "url": "https://collectmemes.com/access/getCollect.php",
                 "method": "post",
                 "data": {
-                  "userId": "{{$global.userKey}}"
+                  "userId": "{{$global.userKey}}",
+                  "pass": "933kfjhga7862344bv"
                 }
               },
               "success": {
                 "type": "$cache.set",
                 "options": {
-                  "cur": "{{$jason}}"
+                  "cur": "{{$jason.cur}}",
+                  "achievement": "{{$jason.achievement}}"
                 },
-                "success": {
-                  "type": "$render"
-                }
+                "success": [
+                  {
+                    "{{#if $cache.achievement.status == 1}}": {
+                      "type": "$render",
+                      "options": {
+                        "template": "achievement"
+                      }
+                    }
+                  },
+                  {
+                    "{{#else}}": {
+                      "type": "$render"
+                    }
+                  }
+                ]
               }
             }
           },
@@ -63,13 +77,62 @@
               }
             }
           }
-        ]
+        ],
+        "onSpin": {
+          "trigger": "interactSpinButton",
+          "success": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/views/collect.json",
+              "transition": "fullscreen",
+              "options": {
+                "call": "true"
+              }
+            }
+          }
+        },
+        "interactCollectButton": {
+          "type": "$cache.set"
+        },
+        "onCollect": {
+          "trigger": "interactCollectButton",
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/access/addToCollection.php",
+              "method": "post",
+              "data": {
+                "memeId": "{{$cache.cur.memeId}}",
+                "userId": "{{$global.userKey}}"
+              }
+            },
+            "success": [
+              {
+                "{{#if $jason.achievement.status == 1}}": {
+                  "type": "$cache.set",
+                  "options": {
+                    "achievement": "{{$jason.achievement}}"
+                  },
+                  "success": {
+                    "type": "$render",
+                    "options": {
+                      "template": "achievement"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
       },
       "templates": {
         "welcome": {
           "background": "#ffffff"
         },
         "achievement": {
+          "background": "#ffffff"
+        },
+        "memeCollected": {
           "background": "#ffffff"
         },
         "body": {

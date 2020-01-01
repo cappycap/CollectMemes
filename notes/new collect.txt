@@ -1,9 +1,10 @@
 cache:
-cur: {isMeme, title, author, image, rank, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus, isLiked}
+cur: {isMeme, memeId, title, author, image, rank, liked, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus}
+
+achievement: {image, title, reqs, xp, emmaImage, emmaQuote, nextTemplate}
 
 #isMeme is for controlling the appearance of: rank section, author
 #title, image, rarityLining are set to a spin to get started variant if user cant spin
-
 
 NOTE: params.call must be passed from login/register.
 
@@ -20,6 +21,5 @@ on spin:
 - href to collect with params.call = 1
 
 on collect:
-- make call to addToCollection (which updates spinsLeft:0, nextSpin:appropriate<-(compare whether or not nextSpin has been updated by running out of spins already. if it has, don't update it.) in DB)
-- href to collect with params.call = 1
- 
+- make call to addToCollection (which updates spinsLeft:0, nextSpin:appropriate<-(compare whether or not nextSpin has been updated by running out of spins already. if it has, don't update it.) in DB) - add a check in aTC for whether meme is already in user's shit to handle multiple clicks.
+- memeCollected template appears, that has href to collect with params.call = 1
