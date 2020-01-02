@@ -53,7 +53,7 @@ if ($c = $con->prepare($collectedQ)) {
     <title>CollectMemes</title>
     <meta name="description" content="Build a personal collection of the world's most popular memes, and share with your friends!"/>
 
-    <meta name="viewport" content="width=1000, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=1000">
 
     <!-- Loading Bootstrap -->
     <link href="dist/css/vendor/bootstrap.min.css" rel="stylesheet">
@@ -72,15 +72,21 @@ if ($c = $con->prepare($collectedQ)) {
   </head>
   <body>
     <div class="container">
-      <div class="demo-headline">
+      <div class="demo-headline" style="padding-bottom:10px;">
         <h1 class="demo-logo">
           <div class="logo"></div>
           CollectMemes
-          <small>Literally just collect memes.</small>
+          <small style="font-size:40px;">Literally just collect memes.</small>
         </h1>
       </div> <!-- /demo-headline -->
 
-      <div class="row demo-tiles">
+      <div style="text-align:center;">
+        <h3>Alpha is now available on Android only:</h3>
+        <a href='https://play.google.com/store/apps/details?id=com.collectmemes&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:50%" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+        <h4 style="padding-bottom:40px;">The Alpha may contain bugs.<br>A massive Beta update will be releasing in January 2020.</h4>
+      </div>
+
+      <div class="row demo-tiles" style="width:90%;margin:auto;">
 
         <div class="col">
           <div class="tile tile-hot">
@@ -111,40 +117,6 @@ if ($c = $con->prepare($collectedQ)) {
 
 
     </div> <!-- /container -->
-
-    <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-7" style="padding-left:40px;">
-            <h3 class="footer-title">About CollectMemes</h3>
-            <p>This is a small project created by a student developer.<br/>
-              Check back in to see how the project develops!
-            </p>
-
-            <p class="pvl">
-              <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://collectmemes.com/" data-text="I'm excited to start collecting some memes!" data-via="collect_memes">Tweet</a>
-							<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-            </p>
-
-            <a class="footer-brand" href="http://designmodo.com" target="_blank">
-              <img src="docs/assets/images/demo/logo.png" alt="Designmodo.com" />
-            </a>
-          </div> <!-- /col-7 -->
-
-          <div class="col-5">
-            <div class="footer-banner">
-              <h3 class="footer-title">Why I'm doing this:</h3>
-              <ul>
-                <li>It's pretty fun!</li>
-                <li>Automated feedback practice.</li>
-                <li>Who doesn't love ranking?</li>
-              </ul>
-              Go to <a href="http://adambullard.com">adambullard.com</a> to learn more.
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

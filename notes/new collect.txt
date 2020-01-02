@@ -1,5 +1,5 @@
 cache:
-cur: {isMeme, memeId, title, author, image, rank, liked, rarity, rarityColor, rarityImage, rarityLining, spinMessage, spinStatus, collectStatus}
+cur: {isMeme, memeId, title, author, image, rank, liked, rarity, rarityColor, rarityImage, rarityLining, spinStatus, collectStatus, spinMessage}
 
 achievement: {image, title, reqs, xp, emmaImage, emmaQuote, nextTemplate}
 

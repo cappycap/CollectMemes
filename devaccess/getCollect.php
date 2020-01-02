@@ -118,7 +118,63 @@ function getMeme($userId) {
 
 }
 
-if (isset($_POST['userId']) and isset($_POST['pass'])) {
+function spinMessage($spinsLeft, $isCountdown) {
+
+  $m = "";
+
+  if ($isCountdown) {
+
+    // js countdown
+
+  } else {
+
+    // spins left
+
+  }
+
+  return $m;
+
+}
+
+function checkAchievements($userId, $totalSpins) {
+
+  $achievement = array();
+
+  // spin achievement check:
+  $achievementId = -1;
+  $stage = -1;
+
+  if ($totalSpins == 100) {
+
+    $achievemntId = 1;
+    $stage = 1;
+
+  } else if ($totalSpins == 500) {
+
+
+  } else if ($totalSpins == 1000) {
+
+
+  }
+
+  if ($achievementId == -1) {
+
+    $achievement['status'] = 0;
+
+  } else {
+
+    $achievement['status'] = 1;
+
+
+    updateAchievementsProgress($userId, $achievementId, $stage);
+
+  }
+
+  return $achievement;
+  
+}
+
+if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme'])) {
 
   if ($_POST['pass'] == "933kfjhga7862344bv") {
 
@@ -147,17 +203,20 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
 
           $newSpinsLeft = 0;
           $uQ = "";
+          $nU = 0;
 
           if ($spinsLeft == 0) {
 
             $newSpinsLeft = 10;
 
-            $cur['isMeme'] = "";
-            $cur['memeId'] = "";
-            $cur['title'] = "";
-            $cur['image'] = ""; // need to make this image
+            $cur['isMeme'] = "0";
+            $cur['memeId'] = "0";
+            $cur['title'] = "Spin to get started!";
+            $cur['image'] = ($_POST['scheme'] == 'light') ? "file://collect/start-light.png" : "file://collect/start-dark.png";
             $cur['spinStatus'] = 1;
             $cur['collectStatus'] = 1;
+
+            $achievement['status'] = 0;
 
             $uQ = "UPDATE users SET spinsLeft=? WHERE id=?";
 
@@ -168,8 +227,12 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
             $cur = getMeme($userId);
             $cur['spinStatus'] = 0;
             $cur['collectStatus'] = 1;
+            $cur['spinMessage'] = spinMessage($newSpinsLeft, 0);
 
-            $uQ = "UPDATE users SET spinsLeft=?,totalSpins=totalSpins+1 WHERE id=?";
+            $achievement = checkAchievements($totalSpins+1);
+
+            $uQ = "UPDATE users SET spinsLeft=?,totalSpins=totalSpins+1,nextSpin=? WHERE id=?";
+            $nU = 1;
 
           } else {
 
@@ -178,16 +241,27 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
             $cur = getMeme($userId);
             $cur['spinStatus'] = 1;
             $cur['collectStatus'] = 1;
+            $cur['spinMessage'] = spinMessage($newSpinsLeft, 0);
+
+            $achievement = checkAchievements($totalSpins+1);
 
             $uQ = "UPDATE users SET spinsLeft=?,totalSpins=totalSpins+1 WHERE id=?";
 
           }
 
-
-
           if ($u = $con->prepare($uQ)) {
 
-            $u->bind_param("ii",$newSpinsLeft,$userId);
+            if ($nU) {
+
+              $newNextSpin = time() + 1800;
+
+              $u->bind_param("iii",$newSpinsLeft,$newNextSpin,$userId);
+
+            } else {
+
+              $u->bind_param("ii",$newSpinsLeft,$userId);
+
+            }
 
             $u->execute():
 
@@ -197,13 +271,24 @@ if (isset($_POST['userId']) and isset($_POST['pass'])) {
 
         } else {
 
-          //
+          $cur['isMeme'] = "0";
+          $cur['memeId'] = "0";
+          $cur['title'] = "Out of spins!";
+          $cur['image'] = ($_POST['scheme'] == 'light') ? "file://collect/out-light.png" : "file://collect/out-dark.png";
+          $cur['spinStatus'] = 0;
+          $cur['collectStatus'] = 0;
+          $cur['spinMessage'] = spinMessage(0, 1);
+
+          $achievement['status'] = 0;
 
         }
 
       }
 
     }
+
+    $response['cur'] = $cur;
+    $response['achievement'] = $achievement;
 
   }
 
