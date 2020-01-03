@@ -8,6 +8,8 @@ $challenges = array();
 
 if (isset($POST['userId']) {
 
+  $totalCompleted = 0;
+
   $u = $con->real_escape_string($_POST['userId']);
 
   $cpQ = "SELECT collectionId,totalOwned,completed FROM collectionsProgress WHERE userId=? ORDER BY totalOwned DESC";
@@ -24,9 +26,14 @@ if (isset($POST['userId']) {
 
       $chal = array();
 
-      $chal['id'] = $colledtionId;
-      $chal['totalOwned'] = $totalOwned;
+      $chal['id'] = $collectionId;
       $chal['completed'] = $completed;
+
+      if ($completed == 1) {
+
+        $totalCompleted++;
+
+      }
 
       $challenges[] = $chal;
 
@@ -48,24 +55,38 @@ if (isset($POST['userId']) {
 
         if ($s->fetch()) {
 
-          $challenge['progress'] = $challenge['totalOwned'] . "/" . $totalMemes;
+          $percent = intval(intval($totalOwned) / intval($totalMemes) * 100);
+
+          $challenge['circleHTML'] = "<html>
+          <head>
+          <style>body { margin:0; }</style>
+          <link href='https://collectmemes.com/dist/css-circular-prog-bar.css' rel='stylesheet'>
+          </head>
+          <body>
+          <div class='progress-circle p" . $percent . "'>
+            <span>" . $totalOwned . "/" . $totalMemes . "</span>
+            <div class='left-half-clipper'>
+              <div class='first50-bar'></div>
+              <div class='value-bar'></div>
+            </div>
+          </div>
+          </body>
+          </html>";
+
           $challenge['title'] = $title;
 
           if ($challenge['completed']) {
 
-            $challenge['progressColor'] = "#2ecc71";
             $challenge['xpColor'] = "#2ecc71";
-            $challenge['xp'] = "Complete!";
+            $challenge['xp'] = "Completed!";
 
           } else {
 
-            $challenge['progressColor'] = "#f1c40f";
             $challenge['xpColor'] = "#3498db";
-            $challenge['xp'] = "(+" . number_format($xpReward) . " XP)";
+            $challenge['xp'] = "on completion: (+" . number_format($xpReward) . " XP)";
 
           }
 
-          unset($challenge['totalOwned']);
           unset($challenge['completed']);
 
 

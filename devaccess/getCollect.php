@@ -118,21 +118,111 @@ function getMeme($userId) {
 
 }
 
-function spinMessage($spinsLeft, $isCountdown) {
+function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
 
   $m = "";
+  $color = "#111111";
+  $background = "#ffffff";
 
-  if ($isCountdown) {
+  if ($scheme == "dark") {
 
-    // js countdown
-
-  } else {
-
-    // spins left
+    $color = "#ffffff";
+    $background = "#111111";
 
   }
 
+  if ($isCountdown) {
+
+    $m = "<html><head><style>body{ background-color:" . $background . "; text-align:center; margin:0; padding:10px 0; color:" . $color . "; font-size:15px; }</style></head><body id='demo'></body>
+
+    <script>
+    var countDownDate = " . $nextSpin . ";
+    var x = setInterval(function() {
+      var now = new Date().getTime() / 1000;
+      var distance = countDownDate - now;
+      var minutes = Math.floor((distance % (60 * 60)) / (60));
+      var seconds = Math.floor((distance % (60)));
+      document.getElementById('demo').innerHTML = minutes + 'm ' + seconds + 's ';
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById('demo').innerHTML = 'EXPIRED';
+      }
+    }, 1000);
+    </script>
+    </html>";
+
+  } else {
+
+    $m = "<html><head><style>body{ background-color:" . $background . "; text-align:center; margin:0; padding:10px 0; color:#22a258; font-size:15px; }</style></head><body>" . $spinsLeft . " spins left</body></html>";
+0
+  }
+
   return $m;
+
+}
+
+function getAchievementEmma() {
+
+  $emma = array();
+
+  $options = array(
+    array("image"=>"file://emma/laughing.png","quote"=>"Congrats, you got an achievement!"),
+    array("image"=>"file://emma/surprised.png","quote"=>"Whoa! You unlocked an achievement!"),
+    array("image"=>"file://emma/laughing.png","quote"=>"Yay, you unlocked a new achievement!")
+  );
+
+  $num = mt_rand(0,count($options));
+
+  $emma['image'] = $options[$num]['image'];
+  $emma['quote'] = $options[$num]['quote'];
+
+  return $emma;
+
+}
+
+function updateAchievementsProgress($userId, $achievementId, $stage) {
+
+  $ret = false;
+
+  $q = "SELECT progress FROM achievementsProgress WHERE userId=?";
+
+  if ($s = $con->prepare($q)) {
+
+    $s->bind_param("i",$userId);
+
+    $s->execute();
+
+    $s->bind_result($progress);
+
+    if ($s->fetch());
+
+    $s->close();
+
+    $p = explode(",",$progress);
+
+    $p[$achievementId] = $stage;
+
+    $new = implode(",",$p);
+
+    $uQ = "UPDATE achievementsProgress SET progress=?, completed=completed+1 WHERE userId=?";
+
+    if ($u = $con->prepare($uQ)) {
+
+      $u->bind_param("si",$new,$userId);
+
+      if ($s->execute()) {
+
+        $ret = true;
+
+      }
+
+      $s->close();
+
+    }
+
+  }
+
+  return $ret;
 
 }
 
@@ -146,14 +236,18 @@ function checkAchievements($userId, $totalSpins) {
 
   if ($totalSpins == 100) {
 
-    $achievemntId = 1;
+    $achievementId = 1;
     $stage = 1;
 
   } else if ($totalSpins == 500) {
 
+    $achievementId = 1;
+    $stage = 2;
 
   } else if ($totalSpins == 1000) {
 
+    $achievementId = 1;
+    $stage = 3;
 
   }
 
@@ -165,13 +259,42 @@ function checkAchievements($userId, $totalSpins) {
 
     $achievement['status'] = 1;
 
+    $q = "SELECT image, title, reqs, xp FROM achievements WHERE achievementId=?, stage=?";
+
+    if ($s = $con->prepare($q)) {
+
+      $s->bind_param("ii",$achievementId,$stage);
+
+      $s->execute();
+
+      $s->bind_result($image,$title,$reqs,$xp);
+
+      if ($s->fetch()) {
+
+        $achievement['image'] = $image;
+        $achievement['title'] = $title;
+        $achievement['reqs'] = $reqs;
+        $achievement['xp'] = "+" . number_format($xp) . " XP";
+
+      }
+
+      $s->close();
+
+    }
+
+    $emma = getAchievementEmma();
+
+    $achievement['emmaImage'] = $emma['image'];
+    $achievement['emmaQuote'] = $emma['quote'];
+
+    $achievement['nextTemplate'] = "body";
 
     updateAchievementsProgress($userId, $achievementId, $stage);
 
   }
 
   return $achievement;
-  
+
 }
 
 if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme'])) {
@@ -182,7 +305,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
     $achievement = array();
 
     $userId = $con->real_escape_string($_POST['userId']);
-
+    $scheme = $_POST['scheme'];
     $q = "SELECT nextSpin, spinsLeft, totalSpins FROM users WHERE id=?";
 
     if ($s = $con->prepare($q)) {
@@ -212,7 +335,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur['isMeme'] = "0";
             $cur['memeId'] = "0";
             $cur['title'] = "Spin to get started!";
-            $cur['image'] = ($_POST['scheme'] == 'light') ? "file://collect/start-light.png" : "file://collect/start-dark.png";
+            $cur['image'] = ($scheme == 'light') ? "file://collect/start-light.png" : "file://collect/start-dark.png";
             $cur['spinStatus'] = 1;
             $cur['collectStatus'] = 1;
 
@@ -227,7 +350,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur = getMeme($userId);
             $cur['spinStatus'] = 0;
             $cur['collectStatus'] = 1;
-            $cur['spinMessage'] = spinMessage($newSpinsLeft, 0);
+            $cur['spinMessage'] = spinMessage($newSpinsLeft, 1, $scheme, $nextSpin);
 
             $achievement = checkAchievements($totalSpins+1);
 
@@ -241,7 +364,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur = getMeme($userId);
             $cur['spinStatus'] = 1;
             $cur['collectStatus'] = 1;
-            $cur['spinMessage'] = spinMessage($newSpinsLeft, 0);
+            $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0);
 
             $achievement = checkAchievements($totalSpins+1);
 
@@ -274,10 +397,10 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
           $cur['isMeme'] = "0";
           $cur['memeId'] = "0";
           $cur['title'] = "Out of spins!";
-          $cur['image'] = ($_POST['scheme'] == 'light') ? "file://collect/out-light.png" : "file://collect/out-dark.png";
+          $cur['image'] = ($scheme == 'light') ? "file://collect/out-light.png" : "file://collect/out-dark.png";
           $cur['spinStatus'] = 0;
           $cur['collectStatus'] = 0;
-          $cur['spinMessage'] = spinMessage(0, 1);
+          $cur['spinMessage'] = spinMessage(0, 1, $scheme, $nextSpin);
 
           $achievement['status'] = 0;
 
