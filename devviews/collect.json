@@ -120,6 +120,14 @@
                     }
                   }
                 }
+              },
+              {
+                "{{#else}}": {
+                  "type": "$render",
+                  "options": {
+                    "template": "memeCollected"
+                  }
+                }
               }
             ]
           }
