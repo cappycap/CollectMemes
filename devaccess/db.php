@@ -106,4 +106,22 @@ function generateRank($con) {
 
 }
 
+function xpToLevel($xp) {
+
+	$b = 150;
+
+	return floor(0.5*((sqrt($b+(8*$xp))/sqrt($b))-1));
+
+}
+
+function nextLevelXpNeeded($currentLevel) {
+
+	$b = 150;
+
+	$c = intval($currentLevel) + 1;
+
+	return ($c*($c+1)) / 2) * $b;
+
+}
+
 ?>

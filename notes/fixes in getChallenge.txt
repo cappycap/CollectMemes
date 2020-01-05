@@ -1,0 +1,3 @@
+things to go back and fix in getChallenge:
+
+- providing background color for scheme to html elements
