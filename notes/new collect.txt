@@ -22,4 +22,4 @@ on spin:
 
 on collect:
 - make call to addToCollection (which updates spinsLeft:0, nextSpin:appropriate<-(compare whether or not nextSpin has been updated by running out of spins already. if it has, don't update it.) in DB) - add a check in aTC for whether meme is already in user's shit to handle multiple clicks.
-- memeCollected template appears, that has href to collect with params.call = 1
+- memeCollected template appears, that has href to collect with params.spin = 1

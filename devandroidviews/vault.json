@@ -1,0 +1,804 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Vault",
+      "actions": {
+        "mainLoad": [
+          {
+            "{{#if 'cur' in $cache}}": {
+              "trigger": "fetchImages"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "cur": "1",
+                "sort": "rank",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "fetchImages"
+              }
+            }
+          }
+        ],
+        "deletedCheck": [
+          {
+            "{{#if 'memeRemoved' in $global}}": [
+              {
+                "{{#if $global.memeRemoved == 0}}": {
+                  "trigger": "mainLoad"
+                }
+              },
+              {
+                "{{#else}}": {
+                  "type": "$util.banner",
+                  "options": {
+                    "title": "Attention:",
+                    "description": "Meme removed from collection!"
+                  },
+                  "success": {
+                    "type": "$global.set",
+                    "options": {
+                      "memeRemoved": "0"
+                    },
+                    "success": {
+                      "type": "$cache.set",
+                      "options": {
+                        "cur": "1"
+                      },
+                      "success": {
+                        "trigger": "mainLoad"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "{{#else}}": {
+              "trigger": "mainLoad"
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/devandroidaccess/math.php",
+                "method": "post",
+                "data": {
+                  "x": "{{$env.device.width}}",
+                  "y": "3",
+                  "div": "true"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "memeHeight": "{{$jason.ret}}"
+                },
+                "success": {
+                  "trigger": "deletedCheck"
+                }
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/welcome.json"
+              }
+            }
+          }
+        ],
+        "fetchImages": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getVaultCollection.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "cur": "{{$cache.cur}}",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "components": "{{$jason.components}}",
+              "size": "{{$jason.size}}",
+              "avgRank": "{{$jason.avgRank}}",
+              "curAdd": "{{$jason.curAdd}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "onRank": {
+          "type": "$cache.set",
+          "options": {
+            "sort": "rank"
+          },
+          "success": {
+            "type": "$reload"
+          }
+        },
+        "onRecent": {
+          "type": "$cache.set",
+          "options": {
+            "sort": "dateAdded"
+          },
+          "success": {
+            "type": "$reload"
+          }
+        },
+        "onSort": {
+          "type": "$cache.set",
+          "options": {
+            "sortDir": [
+              {
+                "{{#if $cache.sortDir == 1}}": "0"
+              },
+              {
+                "{{#else}}": "1"
+              }
+            ]
+          },
+          "success": {
+            "type": "$reload"
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "file://bg.png",
+          "style": {
+            "border": "none"
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/back.png",
+              "style": {
+                "align": "left",
+                "left": "2%",
+                "width": "7%",
+                "top": "2%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/collect.json",
+                  "transition": "push"
+                }
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://heart-full.png",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "top": "2%-6",
+                "left": "86%+2"
+              },
+              "href": {
+                "url": "https://collectmemes.com/devandroidviews/likes.json",
+                "transition": "push"
+              }
+            },
+            {
+              "type": "label",
+              "text": ".",
+              "style": {
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "40"
+                  }
+                ],
+                "height": "40",
+                "left": [
+                  {
+                    "{{#if $cache.sort == 'rank'}}": "2%"
+                  },
+                  {
+                    "{{#else}}": "51%"
+                  }
+                ],
+                "top": "9%+15",
+                "background": "#dedede",
+                "color": "#dedede"
+              }
+            },
+            {
+              "type": "image",
+              "url": [
+                {
+                  "{{#if $cache.sortDir == 1}}": "https://collectmemes.com/img/sort-up.png"
+                },
+                {
+                  "{{#else}}": "https://collectmemes.com/img/sort-down.png"
+                }
+              ],
+              "style": {
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "30"
+                  }
+                ],
+                "height": "30",
+                "left": [
+                  {
+                    "{{#if $cache.sort == 'rank'}}": "2%+5"
+                  },
+                  {
+                    "{{#else}}": "51%+5"
+                  }
+                ],
+                "top": "9%+20"
+              },
+              "action": {
+                "trigger": "onSort"
+              }
+            },
+            {
+              "type": "button",
+              "text": "Rank",
+              "style": {
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#elseif $cache.sort == 'rank'}}": "47%-41"
+                  },
+                  {
+                    "{{#else}}": "47%"
+                  }
+                ],
+                "height": "40",
+                "left": [
+                  {
+                    "{{#if $cache.sort == 'rank'}}": "2%+41"
+                  },
+                  {
+                    "{{#else}}": "2%"
+                  }
+                  ],
+                "top": "9%+15",
+                "align": "center",
+                "background": [
+                  {
+                    "{{#if $cache.sort == 'rank'}}": "#dedede"
+                  },
+                  {
+                    "{{#else}}": "#A3A3A3"
+                  }
+                ],
+                "color": "#111111",
+                "size": "16"
+              },
+              "action": [
+                {
+                  "{{#if $cache.sort == 'dateAdded'}}": {
+                    "trigger": "onRank"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "text": "Recent",
+              "style": {
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#elseif $cache.sort == 'dateAdded'}}": "47%-41"
+                  },
+                  {
+                    "{{#else}}": "47%"
+                  }
+                ],
+                "height": "40",
+                "left": [
+                  {
+                    "{{#if $cache.sort == 'dateAdded'}}": "51%+41"
+                  },
+                  {
+                    "{{#else}}": "51%"
+                  }
+                ],
+                "top": "9%+15",
+                "align": "center",
+                "background": [
+                  {
+                    "{{#if $cache.sort == 'dateAdded'}}": "#dedede"
+                  },
+                  {
+                    "{{#else}}": "#A3A3A3"
+                  }
+                ],
+                "color": "#111111",
+                "size": "16"
+              },
+              "action": [
+                {
+                  "{{#if $cache.sort == 'rank'}}": {
+                    "trigger": "onRecent"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "label",
+              "text": "Vault",
+              "style": {
+                "color": "#ffffff",
+                "left": "30%",
+                "top": "1%",
+                "align": "center",
+                "size": "30",
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "40%"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.size}} memes | avg rank {{$cache.avgRank}}",
+              "style": {
+                "color": "#ffffff",
+                "left": "20%",
+                "top": "7%-7",
+                "align": "center",
+                "size": "21",
+                "width": [
+                  {
+                    "{{#if $cache.components == 'undefined'}}": "0"
+                  },
+                  {
+                    "{{#else}}": "60%"
+                  }
+                ]
+              }
+            }
+          ],
+          "sections": [{
+            "items": [
+              {
+                "{{#if $cache.components == 'undefined'}}": [
+                  {
+                    "type": "label",
+                    "text": "No memes collected yet!",
+                    "style": {
+                      "padding": "20",
+                      "align": "center",
+                      "color": "#ffffff",
+                      "size": "20"
+                    }
+                  }
+                ]
+              },
+              {
+                "{{#else}}": [
+                  {
+                    "type": "image",
+                    "url": "file://flattop2.png",
+                    "style": {
+                      "width": "100%",
+                      "padding": "0"
+                    }
+                  },
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0"
+                    },
+                    "components": [
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[3].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[3].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[3].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "padding": "0",
+                          "spacing": "0"
+                        },
+                        "components": [
+                          {
+                            "type": "button",
+                            "url": [
+                              {
+                                "{{#if $cache.cur >= 13}}": "file://left-active.png"
+                              },
+                              {
+                                "{{#else}}": "file://left-empty.png"
+                              }
+                            ],
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.cur >= 13}}": {
+                                  "type": "$network.request",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidaccess/math.php",
+                                    "method": "post",
+                                    "data": {
+                                      "x": "{{$cache.cur}}",
+                                      "y": "12",
+                                      "sub": "true"
+                                    }
+                                  },
+                                  "success": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "cur": "{{$jason.ret}}"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "image",
+                            "url": "file://mid.png",
+                            "style": {
+                              "width": "76%"
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "url": [
+                              {
+                                "{{#if $cache.curAdd <= $cache.size}}": "file://right-active.png"
+                              },
+                              {
+                                "{{#else}}": "file://right-empty.png"
+                              }
+                            ],
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.curAdd <= $cache.size}}": {
+                                  "type": "$network.request",
+                                  "options": {
+                                    "url": "https://collectmemes.com/devandroidaccess/math.php",
+                                    "method": "post",
+                                    "data": {
+                                      "x": "{{$cache.cur}}",
+                                      "y": "12",
+                                      "add": "true"
+                                    }
+                                  },
+                                  "success": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "cur": "{{$jason.ret}}"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }]
+        }
+      }
+    }
+  }
+}

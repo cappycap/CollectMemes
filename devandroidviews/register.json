@@ -1,0 +1,251 @@
+{
+  "$jason": {
+    "head": {
+      "title": "register",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$render"
+            }
+          }
+        ],
+        "attemptCreate": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/createUser.php",
+            "method": "post",
+            "data": {
+              "username": "{{$get.username}}",
+              "email": "{{$get.email}}",
+              "password": "{{$get.password}}",
+              "device": "{{$env.device.os.name}}"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 1}}": {
+                "type": "$global.set",
+                "options": {
+                  "userKey": "{{$jason.userKey}}",
+                  "spinsLeft": "10",
+                  "firstLoadDone": "0"
+                },
+                "success": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/devandroidviews/collect.json"
+                  }
+                }
+              }
+            },
+            {
+              "{{#elseif $jason.success == 0}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Maintenence",
+                  "description": "CollectMemes is doing some backend work right now. Try registering in a little bit!"
+                }
+              }
+            }
+          ]
+        },
+        "onClick": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/checkRegisterCredentials.php",
+            "method": "post",
+            "data": {
+              "username": "{{$get.username}}",
+              "email": "{{$get.email}}",
+              "password": "{{$get.password}}"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 1}}": {
+                "trigger": "attemptCreate"
+              }
+            },
+            {
+              "{{#elseif $jason.success == 0}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "So close...",
+                  "description": "{{$jason.failed}}"
+                },
+                "success": {
+                  "type": "$reload"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "header": {
+            "style": {
+              "background": "#ffffff"
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            }
+          },
+          "layers": [
+            {
+              "type": "label",
+              "text": "Register",
+              "style": {
+                "color": "#111111",
+                "align": "center",
+                "width": "300",
+                "left": "50%-150",
+                "top": "10%",
+                "size": "30"
+              }
+            },
+            {
+              "type": "label",
+              "text": "a new account!",
+              "style": {
+                "color": "#b8b8b8",
+                "align": "center",
+                "width": "300",
+                "left": "50%-150",
+                "top": "10%+35",
+                "size": "15"
+              }
+            },
+            {
+              "type": "textfield",
+              "name": "username",
+              "placeholder": "preferred username...",
+              "style": {
+                "font": "Roboto",
+                "align": "center",
+                "size": "20",
+                "color": "#111111",
+                "background": "#eff0f2",
+                "padding": "15",
+                "top": "21%",
+                "width": "80%",
+                "left": "10%",
+                "corner_radius": "30"
+              }
+            },
+            {
+              "type": "label",
+
+            },
+            {
+              "type": "textfield",
+              "name": "email",
+              "placeholder": "email...",
+              "style": {
+                "font": "Roboto",
+                "size": "20",
+                "color": "#111111",
+                "background": "#eff0f2",
+                "padding": "15",
+                "top": "34%",
+                "width": "80%",
+                "left": "10%",
+                "corner_radius": "30",
+                "align": "center"
+              }
+            },{
+              "type": "textfield",
+              "name": "password",
+              "placeholder": "password...",
+              "style": {
+                "font": "Roboto",
+                "size": "20",
+                "color": "#111111",
+                "background": "#eff0f2",
+                "padding": "15",
+                "secure": "true",
+                "top": "47%",
+                "width": "80%",
+                "left": "10%",
+                "corner_radius": "30",
+                "align": "center"
+              }
+            },
+            { "type": "label",
+              "text": "Register",
+              "style": {
+                "width": "300",
+                "height": "55",
+                "size": "17",
+                "top": "62%",
+                "left": "50%-150",
+                "background": "#2d91d1",
+                "color": "#ffffff",
+                "padding": "2",
+                "corner_radius": "50",
+                "align": "center"
+              },
+              "action": {
+                "trigger": "onClick"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Already have an account?",
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/login.json",
+                  "transition": "push"
+                }
+              },
+              "style": {
+                "color": "#b8b8b8",
+                "align": "right",
+                "width": "300",
+                "left": "50%-150",
+                "top": "62%+70",
+                "size": "15"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://emma/emma-circle-smile.png",
+              "style": {
+                "width": "30%",
+                "height": "30%",
+                "top": "70%",
+                "left": "15"
+              }
+            },
+            {
+              "type": "html",
+              "style": {
+                "width": "60%",
+                "top": "78%",
+                "right": "15",
+                "height": "30%"
+              },
+              "text": "<html><body style='text-align:center;width:{{$cache.htmlWidth}}px;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'Before we get to the memes, set your profile up with some basic info!';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

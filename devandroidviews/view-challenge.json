@@ -1,0 +1,145 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getViewChallenge.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "id": "{{$params.id}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "challenge": "{{$jason}}"
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "horizontal",
+                  "style": {
+                    "spacing": "10"
+                  }
+                  "items": [
+                    {
+                      "type": "image",
+                      "url": "file://back.png",
+                      "style": {
+                        "width": "40",
+                        "height": "40",
+                        "spacing": "5"
+                      }
+                      "action": {
+                        "type": "$href",
+                        "options": {
+                          "url": "https://collectmemes.com/devandroidviews/challenges.json"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "header": "Challenges",
+              "items": {
+                "{{#each $cache.challenges}}": {
+                  "type": "horizontal",
+                  "style": {
+                    "spacing": "10"
+                  },
+                  "components": [
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenges[$index].progress}}",
+                      "style": {
+                        "width": "25%",
+                        "align": "left",
+                        "color": "{{$cache.challenges[$index].progressColor}}"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenges[$index].title}}",
+                      "style": {
+                        "width": "50%",
+                        "align": "left"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "5"
+                      },
+                      "components": [
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenges[$index].xp}}",
+                          "style": {
+                            "color": "{{$cache.challenges[$index].xpColor}}",
+                            "width": "15%"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "text": "View",
+                          "style": {
+                            "padding": "3",
+                            "color": "#ffffff",
+                            "background": "#1a24fb",
+                            "width": "10%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/viewChallenge.json",
+                              "options": {
+                                "id": "{{$cache.challenges[$index].id}}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "layers": [
+            {
+              "test": "test"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Empty",
+      "actions": {
+        "mainLoad": {
+          "type": "$cache.set",
+          "options": {
+            "memeId": "{{$params.memeId}}"
+          },
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/devandroidaccess/getMemeById.php",
+              "method": "post",
+              "data": {
+                "id": "{{$cache.memeId}}",
+                "userKey": "{{$global.userKey}}",
+                "liked": "x"
+              }
+            },
+            "success": {
+              "type": "$cache.set",
+              "options": {
+                "meme": "{{$jason.meme}}"
+              },
+              "success": {
+                "type": "$render"
+              }
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0' && 'memeId' in $params}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/vault.json"
+              }
+            }
+          }
+        ],
+        "onRemove": {
+          "type": "$util.alert",
+          "options": {
+            "title": "Unlike Meme?",
+            "description": "Are you sure you want to remove this meme from your likes? Press OK to continue."
+          },
+          "success": {
+            "type": "$network.request",
+            "options": {
+              "url": "https://collectmemes.com/devandroidaccess/removeFromLikes.php",
+              "method": "post",
+              "data": {
+                "userId": "{{$global.userKey}}",
+                "memeId": "{{$cache.memeId}}"
+              }
+            },
+            "success": {
+              "type": "$global.set",
+              "options": {
+                "likeMemeRemoved": "1"
+              },
+              "success": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/likes.json",
+                  "transition": "push"
+                }
+              }
+            }
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://flattop2.png",
+              "style": {
+                "width": "100%",
+                "top": "0"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://profilebot.png",
+              "style": {
+                "width": "100%",
+                "bottom": "0",
+                "z_index": "1"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.meme.file}}",
+              "style": {
+                "width": "20%",
+                "left": "40%",
+                "bottom": "2%"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/trash.png",
+              "style": {
+                "align": "left",
+                "right": "3%",
+                "width": "7%",
+                "top": "3%",
+                "z_index": "1"
+              },
+              "action": {
+                "trigger": "onRemove"
+              }
+            },
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/back.png",
+              "style": {
+                "align": "left",
+                "left": "3%",
+                "width": "7%",
+                "top": "3%",
+                "z_index": "2"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/likes.json",
+                  "transition": "push"
+                }
+              }
+            },
+            {
+              "type": "label",
+              "text": "\"{{$cache.meme.title}}\"",
+              "style": {
+                "size": "30",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "2%",
+                "padding": "0"
+              }
+            },
+            {
+              "type": "label",
+              "text": "by {{$cache.meme.creator}}",
+              "style": {
+                "size": "22",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "2%+35"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.meme.likes}} likes - {{$cache.meme.totalOwned}} collects",
+              "style": {
+                "size": "18",
+                "color": "#ffffff",
+                "align": "center",
+                "width": "80%",
+                "left": "10%",
+                "top": "2%+65"
+              }
+            },
+            {
+              "type": "label",
+              "text": "#{{$cache.meme.rank}}",
+              "style": {
+                "left": "5%",
+                "bottom": "3%",
+                "size": "22",
+                "width": "45%",
+                "align": "left",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "label",
+              "text": "({{$cache.meme.rarity}})",
+              "style": {
+                "left": "55%",
+                "bottom": "3%",
+                "size": "{{$cache.meme.fontSizeView}}",
+                "width": "40%",
+                "align": "right",
+                "color": "{{$cache.meme.color}}"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.meme.owned}}",
+              "style": {
+                "left": "55%",
+                "bottom": "7%",
+                "size": "15",
+                "width": "40%",
+                "align": "right",
+                "color": "#ffffff"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.meme.image}}",
+              "style": {
+                "align": "center",
+                "left": "2%",
+                "width": "96%",
+                "top": "20%"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

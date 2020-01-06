@@ -1,0 +1,143 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getAchievements.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "achievements": "{{$jason}}"
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "horizontal",
+                  "items": [
+                    {
+                      "type": "label",
+                      "text": ".",
+                      "style": {
+                        "color": "#ffffff",
+                        "width": "100%-60"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "url": "file://back-right.png",
+                      "style": {
+                        "width": "40",
+                        "height": "40"
+                      },
+                      "action": {
+                        "type": "$href",
+                        "options": {
+                          "url": "https://collectmemes.com/devandroidviews/collect.json"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "header": "Achievements",
+              "items": {
+                "{{#each $cache.achievements}}": {
+                  "type": "horizontal",
+                  "style": {
+                    "spacing": "10"
+                  },
+                  "components": [
+                    {
+                      "type": "image",
+                      "text": "{{$cache.achievements[$index].image}}",
+                      "style": {
+                        "width": "60",
+                        "height": "60",
+                        "align": "left"
+                      }
+                    },
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "spacing": "1",
+                        "width": "50%-80"
+                      },
+                      "components": [
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenges[$index].title}}",
+                          "style": {
+                            "color": "#111111"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenges[$index].reqs}}",
+                          "style": {
+                            "color": "#dedede"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": "{{$cache.challenges[$index].xp}}",
+                      "style": {
+                        "color": "{{$cache.challenges[$index].xpColor}}",
+                        "width": "25%"
+                      }
+                    },
+                    {
+                      "type": "html",
+                      "text": "{{$cache.challenges[$index].html}}",
+                      "style": {
+                        "width": "25%"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "layers": [
+            {
+              "test": "test"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
