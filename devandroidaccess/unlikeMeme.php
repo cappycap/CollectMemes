@@ -11,12 +11,10 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST['userId']) and isset($_POST['memeId']) and isset($_POST['scheme'])) {
+if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $memeId = $con->real_escape_string($_POST['memeId']);
-
-  $response['heart'] = ($_POST['scheme'] == "light") ? "file://collect/heart-empty-light.png" : "file://collect/heart-empty-dark.png";
 
   // Update meme.
   $queryUpdateMeme = "UPDATE memes SET likes = likes - 1 WHERE id=?";

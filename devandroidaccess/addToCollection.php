@@ -13,7 +13,7 @@ function isMemePartofChallenges($m, $con) {
 
 		$s->execute();
 
-		$s->bind_param($id,$memesStr,$total);
+		$s->bind_result($id,$memesStr,$total);
 
 		while ($s->fetch()) {
 
@@ -139,7 +139,8 @@ function getAchievementEmma() {
     array("image"=>"file://emma/laughing.png","quote"=>"Yay, you unlocked a new achievement!")
   );
 
-  $num = mt_rand(0,count($options));
+	$top = count($options) - 1;
+  $num = mt_rand(0,$top);
 
   $emma['image'] = $options[$num]['image'];
   $emma['quote'] = $options[$num]['quote'];
@@ -148,7 +149,7 @@ function getAchievementEmma() {
 
 }
 
-function updateAchievementsProgress($userId, $achievementId, $stage) {
+function updateAchievementsProgress($userId, $achievementId, $stage, $con) {
 
   $ret = false;
 
@@ -178,13 +179,13 @@ function updateAchievementsProgress($userId, $achievementId, $stage) {
 
       $u->bind_param("si",$new,$userId);
 
-      if ($s->execute()) {
+      if ($u->execute()) {
 
         $ret = true;
 
       }
 
-      $s->close();
+      $u->close();
 
     }
 
@@ -330,7 +331,7 @@ function checkAchievements($userId, $memeId, $collectionSize, $rarity, $rarityCo
 
     $achievement['status'] = 1;
 
-    $q = "SELECT image, title, reqs, xp FROM achievements WHERE achievementId=?, stage=?";
+    $q = "SELECT image, title, reqs, xp FROM achievements WHERE achievementId=? AND stage=?";
 
     if ($s = $con->prepare($q)) {
 
@@ -358,9 +359,9 @@ function checkAchievements($userId, $memeId, $collectionSize, $rarity, $rarityCo
     $achievement['emmaImage'] = $emma['image'];
     $achievement['emmaQuote'] = $emma['quote'];
 
-    $achievement['nextTemplate'] = "memeCollected";
+    $achievement['exitTemplate'] = "memeCollected";
 
-    $achievement['progressUpdated'] = updateAchievementsProgress($userId, $achievementId, $stage);
+    $achievement['progressUpdated'] = updateAchievementsProgress($userId, $achievementId, $stage, $con);
 
   }
 
@@ -553,11 +554,11 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	  if ($achievement['status'] == 1) {
 
-			$response['nextTemplate'] = "achievement";
+			$achievement['nextTemplate'] = "achievement";
 
 	  } else {
 
-			$response['nextTemplate'] = "memeCollected";
+			$achievement['nextTemplate'] = "memeCollected";
 
 	  }
 
@@ -565,7 +566,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	} else {
 
-		$response['nextTemplate'] = "memeCollected";
+		$achievement['nextTemplate'] = "memeCollected";
 
 	}
 

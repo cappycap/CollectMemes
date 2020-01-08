@@ -61,6 +61,26 @@ function getMeme($userId, $con) {
           $meme['image'] = $image;
           $meme['rank'] = $rank;
 
+          $memeWidth = intval(0.84 * $_POST['screenWidth']);
+
+          list($width, $height) = getimagesize($image);
+
+          if ($width < $height) {
+
+            $meme['height'] = intval($memeWidth);
+            $meme['heightdiv2'] = intval($memeWidth/2);
+
+          } else {
+
+            $ratio = $memeWidth / $width;
+
+            $newHeight = $ratio * $height;
+
+            $meme['height'] = intval($newHeight);
+            $meme['heightdiv2'] = intval($memeWidth/2);
+
+          }
+
           $count = $count + 1;
 
           $stmt->free_result();
@@ -153,7 +173,10 @@ function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
 
   } else {
 
-    $m = "<html><head><style>body{ background-color:" . $background . "; text-align:center; margin:0; padding:10px 0; color:#22a258; font-size:15px; }</style></head><body>" . $spinsLeft . " spins left</body></html>";
+    $spinsLeftText = strval($spinsLeft);
+    $spinsLeftText .= ($spinsLeft == 1) ? " spin" : " spins";
+
+    $m = "<html><head><style>body{ background-color:" . $background . "; text-align:center; margin:0; padding:10px 0; color:#22a258; font-size:15px; }</style></head><body>" . $spinsLeftText . " left</body></html>";
 
   }
 
@@ -171,7 +194,9 @@ function getAchievementEmma() {
     array("image"=>"file://emma/laughing.png","quote"=>"Yay, you unlocked a new achievement!")
   );
 
-  $num = mt_rand(0,count($options));
+  $top = count($options) - 1;
+  
+  $num = mt_rand(0,$top);
 
   $emma['image'] = $options[$num]['image'];
   $emma['quote'] = $options[$num]['quote'];
@@ -180,7 +205,7 @@ function getAchievementEmma() {
 
 }
 
-function updateAchievementsProgress($userId, $achievementId, $stage) {
+function updateAchievementsProgress($userId, $achievementId, $stage, $con) {
 
   $ret = false;
 
@@ -210,13 +235,13 @@ function updateAchievementsProgress($userId, $achievementId, $stage) {
 
       $u->bind_param("si",$new,$userId);
 
-      if ($s->execute()) {
+      if ($u->execute()) {
 
         $ret = true;
 
       }
 
-      $s->close();
+      $u->close();
 
     }
 
@@ -259,7 +284,7 @@ function checkAchievements($userId, $totalSpins, $con) {
 
     $achievement['status'] = 1;
 
-    $q = "SELECT image, title, reqs, xp FROM achievements WHERE achievementId=?, stage=?";
+    $q = "SELECT image, title, reqs, xp FROM achievements WHERE achievementId=? AND stage=?";
 
     if ($s = $con->prepare($q)) {
 
@@ -287,9 +312,9 @@ function checkAchievements($userId, $totalSpins, $con) {
     $achievement['emmaImage'] = $emma['image'];
     $achievement['emmaQuote'] = $emma['quote'];
 
-    $achievement['nextTemplate'] = "body";
+    $achievement['exitTemplate'] = "body";
 
-    updateAchievementsProgress($userId, $achievementId, $stage);
+    updateAchievementsProgress($userId, $achievementId, $stage, $con);
 
   }
 
@@ -297,7 +322,7 @@ function checkAchievements($userId, $totalSpins, $con) {
 
 }
 
-if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']) and isset($_POST['spin'])) {
+if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']) and isset($_POST['spin']) and isset($_POST['screenWidth'])) {
 
   if ($_POST['pass'] == "933kfjhga7862344bv") {
 
@@ -306,8 +331,6 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
     $userId = $con->real_escape_string($_POST['userId']);
     $scheme = $_POST['scheme'];
-
-    $passCur = json_decode($_POST['cur']);
 
     if ($_POST['spin'] == "true") {
 
@@ -329,13 +352,13 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
           $time = time();
 
-          if ($nextSpin < $time and $spinsLeft != 0) {
+          if ($nextSpin < $time) {
 
             $newSpinsLeft = 0;
             $uQ = "";
             $nU = 0;
 
-            if ($spinsLeft == 11) {
+            if ($spinsLeft == 11 or $spinsLeft == 0) {
 
               $newSpinsLeft = 10;
 
@@ -346,6 +369,13 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               $cur['rarityLining'] = "file://shared/lining.png";
               $cur['spinStatus'] = 1;
               $cur['collectStatus'] = 1;
+
+              $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0);
+
+              $memeWidth = intval(0.84 * $_POST['screenWidth']);
+
+              $cur['height'] = intval($memeWidth);
+              $cur['heightdiv2'] = intval($memeWidth/2);
 
               $achievement['status'] = 0;
 
@@ -420,6 +450,11 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur['spinStatus'] = 0;
             $cur['collectStatus'] = 0;
             $cur['spinMessage'] = spinMessage(0, 1, $scheme, $nextSpin);
+
+            $memeWidth = intval(0.84 * $_POST['screenWidth']);
+
+            $cur['height'] = intval($memeWidth);
+            $cur['heightdiv2'] = intval($memeWidth/2);
 
             $achievement['status'] = 0;
 
