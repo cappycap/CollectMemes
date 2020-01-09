@@ -7,12 +7,19 @@ $response = array();
 $list = array();
 $components = array();
 
-if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir'])) {
+if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir']) and isset($_POST['scheme'])) {
 
   $u = $con->real_escape_string($_POST['userId']);
   $c = (int)$con->real_escape_string($_POST['cur']) - 1;
   $s = $con->real_escape_string($_POST['sort']);
   $d = (int)$con->real_escape_string($_POST['sortDir']);
+
+  $scheme = $_POST['scheme'];
+
+  $nav = array();
+
+  $nav['collectLeft'] = ($scheme == "light") ? "file://nav/collect-left-light.png" : "file://nav/collect-left-dark.png";
+  $nav['likesRight'] = ($scheme == "light") ? "file://nav/likes-right-light.png" : "file://nav/likes-right-dark.png";
 
   $dir = "";
 
@@ -157,7 +164,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
       }
 
-      while ($counter2 < 12) {
+      while ($counter2 < 9) {
 
         $list[$counter2] = array("text"=>"<html>
         <head>
@@ -182,7 +189,6 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $components[0] = array("components"=>array($list[0],$list[1],$list[2]));
       $components[1] = array("components"=>array($list[3],$list[4],$list[5]));
       $components[2] = array("components"=>array($list[6],$list[7],$list[8]));
-      $components[3] = array("components"=>array($list[9],$list[10],$list[11]));
 
     } else {
 
@@ -205,6 +211,10 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $response['size'] = number_format($size);
       $response['avgRank'] = $avgRank;
       $response['curAdd'] = $c + 13;
+
+      $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+      
+      $response['stats'] = "<html><head><style>body { margin:0; }</style></head><body></body></html>";
 
     }
 

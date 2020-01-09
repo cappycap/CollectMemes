@@ -165,7 +165,7 @@ function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
       document.getElementById('demo').innerHTML = minutes + 'm ' + seconds + 's ';
       if (distance < 0) {
         clearInterval(x);
-        document.getElementById('demo').innerHTML = 'EXPIRED';
+        document.getElementById('demo').innerHTML = 'Spin to refresh!';
       }
     }, 1000);
     </script>
@@ -195,7 +195,7 @@ function getAchievementEmma() {
   );
 
   $top = count($options) - 1;
-  
+
   $num = mt_rand(0,$top);
 
   $emma['image'] = $options[$num]['image'];
@@ -463,6 +463,9 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
         }
 
       }
+      
+      $cur['challengesLeft'] = ($scheme == 'light') ? "file://nav/challenges-left-light.png" : "file://nav/challenges-left-dark.png";
+      $cur['profileRight'] = ($scheme == 'light') ? "file://nav/profile-right-light.png" : "file://nav/profile-right-dark.png";
 
       $response['cur'] = $cur;
       $response['achievement'] = $achievement;
