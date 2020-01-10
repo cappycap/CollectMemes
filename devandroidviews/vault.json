@@ -18,7 +18,7 @@
             "{{#else}}": {
               "type": "$cache.set",
               "options": {
-                "cur": "1",
+                "cur": "0",
                 "sort": "rank",
                 "sortDir": "1"
               },
@@ -51,7 +51,7 @@
                     "success": {
                       "type": "$cache.set",
                       "options": {
-                        "cur": "1"
+                        "cur": "0"
                       },
                       "success": {
                         "trigger": "mainLoad"
@@ -117,42 +117,27 @@
             "options": {
               "components": "{{$jason.components}}",
               "stats": "{{$jason.stats}}",
-              "nav": "{{$jason.nav}}"
+              "nav": "{{$jason.nav}}",
+              "cur": "{{$jason.cur}}"
             },
             "success": {
               "type": "$render"
             }
           }
         },
-        "onRank": {
+        "onPageLeft": {
           "type": "$cache.set",
           "options": {
-            "sort": "rank"
+            "cur": "{{$cache.nav.curMin}}"
           },
           "success": {
             "type": "$reload"
           }
         },
-        "onRecent": {
+        "onPageRight": {
           "type": "$cache.set",
           "options": {
-            "sort": "dateAdded"
-          },
-          "success": {
-            "type": "$reload"
-          }
-        },
-        "onSort": {
-          "type": "$cache.set",
-          "options": {
-            "sortDir": [
-              {
-                "{{#if $cache.sortDir == 1}}": "0"
-              },
-              {
-                "{{#else}}": "1"
-              }
-            ]
+            "cur": "{{$cache.nav.curAdd}}"
           },
           "success": {
             "type": "$reload"
@@ -161,7 +146,7 @@
       },
       "templates": {
         "body": {
-          "background": "file://bg.png",
+          "background": "#ffffff",
           "style": {
             "border": "none"
           },
@@ -184,28 +169,48 @@
               {
                 "{{#else}}": [
                   {
-                    "type": "image",
-                    "url": "file://shared/lining.png",
-                    "style": {
-                      "width": "100%"
-                    }
-                  },
-                  {
                     "type": "vertical",
                     "style": {
                       "align": "center",
-                      "padding": "5"
+                      "padding": "0",
+                      "spacing": "0"
                     }
                     "components": [
                       {
+                        "type": "image",
+                        "url": "file://shared/lining.png",
+                        "style": {
+                          "width": "100%"
+                        }
+                      },
+                      {
+                        "type": "space",
+                        "style": {
+                          "height": "1%"
+                        }
+                      },
+                      {
                         "type": "horizontal",
                         "style": {
-                          "align": "center"
+                          "align": "center",
+                          "width": "98%",
+                          "padding": "10",
+                          "spacing": "10"
                         }
                         "components": [
                           {
                             "type": "image",
-                            "url": "{{$cache.nav.collectLeft}}"
+                            "url": "{{$cache.nav.collectLeft}}",
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": {
+                              "type": "$href",
+                              "options": {
+                                "url": "https://collectmemes.com/devandroidviews/collect.json",
+                                "transition": "fullscreen"
+                              }
+                            }
                           },
                           {
                             "type": "space"
@@ -214,8 +219,7 @@
                             "type": "image",
                             "url": "file://tops/collection.png",
                             "style": {
-                              "padding": "10",
-                              "width": "15%"
+                              "width": "20%"
                             }
                           },
                           {
@@ -223,7 +227,17 @@
                           },
                           {
                             "type": "image",
-                            "url": "{{$cache.nav.likesRight}}"
+                            "url": "{{$cache.nav.likesRight}}",
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": {
+                              "type": "$href",
+                              "options": {
+                                "url": "https://collectmemes.com/devandroidviews/likes.json",
+                                "transition": "fullscreen"
+                              }
+                            }
                           },
                         ]
                       },
@@ -231,34 +245,126 @@
                         "type": "label",
                         "text": "Vault",
                         "style": {
-                          "padding": "5",
+                          "padding": "0",
                           "size": "40",
-                          "color": "#111111"
+                          "color": "#111111",
+                          "align": "center"
                         }
                       },
                       {
                         "type": "horizontal",
                         "style": {
-                          "align": "center"
+                          "align": "center",
+                          "padding": "0",
+                          "spacing": "0",
+                          "height": "6%"
                         }
                         "components": [
                           {
-                            "type": "space"
+                            "type": "space",
+                            "style": {
+                              "width": "10%"
+                            }
                           },
                           {
                             "type": "html",
-                            "url": "{{$cache.stats}}",
+                            "text": "{{$cache.stats}}",
                             "style": {
-                              "padding": "10",
-                              "width": "15%"
+                              "padding": "0",
+                              "width": "80%"
+                            }
+                          },
+                          {
+                            "type": "space"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "padding": "0",
+                          "spacing": "0"
+                        }
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "86%"
                             }
                           },
                           {
                             "type": "image",
-                            "url": "{{$cache.nav.sortButton}}"
+                            "url": "{{$cache.nav.sortButton}}",
+                            "style": {
+                              "width": "7%"
+                            },
+                            "action": {
+                              "type": "$util.picker",
+                              "options": {
+                                "title": "Sort By:",
+                                "items": [
+                                  {
+                                    "text": "Rank (ascending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "1",
+                                        "sort": "rank"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Rank (descending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "0",
+                                        "sort": "rank"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Date Collected (ascending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "1",
+                                        "sort": "dateAdded"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Date Collected (descending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "0",
+                                        "sort": "dateAdded"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
                           },
+                          {
+                            "type": "space"
+                          }
                         ]
-                      },
+                      }
                     ]
                   },
                   {
@@ -472,6 +578,75 @@
                                 }
                               }
                             ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0",
+                    },
+                    "components": [
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "padding": "10",
+                          "spacing": "10",
+                          "align": "center"
+                        },
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "24%"
+                            }
+                          }
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.pageLeft}}",
+                            "style": {
+                              "width": "8%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.nav.allowPageLeft != '0'}}": {
+                                  "trigger": "onPageLeft"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "label",
+                            "text": "{{$cache.nav.pageDisplay}}",
+                            "style": {
+                              "size": "30",
+                              "color": "#3b9fdf",
+                              "align": "center",
+                              "width": "36%"
+                            }
+                          },
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.pageRight}}",
+                            "style": {
+                              "width": "8%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.nav.allowPageRight != '0'}}": {
+                                  "trigger": "onPageRight"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "24%"
+                            }
                           }
                         ]
                       }

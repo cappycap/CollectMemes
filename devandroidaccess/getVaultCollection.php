@@ -10,7 +10,7 @@ $components = array();
 if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir']) and isset($_POST['scheme'])) {
 
   $u = $con->real_escape_string($_POST['userId']);
-  $c = (int)$con->real_escape_string($_POST['cur']) - 1;
+  $c = (int)$con->real_escape_string($_POST['cur']);
   $s = $con->real_escape_string($_POST['sort']);
   $d = (int)$con->real_escape_string($_POST['sortDir']);
 
@@ -28,10 +28,12 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
     if ($d == 1) {
 
       $dir = "ASC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
 
     } else {
 
       $dir = "DESC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
 
     }
 
@@ -40,17 +42,18 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
     if ($d == 1) {
 
       $dir = "DESC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
 
     } else {
 
       $dir = "ASC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
 
     }
 
   }
 
-
-  $q = "SELECT memeId FROM owns WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 12" . " OFFSET " . $c;
+  $q = "SELECT memeId FROM owns WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 9" . " OFFSET " . $c;
 
   if ($stmt = $con->prepare($q)) {
 
@@ -105,38 +108,38 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
             html {
               margin:0;
               padding:0;
-              height:90%;
               width:100%;
               overflow:hidden;
               display:block;
               box-sizing: border-box;
             }
             body {
-                background-color: #111111;
+                background-color: #ffffff;
                 margin:0;
                 padding:0;
-                height:97%;
                 width:100%;
                 text-align:center;
-                border:3px solid " . $info['color'] . ";
                 overflow:hidden;
                 display:block;
                 box-sizing:border-box;
-                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(" . $image . ");
+                background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(" . $image . ");
                 background-size:     cover;
                 background-repeat:   no-repeat;
                 background-position: center center;
             }
+            .shadow {
+               box-shadow:         inset 0 0 40px " . $info['rarityColor'] . ";
+            }
             .main {
-    height: 100%;
-    width: 100%;
-    display: table;
-}
-.wrapper {
-    display: table-cell;
-    height: 100%;
-    vertical-align: middle;
-}
+                height: 100%;
+                width: 100%;
+                display: table;
+            }
+            .wrapper {
+                display: table-cell;
+                height: 100%;
+                vertical-align: middle;
+            }
 
             .text {
               text-align:center;
@@ -146,7 +149,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
             </style>
             </head>
-            <body class='child'>
+            <body class='shadow'>
               <div class='main'>
                 <div class='wrapper'>
                   <div class='text'>#" . $rank . "</div>
@@ -208,13 +211,28 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
     if ($stmt->fetch()) {
 
-      $response['size'] = number_format($size);
-      $response['avgRank'] = $avgRank;
-      $response['curAdd'] = $c + 13;
+      $size = number_format($size);
+      $avg = $avgRank;
+
+      $response['cur'] = $c;
+
+      $nav['curAdd'] = $c + 9;
+      $nav['curMin'] = $c - 9;
+
+      $curPage = 1 + intval($c / 9);
+      $totalPages = 1 + intval($size / 9);
+
+      $nav['pageLeft'] = ($curPage != 1) ? "file://shared/page-left-active.png" : "file://shared/page-left-null.png";
+      $nav['pageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "file://shared/page-right-active.png" : "file://shared/page-right-null.png";
+
+      $nav['allowPageLeft'] = ($curPage != 1) ? "1" : "0";
+      $nav['allowPageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "1" : "0";
+
+      $nav['pageDisplay'] = $curPage . " / " . $totalPages;
 
       $bg = ($scheme == "light") ? "#ffffff" : "#111111";
-      
-      $response['stats'] = "<html><head><style>body { margin:0; }</style></head><body></body></html>";
+
+      $response['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#dedede;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $size . "</span> collected | avg rank <span style='font-weight:bold;'>" . $avg . "</span></body></html>";
 
     }
 
@@ -222,6 +240,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
   }
 
+  $response['nav'] = $nav;
   $response['components'] = $components;
 
 }

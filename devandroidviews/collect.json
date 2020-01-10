@@ -681,9 +681,6 @@
                     "width": "42%",
                     "left": "52%",
                     "height": "8%"
-                  },
-                  "action": {
-                    "trigger": "collect"
                   }
                 },
                 {
