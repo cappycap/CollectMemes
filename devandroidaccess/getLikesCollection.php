@@ -7,12 +7,18 @@ $response = array();
 $list = array();
 $components = array();
 
-if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir'])) {
+if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir']) and isset($_POST['scheme'])) {
 
   $u = $con->real_escape_string($_POST['userId']);
-  $c = (int)$con->real_escape_string($_POST['cur']) - 1;
+  $c = (int)$con->real_escape_string($_POST['cur']);
   $s = $con->real_escape_string($_POST['sort']);
   $d = (int)$con->real_escape_string($_POST['sortDir']);
+
+  $scheme = $_POST['scheme'];
+
+  $nav = array();
+
+  $nav['vaultLeft'] = ($scheme == "light") ? "file://nav/collection-left-light.png" : "file://nav/collection-left-dark.png";
 
   $dir = "";
 
@@ -21,10 +27,12 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
     if ($d == 1) {
 
       $dir = "ASC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
 
     } else {
 
       $dir = "DESC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
 
     }
 
@@ -33,17 +41,18 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
     if ($d == 1) {
 
       $dir = "DESC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
 
     } else {
 
       $dir = "ASC";
+      $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
 
     }
 
   }
 
-
-  $q = "SELECT memeId FROM likes WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 12" . " OFFSET " . $c;
+  $q = "SELECT memeId FROM likes WHERE userId=? ORDER BY " . $s . " " . $dir . " LIMIT 9" . " OFFSET " . $c;
 
   if ($stmt = $con->prepare($q)) {
 
@@ -76,7 +85,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
       foreach($results as $data) {
 
-        $iQ = "SELECT image FROM memes WHERE id=?";
+        $iQ = "SELECT image,rank FROM memes WHERE id=?";
 
         if ($iQS = $con->prepare($iQ)) {
 
@@ -84,37 +93,48 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
           $iQS->execute();
 
-          $iQS->bind_result($image);
+          $iQS->bind_result($image,$rank);
 
           if ($iQS->fetch()) {
 
             $iQS->close();
 
+            $info = getRankInfo($rank, $con);
+
             $list[$counter2] = array("text"=>"<html>
             <head>
             <style>
+            html {
+              margin:0;
+              padding:0;
+              width:100%;
+              overflow:hidden;
+              display:block;
+              box-sizing: border-box;
+            }
             body {
-                background-color: #111111;
+                background-color: #ffffff;
                 margin:0;
+                padding:0;
                 width:100%;
-                height:100%;
+                text-align:center;
+                overflow:hidden;
+                display:block;
+                box-sizing:border-box;
+                background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(" . $image . ");
+                background-size:     cover;
+                background-repeat:   no-repeat;
+                background-position: center center;
+            }
+            .shadow {
+               box-shadow:         inset 0 0 40px " . $info['rarityColor'] . ";
             }
 
-            .image {
-              background-image:    url('" . $image . "');
-              background-size:     cover;
-              background-repeat:   no-repeat;
-              background-position: center center;
-              width:100%;
-              height:100%;
-              margin:0;
-            }
 
             </style>
             </head>
-            <body>
-            <div class='image'></div>
-            </div>
+            <body class='shadow'>
+
             </body>
             </html>",
             "memeId"=>$data['memeId']);
@@ -127,7 +147,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
       }
 
-      while ($counter2 < 12) {
+      while ($counter2 < 9) {
 
         $list[$counter2] = array("text"=>"<html>
         <head>
@@ -152,7 +172,6 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $components[0] = array("components"=>array($list[0],$list[1],$list[2]));
       $components[1] = array("components"=>array($list[3],$list[4],$list[5]));
       $components[2] = array("components"=>array($list[6],$list[7],$list[8]));
-      $components[3] = array("components"=>array($list[9],$list[10],$list[11]));
 
     } else {
 
@@ -172,8 +191,29 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
     if ($stmt->fetch()) {
 
-      $response['size'] = number_format($size);
-      $response['curAdd'] = $c + 13;
+      $size = number_format($size);
+
+      $response['cur'] = $c;
+
+      $nav['curAdd'] = $c + 9;
+      $nav['curMin'] = $c - 9;
+
+      $curPage = 1 + intval($c / 9);
+      $totalPages = 1 + intval($size / 9);
+
+      $nav['pageLeft'] = ($curPage != 1) ? "file://likes/page-left-active.png" : "file://shared/page-left-null.png";
+      $nav['pageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "file://likes/page-right-active.png" : "file://shared/page-right-null.png";
+
+      $nav['allowPageLeft'] = ($curPage != 1) ? "1" : "0";
+      $nav['allowPageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "1" : "0";
+
+      $nav['pageDisplay'] = $curPage . " / " . $totalPages;
+
+      $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+
+      $memeText = ($size == 1) ? "meme" : "memes";
+      
+      $response['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#dedede;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $size . "</span> " . $memeText . " liked!</body></html>";
 
     }
 
@@ -181,6 +221,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
   }
 
+  $response['nav'] = $nav;
   $response['components'] = $components;
 
 }

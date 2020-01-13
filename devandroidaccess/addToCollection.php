@@ -506,21 +506,21 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	      if (!$isPro) {
 
-	        $time2 = time() + 3600;
+	        $time2 = $time + 3600;
 
 	      } else {
 
-	        $time2 = time() + 1800;
+	        $time2 = $time + 1800;
 
 	      }
 
-	      $queryUpdateUser = "UPDATE users SET " . $rarity . "Count=" . $rarity . "Count+1, avgRank=?, collectionSize=?, collectionSum=?, nextSpin=?, spinsLeft=0 WHERE id=?";
+	      $queryUpdateUser = "UPDATE users SET " . $rarity . "Count=" . $rarity . "Count+1, avgRank=?, collectionSize=?, collectionSum=?, nextSpin=?, lastCollect=? spinsLeft=0 WHERE id=?";
 
 	      $response['collectionSize'] = $newCollectionSize;
 
 	      if ($stmtUpdateUser = $con->prepare($queryUpdateUser)) {
 
-	        $stmtUpdateUser->bind_param("iiiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$time2,$userId);
+	        $stmtUpdateUser->bind_param("iiiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$time2,$time,$userId);
 
 	        $stmtUpdateUser->execute();
 

@@ -463,7 +463,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
         }
 
       }
-      
+
       $cur['challengesLeft'] = ($scheme == 'light') ? "file://nav/challenges-left-light.png" : "file://nav/challenges-left-dark.png";
       $cur['profileRight'] = ($scheme == 'light') ? "file://nav/profile-right-light.png" : "file://nav/profile-right-dark.png";
 

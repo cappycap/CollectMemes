@@ -11,7 +11,7 @@
         "updateProfileInfo": {
           "type": "$network.request",
           "options": {
-            "url": "https://collectmemes.com/devandroidaccess/getUserProfileInfo.php",
+            "url": "https://collectmemes.com/devandroidaccess/getUserSettingsInfo.php",
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}"
@@ -67,7 +67,7 @@
                 "success": {
                   "type": "$href",
                   "options": {
-                    "url": "https://collectmemes.com/devandroidviews/profile.json"
+                    "url": "https://collectmemes.com/devandroidviews/settings.json"
                   }
                 }
               }
@@ -89,36 +89,10 @@
       },
       "templates": {
         "body": {
-          "background": "#111111",
+          "background": "#ffffff",
           "style": {
             "border": "none"
           },
-          "sections": [
-            {
-              "items": [
-                {
-                  "type": "html",
-                  "text": "<html>
-                  <head>
-                    <style>
-                      body {
-                        background:#111111;
-                        margin:0;
-                      }
-                    </style>
-                  </head>
-                  <body>
-                    <img style='width:100%;position:relative;top:-20px;' src='file://profiletop.png'>
-                  </body>
-                  </html>",
-                  "style": {
-                    "width": "100%",
-                    "height": "50%"
-                  }
-                }
-              ]
-            }
-          ],
           "layers": [
             {
               "type": "label",
@@ -131,21 +105,7 @@
                 "align": "center",
                 "font": "HelveticaNeue-Bold",
                 "size": "30",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Registered {{$cache.date}}",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "7%+36",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "15",
-                "color": "#ffffff"
+                "color": "#111111"
               }
             },
             {
@@ -159,7 +119,7 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
                 "size": "25",
-                "color": "#ffffff"
+                "color": "#111111"
               }
             },
             {
@@ -215,17 +175,6 @@
             },
             {
               "type": "image",
-              "url": "{{$cache.avatar}}",
-              "style": {
-                "width": "120",
-                "height": "120",
-                "top": "17%",
-                "corner_radius": "70",
-                "left": "50%-60"
-              }
-            },
-            {
-              "type": "image",
               "url": "https://collectmemes.com/img/back.png",
               "style": {
                 "align": "left",
@@ -236,8 +185,8 @@
               "action": {
                 "type": "$href",
                 "options": {
-                  "url": "https://collectmemes.com/devandroidviews/profile.json",
-                  "transition": "push"
+                  "url": "https://collectmemes.com/devandroidviews/settings.json",
+                  "transition": "fullscreen"
                 }
               }
             }

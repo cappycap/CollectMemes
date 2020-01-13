@@ -369,7 +369,7 @@
                   "action": {
                     "type": "$href",
                     "options": {
-                      "url": "https://collectmemes.com/devandroidaccess/profile.json",
+                      "url": "https://collectmemes.com/devandroidviews/profile.json",
                       "transition": "fullscreen"
                     }
                   }

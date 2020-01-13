@@ -2,9 +2,9 @@
 
 require 'db.php';
 
-function ago($nextSpin) {
+function ago($lastCollect) {
 
-  $t = time() - ($nextSpin - 1800);
+  $t = time() - $lastCollect;
 
   $m = "";
 
@@ -14,23 +14,23 @@ function ago($nextSpin) {
 
   } else if ($t < 60) {
 
-    $m = "collected " . $t . "s ago";
+    $m = "collected " . intval($t) . "s ago";
 
   } else if ($t < 3600) {
 
-    $mins = intval($t / 60);
+    $mins = number_format(intval($t / 60));
 
     $m = "collected " . $mins . "mins ago";
 
   } else if ($t < 86400) {
 
-    $hours = $t / 3600;
+    $hours = number_format(intval($t / 3600));
 
     $m = "collected " . $hours . " hours ago";
 
   } else {
 
-    $days = $t / 86400;
+    $days = number_format(intval($t / 86400));
 
     $m = "collected " . $days . " days ago";
 
@@ -45,12 +45,17 @@ function ago($nextSpin) {
 // profileTopHTML, addFriendImage, friends (array: id, avatarHTML, username, lastCollectText)
 
 $response = array();
-if (isset($_POST['userId']) and isset($_POST['scheme'])) {
+
+if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['cur']) and isset($_POST['sort']) and isset($_POST['sortDir'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $scheme = $con->real_escape_string($_POST['scheme']);
+  $c = (int)$con->real_escape_string($_POST['cur']);
+  $s = $con->real_escape_string($_POST['sort']);
+  $d = (int)$con->real_escape_string($_POST['sortDir']);
 
   $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+
   $textColor = ($scheme == "light") ? "#111111" : "#ffffff";
 
   $uQ = "SELECT username,avatar,xp,totalSpins,friends FROM users WHERE id=?";
@@ -71,6 +76,10 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
       $level = xpToLevel($xp);
 
+      $nextXp = nextLevelXpNeeded($level);
+
+      $percent = intval(100 * ($xp / $nextXp));
+
       $response['profileTopHTML'] = "<html>
       <head>
       <style>
@@ -78,6 +87,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
       	margin:0;
       	background:" . $bg . ";
       	font-family:Arial;
+        width: 100%;
       }
       .container {
          background: linear-gradient(
@@ -136,11 +146,11 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
       	 <div class='level'><img src='https://collectmemes.com/img/levels/" . $level . ".png'></div>
       	</div>
       	<div class='progBar'>
-      		<div class='prog' style='width:70%'></div>
+      		<div class='prog' style='width:" . $percent . "%'></div>
       	</div>
       	<div class='info'>
       		<div class='totalSpins'>" . $totalSpins . " spins</div>
-      		<div class='xp'>" . number_format($xp) . " / " . number_format(nextLevelXpNeeded($level)) . " XP</div>
+      		<div class='xp'>" . number_format($xp) . " / " . number_format($nextXp) . " XP</div>
       	</div>
       </body>
       </html>";
@@ -153,18 +163,25 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
   $frCount = "";
 
-  $frQ = "SELECT COUNT(*) FROM friendRequests WHERE userId=?";
+  $frQ = "SELECT id FROM friendRequests WHERE userId=" . $userId;
 
-  $frGrab = $con->query($frQ);
-  $frRow = $frGrab->fetch_row():
+  if ($frGrab = $con->query($frQ)) {
 
-  if (intval($frRow[0]) > 5) {
+    $frRow = $frGrab->num_rows;
 
-    $frCount = "file://add-friend/5.png";
+    if (intval($frRow) > 5) {
 
-  } else {
+      $frCount = "file://add-friend/5.png";
 
-    $frCount = "file://add-friend/" . (str)$frRow[0] . ".png";
+    } else {
+
+      $str = (string)$frRow;
+
+      $frCount = "file://add-friend/" . $str . ".png";
+
+    }
+
+    $frGrab->close();
 
   }
 
@@ -178,7 +195,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
     $friend['id'] = $id;
 
-    $fQ = "SELECT username, avatar, xp, collectionSize, nextSpin FROM users WHERE id=?";
+    $fQ = "SELECT username, avatar, xp, collectionSize, nextSpin, lastCollect, isPro FROM users WHERE id=?";
 
     if ($fS = $con->prepare($fQ)) {
 
@@ -186,13 +203,15 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
       $fS->execute();
 
-      $fS->bind_result($username, $avatar, $xp, $collectionSize, $nextSpin);
+      $fS->bind_result($username, $avatar, $xp, $collectionSize, $nextSpin, $lastCollect, $isPro);
 
       if ($fS->fetch()) {
 
+        $fS->close();
+
         $friend['username'] = $username;
 
-        $ago = ago($nextSpin);
+        $ago = ago($lastCollect);
 
         $friend['lastCollectText'] = $ago;
 
@@ -200,7 +219,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
         <head>
         <style>
         body {
-        	width:100px;
+        	width:100%;
         	margin:auto;
         	background:" . $bg . ";
         	font-family:Arial;
@@ -209,9 +228,9 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
            background: url('" . $avatar . "');
         	 background-size:cover;
            position: relative;
-           width: 100%;
-           padding-top: 100%;
-        	 border-radius:100%;
+           width: 90%;
+           padding-top: 90%;
+        	 border-radius:90%;
         	 border:3px solid #dedede;
         }
         .level {
@@ -229,17 +248,91 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
         </body>
         </html>";
 
-      }
+        $friend['xp'] = intval($xp);
+        $friend['lastCollect'] = intval($lastCollect);
 
-      $fS->close();
+        $friends[] = $friend;
+
+      }
 
     }
 
   }
 
+  function sortByXP($a, $b) {
+    return $a['xp'] <=> $b['xp'];
+  }
+
+  function sortByLastCollect($a, $b) {
+    return $a['lastCollect'] <=> $b['lastCollect'];
+  }
+
+  $choice = ($s == 'sortByXP') ? 'sortByXP' : 'sortByLastCollect';
+
+  usort($friends, $choice);
+
+  $retFriends = array();
+
+  $size = count($friends);
+
+  $nav = array();
+
+  $curPage = 1 + intval($c / 10);
+  $totalPages = 1 + intval($size / 10);
+
+  $nav['pageLeft'] = ($curPage != 1) ? "file://shared/page-left-active.png" : "file://shared/page-left-null.png";
+  $nav['pageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "file://shared/page-right-active.png" : "file://shared/page-right-null.png";
+
+  $nav['allowPageLeft'] = ($curPage != 1) ? 1 : 0;
+  $nav['allowPageRight'] = ($curPage != $totalPages and $totalPages != 1) ? 1 : 0;
+
+  $nav['displayPager'] = ($curPage == 1 and $totalPages == 1) ? 0 : 1;
+  $nav['pageDisplay'] = $curPage . " / " . $totalPages;
+
+  $top = 0;
+
+  if ($d == 1) {
+
+    $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
+
+    $cur = $c;
+    $top = $c + 10;
+
+    while ($cur < $top and $cur < $size) {
+
+      $retFriends[] = $friends[$cur];
+
+      $cur++;
+
+    }
+
+  } else {
+
+    $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
+
+    $cur = ($size - 1) - $c;
+    $top = $cur - 10;
+
+    while ($cur > $top and $cur >= 0) {
+
+      $retFriends[] = $friends[$cur];
+
+      $cur--;
+
+    }
+
+  }
+
+  $nav['curAdd'] = $top;
+
+  $response['nav'] = $nav;
+  $response['friends'] = $retFriends;
+  $response['hasFriends'] = (empty($retFriends)) ? 0 : 1;
+  $response['cur'] = $c;
+
 }
 
-echo json_encode($response);
+echo json_encode($response, JSON_UNESCAPED_SLASHES);
 
 $con->close();
 ?>
