@@ -5,13 +5,19 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['scheme'])) {
+if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['scheme']) and isset($_POST['deviceHeight'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $collectionId = $con->real_escape_string($_POST['collectionId']);
   $scheme = $con->real_escape_string($_POST['scheme']);
 
+  $titlePer = intval(0.17 * intval($_POST['deviceHeight']));
+
   $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+
+  $nav = array();
+
+  $nav['back'] = ($scheme == "light") ? "file://nav/tap-left-light.png" : "file://nav/tap-left-dark.png";
 
   $progress = array();
 
@@ -37,7 +43,11 @@ if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['
 
   }
 
+  // for carrying memes
   $challenge = array();
+
+  // for returning
+  $chal = array();
 
   $q2 = "SELECT title,memes,totalMemes,xpReward FROM collections WHERE id=?";
 
@@ -62,24 +72,21 @@ if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['
 
       } else {
 
-        $h3Color = ($scheme == "light") ? "#111111" : "#ffffff";
+        $h3Color = "#3498db";
         $h3Text = number_format($xpReward) . " XP reward";
 
       }
 
-      $response['titleHTML'] = "<html>
-      <head>
-        <style>
-          body { background:" . $bg . "; }
-          h3 { color:" . $h3Color . "; }
-        </style>
-      </head>
-      <body>
-        <h1>" . $title . "</h1>
-        <h2>" . $progress['totalOwned'] . " / " . $totalMemes . " collected</h2>
-        <h3>" . $h3Text . "</h3>
-      </body>
-      </html>";
+      $textColor = ($scheme == "light") ? "#111111" : "#ffffff";
+
+      $chal['title'] = $title;
+
+      $chal['progress'] = $progress['totalOwned'] . " / " . $totalMemes;
+      
+      $chal['rewardText'] = $h3Text;
+      $chal['rewardColor'] = $h3Color;
+
+      $response['challenge'] = $chal;
 
     }
 
@@ -92,22 +99,20 @@ if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['
 
   $count = 0; $len = count($status);
 
-  $htmlMemes = array();
+  $memes = array();
 
   while ($count < $len) {
 
+    $meme = array();
+
     $mcurrent = $memeId[$count];
     $cstatus = intval($status[$count]);
-
-    $memeTitle = "";
-    $memeImage = "";
-    $memeSubtext = "";
 
     $memeQ = "SELECT title,image FROM memes WHERE id=?";
 
     if ($mS = $con->prepare($memeQ)) {
 
-      $ms->bind_param("i",$mcurrent);
+      $mS->bind_param("i",$mcurrent);
 
       $mS->execute();
 
@@ -115,17 +120,19 @@ if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['
 
       if ($mS->fetch()) {
 
-        $memeTitle = $title;
+        $meme['title'] = $title;
 
         if ($cstatus == 1) {
 
-          $memeImage = $image;
-          $memeSubtext = "<span style='color:#22a258;'>Owned!</span>";
+          $meme['image'] = $image;
+          $meme['text'] = "Owned!";
+          $meme['textColor'] = "#22a258";
 
         } else {
 
-          $memeImage = ($scheme == "light") ? "https://collectmemes.com/img/unowned-light.png" : "https://collectmemes.com/img/unowned-dark.png";
-          $memeSubtext = "<span style='color:#dedede;'>Unowned!</span>";
+          $meme['image'] = ($scheme == "light") ? "file://shared/unowned-light.png" : "file://shared/unowned-dark.png";
+          $meme['text'] = "Unowned!";
+          $meme['textColor'] = "#c3c3c3";
 
         }
 
@@ -135,51 +142,20 @@ if (isset($_POST['userId']) and isset($_POST['collectionId']) and isset($_POST['
 
     }
 
-    $html = "<div class='meme'>
-      <h2>" . $memeTitle . "</h2>
-      <img src='" . $memeImage . "'>
-      <h3>" . $memeSubtext . "</h3>
-    </div>";
-
-    $htmlMemes[] = $html;
+    $memes[] = $meme;
 
     $count++;
 
   }
 
-  $progressHTML = "<html>
-  	<head>
-  		<style>
-  		body {
-  			text-align:center;
-        background:" . $bg . ";
-  		}
-  		img {
-  			width:200px;
-  			height:200px;
-  			margin:20px auto;
-  			border-radius:200px;
-  		}
-  		.meme {
-  			width:33%;
-  			margin:auto;
-  			display:inline-block;
-  			text-align:center;
-  			color:#111111;
-  		}
-  		</style>
-  	</head>
-  	<body>";
-
-  foreach ($htmlMemes as $html) {
-
-    $progressHTML .= $html;
-
+  function sortByOwned($a, $b) {
+    return $a['text'] <=> $b['text'];
   }
 
-  $progressHTML .= "</body></html>";
+  usort($memes, 'sortByOwned');
 
-  $response['progressHTML'] = $progressHTML;
+  $response['memes'] = $memes;
+  $response['nav'] = $nav;
 
 }
 

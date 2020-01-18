@@ -1,7 +1,7 @@
 {
   "$jason": {
     "head": {
-      "title": "Welcome",
+      "title": "Challenges",
       "actions": {
         "mainLoad": {
           "type": "$network.request",
@@ -9,20 +9,47 @@
             "url": "https://collectmemes.com/devandroidaccess/getChallenges.php",
             "method": "post",
             "data": {
-              "userId": "{{$global.userKey}}"
+              "userId": "{{$global.userKey}}",
+              "scheme": "light",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}"
             }
           },
           "success": {
             "type": "$cache.set",
             "options": {
-              "challenges": "{{$jason}}"
+              "challenges": "{{$jason.challenges}}",
+              "nav": "{{$jason.nav}}",
+              "stats": "{{$jason.stats}}"
+            },
+            "success": {
+              "type": "$render"
             }
           }
         },
+        "vibeCheck": [
+          {
+            "{{#if 'sort' in $cache}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "sort": "totalOwned",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "mainLoad"
+              }
+            }
+          }
+        ],
         "$load": [
           {
             "{{#if $global.userKey != '0'}}": {
-              "type": "mainLoad"
+              "trigger": "vibeCheck"
             }
           },
           {
@@ -42,140 +69,267 @@
             {
               "items": [
                 {
-                  "type": "horizontal",
+                  "type": "vertical",
                   "style": {
-                    "spacing": "10"
-                  }
-                  "items": [
+                    "align": "center",
+                    "padding": "0",
+                    "spacing": "0"
+                  },
+                  "components": [
                     {
                       "type": "image",
-                      "url": "file://leaderboard.png",
+                      "url": "file://shared/lining.png",
                       "style": {
-                        "width": "40",
-                        "height": "40",
-                        "spacing": "5"
-                      }
-                      "action": {
-                        "type": "$href",
-                        "options": {
-                          "url": "https://collectmemes.com/devandroidviews/leaderboard.json"
-                        }
+                        "width": "100%"
                       }
                     },
                     {
-                      "type": "image",
-                      "url": "file://achievements.png",
+                      "type": "space",
                       "style": {
-                        "width": "40",
-                        "height": "40"
-                      }
-                      "action": {
-                        "type": "$href",
-                        "options": {
-                          "url": "https://collectmemes.com/devandroidviews/achievements.json"
-                        }
+                        "height": "1%"
                       }
                     },
                     {
                       "type": "horizontal",
-                      "items": [
+                      "style": {
+                        "align": "center",
+                        "width": "98%",
+                        "padding": "10",
+                        "spacing": "10"
+                      },
+                      "components": [
                         {
-                          "type": "label",
-                          "text": ".",
+                          "type": "image",
+                          "url": "{{$cache.nav.achievementsLeft}}",
                           "style": {
-                            "color": "#ffffff",
-                            "width": "100%-140"
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/achievements.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://tops/challenges.png",
+                          "style": {
+                            "width": "20%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.collectRight}}",
+                          "style": {
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/collect.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "Challenges",
+                      "style": {
+                        "padding": "0",
+                        "size": "40",
+                        "color": "#111111",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0",
+                        "height": "6%"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "10%"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.stats}}",
+                          "style": {
+                            "padding": "0",
+                            "width": "80%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "86%"
                           }
                         },
                         {
                           "type": "image",
-                          "url": "file://back-right.png",
+                          "url": "{{$cache.nav.sortButton}}",
                           "style": {
-                            "width": "40",
-                            "height": "40"
+                            "width": "7%"
                           },
                           "action": {
-                            "type": "$href",
+                            "type": "$util.picker",
                             "options": {
-                              "url": "https://collectmemes.com/devandroidviews/collect.json"
+                              "title": "Sort By:",
+                              "items": [
+                                {
+                                  "text": "Progress (ascending)",
+                                  "action": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "sortDir": "1",
+                                      "sort": "totalOwned"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                },
+                                {
+                                  "text": "Progress (descending)",
+                                  "action": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "sortDir": "0",
+                                      "sort": "totalOwned"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              ]
                             }
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "header": "Challenges",
-              "items": {
-                "{{#each $cache.challenges}}": {
-                  "type": "horizontal",
-                  "style": {
-                    "spacing": "10"
-                  },
-                  "components": [
-                    {
-                      "type": "label",
-                      "text": "{{$cache.challenges[$index].progress}}",
-                      "style": {
-                        "width": "25%",
-                        "align": "left",
-                        "color": "{{$cache.challenges[$index].progressColor}}"
-                      }
-                    },
-                    {
-                      "type": "label",
-                      "text": "{{$cache.challenges[$index].title}}",
-                      "style": {
-                        "width": "50%",
-                        "align": "left"
-                      }
-                    },
-                    {
-                      "type": "horizontal",
-                      "style": {
-                        "spacing": "5"
-                      },
-                      "components": [
-                        {
-                          "type": "label",
-                          "text": "{{$cache.challenges[$index].xp}}",
-                          "style": {
-                            "color": "{{$cache.challenges[$index].xpColor}}",
-                            "width": "15%"
                           }
                         },
                         {
-                          "type": "button",
-                          "text": "View",
-                          "style": {
-                            "padding": "3",
-                            "color": "#ffffff",
-                            "background": "#1a24fb",
-                            "width": "10%"
-                          },
-                          "action": {
-                            "type": "$href",
-                            "options": {
-                              "url": "https://collectmemes.com/devandroidviews/viewChallenge.json",
-                              "options": {
-                                "id": "{{$cache.challenges[$index].id}}"
-                              }
-                            }
-                          }
+                          "type": "space"
                         }
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "spacing": "0"
+                  },
+                  "components": {
+                    "{{#each $cache.challenges}}": {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "10",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "1%"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{circleHTML}}",
+                          "style": {
+                            "width": "32%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "spacing": "0",
+                            "width": "53%",
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "{{title}}",
+                              "style": {
+                                "color": "#111111",
+                                "size": "25"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{xpTop}}",
+                              "style": {
+                                "color": "{{xpColor}}",
+                                "size": "15"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{xp}}",
+                              "style": {
+                                "color": "{{xpColor}}",
+                                "size": "15"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://shared/view-button.png",
+                          "style": {
+                            "width": "8%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/view-challenge.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "id": "{{id}}"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "6%"
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
-              }
-            }
-          ],
-          "layers": [
-            {
-              "test": "test"
+              ]
             }
           ]
         }

@@ -219,29 +219,31 @@ function updateAchievementsProgress($userId, $achievementId, $stage, $con) {
 
     $s->bind_result($progress);
 
-    if ($s->fetch());
+    if ($s->fetch()) {
 
-    $s->close();
+      $p = explode(",",$progress);
 
-    $p = explode(",",$progress);
+      $p[$achievementId] = $stage;
 
-    $p[$achievementId] = $stage;
+      $new = implode(",",$p);
 
-    $new = implode(",",$p);
+      $uQ = "UPDATE achievementsProgress SET progress=? WHERE userId=?";
 
-    $uQ = "UPDATE achievementsProgress SET progress=?, completed=completed+1 WHERE userId=?";
+      $s->close();
 
-    if ($u = $con->prepare($uQ)) {
+      if ($u = $con->prepare($uQ)) {
 
-      $u->bind_param("si",$new,$userId);
+        $u->bind_param("si",$new,$userId);
 
-      if ($u->execute()) {
+        if ($u->execute()) {
 
-        $ret = true;
+          $ret = true;
+
+        }
+
+        $u->close();
 
       }
-
-      $u->close();
 
     }
 
@@ -296,14 +298,16 @@ function checkAchievements($userId, $totalSpins, $con) {
 
       if ($s->fetch()) {
 
+        $s->close();
+
         $achievement['image'] = $image;
         $achievement['title'] = $title;
         $achievement['reqs'] = $reqs;
         $achievement['xp'] = "+" . number_format($xp) . " XP";
 
-      }
+        $updateXP = giveXP($userId, intval($xp), $con);
 
-      $s->close();
+      }
 
     }
 
@@ -314,7 +318,7 @@ function checkAchievements($userId, $totalSpins, $con) {
 
     $achievement['exitTemplate'] = "body";
 
-    updateAchievementsProgress($userId, $achievementId, $stage, $con);
+    $achievement['update'] = updateAchievementsProgress($userId, $achievementId, $stage, $con);
 
   }
 
@@ -379,9 +383,11 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
               $achievement['status'] = 0;
 
-              $uQ = "UPDATE users SET spinsLeft=?,totalSpins=totalSpins+1 WHERE id=?";
+              $uQ = "UPDATE users SET spinsLeft=?,totalSpins=totalSpins WHERE id=?";
 
             } else if ($spinsLeft == 1) {
+
+              $updateXP = giveXP($userId, 20, $con);
 
               $newSpinsLeft = 0;
 
@@ -401,6 +407,8 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               $nU = 1;
 
             } else {
+
+              $updateXP = giveXP($userId, 20, $con);
 
               $newSpinsLeft = $spinsLeft - 1;
 

@@ -8,34 +8,93 @@
       },
       "title": "Empty",
       "actions": {
-        "updateProfileInfo": {
+        "getRequests": {
           "type": "$network.request",
           "options": {
-            "url": "https://collectmemes.com/devandroidaccess/getUserProfileInfo.php",
+            "url": "https://collectmemes.com/devandroidaccess/getFriendRequests.php",
             "method": "post",
             "data": {
-              "userId": "{{$global.userKey}}"
+              "userId": "{{$global.userKey}}",
+              "scheme": "light"
             }
           },
           "success": {
             "type": "$cache.set",
             "options": {
-              "username": "{{$jason.username}}",
-              "email": "{{$jason.email}}",
-              "avatar": "{{$jason.avatar}}",
-              "date": "{{$jason.date}}",
-              "totalSpins": "{{$jason.totalSpins}}",
-              "lastPassChange": "{{$jason.lastPassChange}}"
+              "nav": "{{$jason.nav}}",
+              "hasRequests": "{{$jason.hasRequests}}",
+              "requests": "{{$jason.requests}}"
             },
             "success": {
               "type": "$render"
             }
           }
         },
+        "handleDecision": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/handleFriend.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "senderId": "{{$params.senderId}}",
+              "decision": "{{$params.decision}}"
+            }
+          },
+          "success": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/devandroidviews/add-friend.json",
+              "transition": "fullscreen",
+              "options": {
+                "title": "{{$jason.title}}",
+                "description": "{{$jason.description}}"
+              }
+            }
+          }
+        },
+        "displayAlert": {
+          "type": "$util.alert",
+          "options": {
+            "title": "{{$params.title}}",
+            "description": "{{$params.description}}"
+          },
+          "success": {
+            "type": "$reload"
+          }
+        },
+        "onSubmit": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "targetUsername": "{{$get.username}}"
+            }
+          }
+        },
         "mainLoad": [
           {
+            "{{#if 'decision' in $params}}": {
+              "trigger": "handleDecision"
+            }
+          },
+          {
+            "{{#elseif 'title' in $params}}": {
+              "trigger": "displayAlert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "getRequests"
+            }
+          }
+        ],
+        "$load": [
+          {
             "{{#if $global.userKey != '0'}}": {
-              "trigger": "updateProfileInfo"
+              "trigger": "mainLoad"
             }
           },
           {
@@ -46,374 +105,491 @@
               }
             }
           }
-        ],
-        "$load": [
-          {
-            "{{#if 'profUpdated' in $global}}": [
-              {
-                "{{#if $global.profUpdated == '1'}}": {
-                  "type": "$util.banner",
-                  "options": {
-                    "title": "Nice...",
-                    "description": "Email updated successfully!"
-                  },
-                  "success": {
-                    "type": "$global.set",
-                    "options": {
-                      "profUpdated": "0"
-                    },
-                    "success": {
-                      "trigger": "mainLoad"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#elseif $global.profUpdated == '2'}}": {
-                  "type": "$util.banner",
-                  "options": {
-                    "title": "Nice...",
-                    "description": "Email updated successfully!"
-                  },
-                  "success": {
-                    "type": "$global.set",
-                    "options": {
-                      "profUpdated": "0"
-                    },
-                    "success": {
-                      "trigger": "mainLoad"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#else}}": {
-                  "trigger": "mainLoad"
-                }
-              }
-            ]
-          },
-          {
-            "{{#else}}": {
-              "trigger": "mainLoad"
-            }
-          }
-        ],
-        "logout": {
-          "type": "$global.set",
-          "options": {
-            "userKey": "0"
-          },
-          "success": {
-            "type": "$href",
-            "options": {
-              "url": "https://collectmemes.com/devandroidviews/welcome.json",
-              "transition": "push"
-            }
-          }
-        },
-        "deleteAccount": {
-          "type": "$util.alert",
-          "options": {
-            "title": "Delete Account?",
-            "description": "Are you sure you want to delete your account? All collected memes and likes will be lost. Enter your password and press OK if you're chill with that.",
-            "form": [
-              {
-                "name": "pw",
-                "placeholder": "account password...",
-                "type": "secure",
-                "align": "center"
-              }
-            ]
-          },
-          "success": {
-            "type": "$network.request",
-            "options": {
-              "url": "https://collectmemes.com/devandroidaccess/deleteUser.php",
-              "method": "post",
-              "data": {
-                "userId": "{{$global.userKey}}",
-                "pw": "{{$jason.pw}}"
-              }
-            },
-            "success": [
-              {
-                "{{#if $jason.success == 1}}": {
-                  "type": "$global.set",
-                  "options": {
-                    "userKey": "0"
-                  },
-                  "success": {
-                    "type": "$href",
-                    "options": {
-                      "url": "https://collectmemes.com/devandroidviews/welcome.json",
-                      "transition": "push"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#else}}": {
-                  "type": "$util.alert",
-                  "options": {
-                    "title": "Password Incorrect",
-                    "description": "Sorry, that wasn't your password!"
-                  }
-                }
-              }
-            ]
-          }
-        }
+        ]
       },
       "templates": {
         "body": {
-          "background": "#111111",
+          "background": "#ffffff",
           "style": {
             "border": "none"
           },
-          "layers": [
+          "sections": [
             {
-              "type": "image",
-              "url": "file://profiletop.png",
-              "style": {
-                "width": "100%",
-                "top": "0"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.username}}",
-              "style": {
-                "width": "70%",
-                "height": "50",
-                "top": "7%",
-                "left": "15%",
-                "align": "center",
-                "font": "HelveticaNeue-Bold",
-                "size": "30",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.totalSpins}} total spins",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "17%+130",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Registered {{$cache.date}}",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "7%+36",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "15",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "image",
-              "url": "file://about.png",
-              "style": {
-                "width": "40",
-                "top": "1%+4",
-                "right": "3%"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/about.json"
+              "items": [
+                {
+                  "{{#if $cache.hasRequests == 1}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "file://shared/lining.png",
+                          "style": {
+                            "width": "100%"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "1%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "width": "100%",
+                            "padding": "10",
+                            "spacing": "10",
+                            "height": "10%"
+                          },
+                          "components": [
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.profileLeft}}",
+                              "style": {
+                                "width": "12%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/devandroidviews/profile.json",
+                                  "transition": "fullscreen"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://tops/add-friend.png",
+                              "style": {
+                                "width": "20%"
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "12%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "label",
+                          "text": "Add Friend",
+                          "style": {
+                            "padding": "0",
+                            "size": "40",
+                            "color": "#111111",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "Enter username to add:",
+                          "style": {
+                            "width": "100%",
+                            "color": "#c3c3c3",
+                            "size": "20",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "3%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "height": "200"
+                          },
+                          "components": [
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "padding": "0",
+                                "height": "90"
+                              }
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "10%"
+                                  }
+                                },
+                                {
+                                  "type": "textfield",
+                                  "name": "username",
+                                  "placeholder": "username...",
+                                  "style": {
+                                    "font": "Roboto",
+                                    "size": "20",
+                                    "color": "#111111",
+                                    "background": "#eff0f2",
+                                    "padding": "20",
+                                    "width": "80%",
+                                    "align": "center",
+                                    "corner_radius": "30",
+                                    "height": "60"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "spacing": "0"
+                              },
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "50%-100"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "Submit",
+                                  "style": {
+                                    "width": "200",
+                                    "height": "55",
+                                    "size": "17",
+                                    "background": "#2d91d1",
+                                    "color": "#ffffff",
+                                    "padding": "2",
+                                    "corner_radius": "50",
+                                    "align": "center"
+                                  },
+                                  "action": {
+                                    "trigger": "onSubmit"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "vertical",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Friend Requests",
+                              "style": {
+                                "size": "40",
+                                "color": "#111111",
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "padding": "10",
+                                "height": "400"
+                              }
+                              "components": {
+                                "{{#each $cache.requests}}": {
+                                  "type": "vertical",
+                                  "style": {
+                                    "width": "140",
+                                    "align": "center"
+                                  }
+                                  "components": [
+                                    {
+                                      "type": "image",
+                                      "url": "{{avatar}}",
+                                      "style": {
+                                        "width": "120",
+                                        "height": "120",
+                                        "corner_radius": "150"
+                                      }
+                                    },
+                                    {
+                                      "type": "label",
+                                      "text": "{{username}}",
+                                      "style": {
+                                        "align": "center",
+                                        "color": "#111111",
+                                        "size": "18",
+                                        "width": "100%",
+                                        "height": "30"
+                                      }
+                                    },
+                                    {
+                                      "type": "horizontal",
+                                      "style": {
+                                        "spacing": "0",
+                                        "height": "60"
+                                        "align": "center"
+                                      }
+                                      "components": [
+                                        {
+                                          "type": "image",
+                                          "url": "file://add-friend/accept.png",
+                                          "style": {
+                                            "width": "50",
+                                            "height": "50"
+                                          },
+                                          "action": {
+                                            "type": "$href",
+                                            "options": {
+                                              "url": "https://collectmemes.com/devandroidviews/add-friend.json",
+                                              "transition": "fullscreen",
+                                              "options": {
+                                                "decision": "1",
+                                                "senderId": "{{id}}"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "space",
+                                          "style": {
+                                            "width": "20"
+                                          }
+                                        },
+                                        {
+                                          "type": "image",
+                                          "url": "file://add-friend/deny.png",
+                                          "style": {
+                                            "width": "50",
+                                            "height": "50"
+                                          },
+                                          "action": {
+                                            "type": "$href",
+                                            "options": {
+                                              "url": "https://collectmemes.com/devandroidviews/add-friend",
+                                              "transition": "fullscreen",
+                                              "options": {
+                                                "decision": "0",
+                                                "senderId": "{{id}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "{{#else}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "file://shared/lining.png",
+                          "style": {
+                            "width": "100%"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "1%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "width": "98%",
+                            "padding": "10",
+                            "spacing": "10"
+                          },
+                          "components": [
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.profileLeft}}",
+                              "style": {
+                                "width": "12%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/devandroidviews/profile.json",
+                                  "transition": "fullscreen"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://tops/add-friend.png",
+                              "style": {
+                                "width": "20%"
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "12%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "label",
+                          "text": "Add Friend",
+                          "style": {
+                            "padding": "0",
+                            "size": "40",
+                            "color": "#111111",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "padding": "0",
+                            "spacing": "0",
+                            "height": "6%"
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "10%"
+                              }
+                            },
+                            {
+                              "type": "html",
+                              "text": "Enter username to add:",
+                              "style": {
+                                "padding": "0",
+                                "width": "80%"
+                              }
+                            },
+                            {
+                              "type": "space"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "1%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "components": [
+                            {
+                              "type": "horizontal",
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "10%"
+                                  }
+                                },
+                                {
+                                  "type": "textfield",
+                                  "name": "username",
+                                  "placeholder": "username...",
+                                  "style": {
+                                    "font": "Roboto",
+                                    "size": "20",
+                                    "color": "#111111",
+                                    "background": "#eff0f2",
+                                    "padding": "20",
+                                    "width": "80%",
+                                    "corner_radius": "30"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "horizontal",
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "50%-150"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "Submit",
+                                  "style": {
+                                    "width": "300",
+                                    "height": "55",
+                                    "size": "17",
+                                    "background": "#2d91d1",
+                                    "color": "#ffffff",
+                                    "padding": "2",
+                                    "corner_radius": "50",
+                                    "align": "center"
+                                  },
+                                  "action": {
+                                    "trigger": "onSubmit"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "vertical",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Friend Requests",
+                              "style": {
+                                "size": "25",
+                                "color": "#111111",
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "No incoming requests!",
+                              "style": {
+                                "size": "20",
+                                "color": "#c3c3c3",
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
-              }
-            },
-            {
-              "type": "button",
-              "text": "Log Out",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "17%+165",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "trigger": "logout"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Email",
-              "style": {
-                "width": "400",
-                "height": "25",
-                "align": "center",
-                "top": "47%",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.email}}",
-              "style": {
-                "width": "400",
-                "height": "25",
-                "align": "center",
-                "top": "47%+25",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "18",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "button",
-              "text": "Update Email",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "47%+57",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/update-email.json",
-                  "transition": "push"
-                }
-              }
-            },
-            {
-              "type": "label",
-              "text": "Password",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "54%+72",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Last set {{$cache.lastPassChange}}",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "54%+102",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "18",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "button",
-              "text": "Update Password",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "54%+134",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/update-password.json",
-                  "transition": "push"
-                }
-              }
-            },
-            {
-              "type": "button",
-              "text": "Delete Account",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "85%",
-                "left": "25%",
-                "background": "#e74c3c",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "trigger": "deleteAccount"
-              }
-            },
-            {
-              "type": "label",
-              "text": "(Cannot be undone!)",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "91%+1",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "15",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "image",
-              "url": "{{$cache.avatar}}",
-              "style": {
-                "width": "120",
-                "height": "120",
-                "top": "17%",
-                "corner_radius": "70",
-                "left": "50%-60"
-              }
-            },
-            {
-              "type": "image",
-              "url": "https://collectmemes.com/img/back.png",
-              "style": {
-                "align": "left",
-                "left": "2%",
-                "width": "7%",
-                "top": "2%"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/collect.json",
-                  "transition": "push"
-                }
-              }
+              ]
             }
           ]
         }

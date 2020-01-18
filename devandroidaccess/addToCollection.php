@@ -7,13 +7,13 @@ function isMemePartofChallenges($m, $con) {
 	$check = array();
 	$check['collectionId'] = -1;
 
-	$q = "SELECT id,memes,totalMemes FROM collections";
+	$q = "SELECT id,memes,totalMemes,xpReward FROM collections";
 
 	if ($s = $con->prepare($q)) {
 
 		$s->execute();
 
-		$s->bind_result($id,$memesStr,$total);
+		$s->bind_result($id,$memesStr,$total,$xp);
 
 		while ($s->fetch()) {
 
@@ -23,6 +23,7 @@ function isMemePartofChallenges($m, $con) {
 
 				$check['collectionId'] = $id;
 				$check['total'] = $total;
+				$check['xpReward'] = $xp;
 
 				$done = false;
 				$c = 0;
@@ -58,11 +59,11 @@ function isMemePartofChallenges($m, $con) {
 // returns 0, failed
 // 				 1, user progress updated
 // 				 2, user progress updated and challenge was completed
-function updateUserProgress($c, $index, $total, $m, $u, $con) {
+function updateUserProgress($c, $index, $total, $u, $con) {
 
 	$ret = 0;
 
-	$q = "SELECT id,memes,totalOwned FROM collectionsProgress WHERE collectionId=? AND userId=?";
+	$q = "SELECT memes,totalOwned FROM collectionsProgress WHERE collectionId=? AND userId=?";
 
 	if ($s = $con->prepare($q)) {
 
@@ -70,17 +71,17 @@ function updateUserProgress($c, $index, $total, $m, $u, $con) {
 
 		$s->execute();
 
-		$s->bind_param($id,$memesStr,$to);
+		$s->bind_result($memesStr,$to);
 
 		if ($s->fetch()) {
 
-			$s->close();
-
 			$memes = explode(",",$memesStr);
 
-			$memes[$index] = 1;
+			$i = intval($index);
 
-			$newMemes = implode(",",$memes);
+			$memes[$i] = 1;
+
+			$new = implode(",",$memes);
 
 			$newTO = $to + 1;
 
@@ -88,9 +89,11 @@ function updateUserProgress($c, $index, $total, $m, $u, $con) {
 
 			$updateQ = "UPDATE collectionsProgress SET memes=?,totalOwned=?,completed=? WHERE collectionId=? AND userId=?";
 
+			$s->close();
+
 			if ($uS = $con->prepare($updateQ)) {
 
-				$uS->bind_param("siiii",$newMemes,$newTO,$completed,$c,$u);
+				$uS->bind_param("siiii",$new,$newTO,$completed,$c,$u);
 
 				if ($uS->execute()) {
 
@@ -121,7 +124,13 @@ function updateChallenges($memeId, $userId, $con) {
 
 	if ($check['collectionId'] != -1) {
 
-		$ret = updateUserProgress($check['collectionId'], $check['index'], $check['total'], $memeId, $userId, $con);
+		$ret = updateUserProgress($check['collectionId'], $check['index'], $check['total'], $userId, $con);
+
+		if ($ret == 2) {
+
+			$updateXP = giveXP($userId, intval($check['xpReward']), $con);
+
+		}
 
 	}
 
@@ -163,31 +172,33 @@ function updateAchievementsProgress($userId, $achievementId, $stage, $con) {
 
     $s->bind_result($progress);
 
-    if ($s->fetch());
+    if ($s->fetch()) {
 
-    $s->close();
+			$s->close();
 
-    $p = explode(",",$progress);
+	    $p = explode(",",$progress);
 
-    $p[$achievementId] = $stage;
+	    $p[$achievementId] = $stage;
 
-    $new = implode(",",$p);
+	    $new = implode(",",$p);
 
-    $uQ = "UPDATE achievementsProgress SET progress=?, totalCompleted=totalCompleted+1 WHERE userId=?";
+	    $uQ = "UPDATE achievementsProgress SET progress=? WHERE userId=?";
 
-    if ($u = $con->prepare($uQ)) {
+	    if ($u = $con->prepare($uQ)) {
 
-      $u->bind_param("si",$new,$userId);
+	      $u->bind_param("si",$new,$userId);
 
-      if ($u->execute()) {
+	      if ($u->execute()) {
 
-        $ret = true;
+	        $ret = true;
 
-      }
+	      }
 
-      $u->close();
+	      $u->close();
 
-    }
+	    }
+
+		}
 
   }
 
@@ -348,9 +359,11 @@ function checkAchievements($userId, $memeId, $collectionSize, $rarity, $rarityCo
         $achievement['reqs'] = $reqs;
         $achievement['xp'] = "+" . number_format($xp) . " XP";
 
-      }
+				$s->close();
 
-      $s->close();
+				$updateXP = giveXP($userId, intval($xp), $con);
+
+      }
 
     }
 
@@ -514,13 +527,13 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	      }
 
-	      $queryUpdateUser = "UPDATE users SET " . $rarity . "Count=" . $rarity . "Count+1, avgRank=?, collectionSize=?, collectionSum=?, nextSpin=?, lastCollect=? spinsLeft=0 WHERE id=?";
+	      $queryUpdateUser = "UPDATE users SET " . $rarity . "Count=" . $rarity . "Count+1, avgRank=?, collectionSize=?, collectionSum=?, nextSpin=?, lastCollect=?, spinsLeft=0 WHERE id=?";
 
 	      $response['collectionSize'] = $newCollectionSize;
 
 	      if ($stmtUpdateUser = $con->prepare($queryUpdateUser)) {
 
-	        $stmtUpdateUser->bind_param("iiiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$time2,$time,$userId);
+	        $stmtUpdateUser->bind_param("iiiiii",$newUserAvgRank,$newCollectionSize,$newCollectionSum,$time2,$time,$userId);
 
 	        $stmtUpdateUser->execute();
 
@@ -530,7 +543,7 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	      } else {
 
-	        $response['successUser'] = "0-3";
+	        $response['successUser'] = $con->error;
 
 	      }
 
@@ -548,6 +561,8 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 		// See if user completed any challenges.
 	  $challengesUpdated = updateChallenges($memeId, $userId, $con);
+
+		$response['challengesUpdated'] = $challengesUpdated;
 
 	  // RUn achievement checks. If user achieved something, return that info to app.
 	  $achievement = checkAchievements($userId, $memeId, $response['collectionSize'], $rarity, $response['rarityCount'], $challengesUpdated, $con);

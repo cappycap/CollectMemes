@@ -10,8 +10,11 @@ $con = mysqli_connect(DB_SERVER,DB_USER,DB_PASSWORD,DB_DATABASE);
 
 // Check connection
 if($con->connect_errno) {
+
 	printf("Connect failed: %s\n", $con->connect_error);
-    exit();
+
+  exit();
+
 }
 
 // Function for searching for a target within a collection returned from DB storage format.
@@ -25,6 +28,29 @@ function inCollection($collection, $target) {
 
 }
 
+function giveXP($userId, $amount, $con) {
+
+	$ret = 0;
+
+	$q = "UPDATE users SET xp=xp+? WHERE id=?";
+
+	if ($s = $con->prepare($q)) {
+
+		$s->bind_param("ii",$amount,$userId);
+
+		if ($s->execute()) {
+
+			$ret = 1;
+
+		}
+
+		$s->close();
+
+	}
+
+	return $ret;
+
+}
 function getMemeCount($con) {
 
 	$rows = 0;

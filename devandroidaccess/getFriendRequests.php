@@ -5,15 +5,22 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST['userId'])) {
+if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
   // CLean vars.
   $userId = $con->real_escape_string($_POST['userId']);
+  $scheme = $_POST['scheme'];
 
   // Create array for storing active requests.
   $users = array();
 
-  $search = "SELECT senderId FROM friendrequests WHERE userId=?";
+  $nav = array();
+
+  $nav['profileLeft'] = ($scheme == 'light') ? "file://nav/profile-left-light.png" : "file://nav/profile-left-dark.png";
+
+  $response['nav'] = $nav;
+
+  $search = "SELECT senderId FROM friendRequests WHERE userId=?";
 
   if ($stmt = $con->prepare($search)) {
 
@@ -21,57 +28,74 @@ if (isset($_POST['userId'])) {
 
     $stmt->execute();
 
-    $result = $stmt->get_result();
+    $stmt->store_result();
 
-    $stmt->close();
+    $stmt->bind_result($senderId);
 
-    if ($result->num_rows > 0) {
+    if ($stmt->num_rows > 0) {
 
-      while ($data = $result->fetch_assoc()) {
+      while ($stmt->fetch()) {
 
         $user = array();
 
-        $user['id'] = $data['senderId'];
+        $user['id'] = $senderId;
 
         $users[] = $user;
 
       }
 
+      $stmt->close();
+
+      $requests = array();
+
       foreach ($users as $user) {
 
         // Grab other info to display to user.
-        $userSearch = "SELECT username,avatar FROM users WHERE id=?";
+        $userSearch = "SELECT id,username,avatar FROM users WHERE id=?";
 
-        if ($userSearchStmt = $con->prepare($userSearch)) {
+        if ($u = $con->prepare($userSearch)) {
 
-          $userSearchStmt->bind_param("i",$user['id']);
+          $u->bind_param("i",$user['id']);
 
-          $userSearchStmt->execute();
+          $u->execute();
 
-          $userSearchStmt->bind_result($username,$avatar);
+          $u->bind_result($id,$username,$avatar);
 
-          if ($userSearchStmt->fetch()) {
+          if ($u->fetch()) {
 
-            $user['username'] = $username;
+            $request = array();
 
-            $user['avatar'] = $avatar;
+            $request['id'] = $id;
+
+            $request['avatar'] = $avatar;
+
+            $request['username'] = $username;
+
+            $requests[] = $request;
 
           }
 
-          $userSearchStmt->close();
+          $u->close();
 
         }
 
       }
 
-      $response['success'] = 1;
-      $response['users'] = $users;
+      $response['hasRequests'] = 1;
+      $response['requests'] = $requests;
 
     } else {
 
-      $response['success'] = 0;
+      $stmt->close();
+
+      $response['hasRequests'] = 0;
+      $response['requests'] = array();
 
     }
+
+  } else {
+
+    $response['success'] = $con->error;
 
   }
 

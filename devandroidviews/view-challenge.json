@@ -6,24 +6,31 @@
         "mainLoad": {
           "type": "$network.request",
           "options": {
-            "url": "https://collectmemes.com/devandroidaccess/getViewChallenge.php",
+            "url": "https://collectmemes.com/devandroidaccess/getChallenge.php",
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}",
-              "id": "{{$params.id}}"
+              "collectionId": "{{$params.id}}",
+              "scheme": "light",
+              "deviceHeight": "{{$env.device.height}}"
             }
           },
           "success": {
             "type": "$cache.set",
             "options": {
-              "challenge": "{{$jason}}"
+              "challenge": "{{$jason.challenge}}",
+              "memes": "{{$jason.memes}}",
+              "nav": "{{$jason.nav}}"
+            },
+            "success": {
+              "type": "$render"
             }
           }
         },
         "$load": [
           {
-            "{{#if $global.userKey != '0'}}": {
-              "type": "mainLoad"
+            "{{#if 'id' in $params}}": {
+              "trigger": "mainLoad"
             }
           },
           {
@@ -43,99 +50,146 @@
             {
               "items": [
                 {
-                  "type": "horizontal",
+                  "type": "vertical",
                   "style": {
-                    "spacing": "10"
-                  }
-                  "items": [
-                    {
-                      "type": "image",
-                      "url": "file://back.png",
-                      "style": {
-                        "width": "40",
-                        "height": "40",
-                        "spacing": "5"
-                      }
-                      "action": {
-                        "type": "$href",
-                        "options": {
-                          "url": "https://collectmemes.com/devandroidviews/challenges.json"
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "header": "Challenges",
-              "items": {
-                "{{#each $cache.challenges}}": {
-                  "type": "horizontal",
-                  "style": {
-                    "spacing": "10"
+                    "spacing": "0",
+                    "padding": "0"
                   },
                   "components": [
                     {
-                      "type": "label",
-                      "text": "{{$cache.challenges[$index].progress}}",
+                      "type": "image",
+                      "url": "file://shared/lining.png",
                       "style": {
-                        "width": "25%",
-                        "align": "left",
-                        "color": "{{$cache.challenges[$index].progressColor}}"
-                      }
-                    },
-                    {
-                      "type": "label",
-                      "text": "{{$cache.challenges[$index].title}}",
-                      "style": {
-                        "width": "50%",
-                        "align": "left"
+                        "width": "100%"
                       }
                     },
                     {
                       "type": "horizontal",
                       "style": {
-                        "spacing": "5"
+                        "spacing": "0",
+                        "align": "center"
                       },
                       "components": [
                         {
-                          "type": "label",
-                          "text": "{{$cache.challenges[$index].xp}}",
+                          "type": "space",
                           "style": {
-                            "color": "{{$cache.challenges[$index].xpColor}}",
-                            "width": "15%"
+                            "width": "2%"
                           }
                         },
                         {
-                          "type": "button",
-                          "text": "View",
+                          "type": "image",
+                          "url": "{{$cache.nav.back}}",
                           "style": {
-                            "padding": "3",
-                            "color": "#ffffff",
-                            "background": "#1a24fb",
-                            "width": "10%"
+                            "width": "80",
+                            "height": "80"
                           },
                           "action": {
                             "type": "$href",
                             "options": {
-                              "url": "https://collectmemes.com/devandroidviews/viewChallenge.json",
-                              "options": {
-                                "id": "{{$cache.challenges[$index].id}}"
-                              }
+                              "url": "https://collectmemes.com/devandroidviews/challenges.json"
                             }
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "18%-80"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenge.title}}",
+                          "style": {
+                            "size": "30",
+                            "color": "#111111",
+                            "width": "60%",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "20%"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenge.progress}}",
+                      "style": {
+                        "width": "100%",
+                        "color": "#111111",
+                        "size": "25",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenge.rewardText}}",
+                      "style": {
+                        "width": "100%",
+                        "color": "{{$cache.challenge.rewardColor}}",
+                        "size": "25",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "3%"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "width": "100%",
+                    "padding": "5"
+                  },
+                  "components": {
+                    "{{#each $cache.memes}}": {
+                      "type": "vertical",
+                      "style": {
+                        "spacing": "5",
+                        "padding": "0",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "{{image}}",
+                          "style": {
+                            "width": "60%"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{title}}",
+                          "style": {
+                            "width": "100%",
+                            "align": "center",
+                            "color": "#111111",
+                            "size": "20"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{text}}",
+                          "style": {
+                            "width": "100%",
+                            "align": "center",
+                            "color": "{{textColor}}",
+                            "size": "16",
+                            "height": "40"
                           }
                         }
                       ]
                     }
-                  ]
+                  }
                 }
-              }
-            }
-          ],
-          "layers": [
-            {
-              "test": "test"
+              ]
             }
           ]
         }

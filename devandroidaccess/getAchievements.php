@@ -32,13 +32,19 @@ function userSearch($userId, $column, $con) {
 
 function collectionsSearch($userId, $con) {
 
-  $q = "SELECT COUNT(*) FROM collectionsProgress WHERE userId=" . $userId . " AND completed=1";
+  $q = "SELECT id FROM collectionsProgress WHERE userId=" . $userId . " AND completed=1";
 
-  $result = $con->query($q);
+  $row = 0;
 
-  $row = $result->fetch_row();
+  if ($result = $con->query($q)) {
 
-  return $row[0];
+    $row = $result->num_rows;
+
+    $result->close();
+
+  }
+
+  return $row;
 
 }
 
@@ -138,10 +144,7 @@ function getProgress($achievementId, $stage, $userId, $con) {
 
   $p = ($max != 0) ? intval(($min / $max) * 100) : 100;
 
-  $s = "<html><head><style>body {margin:0; height:24px; background:#dedede;}
-  .bar { width:" . $p . "%; height:24px; } </style></head><body>
-  <div class='bar'></div>
-  </body></html>";
+  $s = "<html><head><style>body { margin:0; height:24px; background:#dedede; } .bar { width:" . $p . "%; height:24px;background:#3498db; } </style></head><body><div class='bar'></div></body></html>";
 
   $progress['bar'] = $s;
   $progress['min'] = $min;
@@ -152,14 +155,19 @@ function getProgress($achievementId, $stage, $userId, $con) {
 }
 
 // Define response array for delivering status.
-// Each lime should have
 $achievements = array();
+$jason = array();
 
-if (isset($POST['userId']) {
+if (isset($_POST['userId']) and isset($_POST['scheme'])) {
+
+  $scheme = $_POST['scheme'];
+  $u = $con->real_escape_string($_POST['userId']);
+
+  $nav = array();
+
+  $nav['challengesRight'] = ($scheme == "light") ? "file://nav/challenges-right-light.png" : "file://nav/challenges-right-dark.png";
 
   $prog = array();
-
-  $u = $con->real_escape_string($_POST['userId']);
 
   $pQ = "SELECT progress FROM achievementsProgress WHERE userId=?";
 
@@ -183,11 +191,13 @@ if (isset($POST['userId']) {
 
   $c = 0;
 
+  $totalCompleted = 0;
+
   foreach ($prog as $stage) {
 
     $id = $c;
 
-    $q = "SELECT isFinal,isStaged,stageMsg,title,reqs,image,xpNext WHERE achievementId=? AND stage=?";
+    $q = "SELECT isFinal,isStaged,stageMsg,title,reqs,image,xpNext FROM achievements WHERE achievementId=? AND stage=?";
 
     if ($s = $con->prepare($q)) {
 
@@ -203,11 +213,15 @@ if (isset($POST['userId']) {
 
         $ach = array();
 
+        $totalCompleted += $stage;
+
+        $ach['stage'] = ($isFinal) ? 100 : $stage;
+
         $ach['image'] = $image;
         $ach['title'] = $title;
         $ach['reqs'] = $reqs;
 
-        $progInfo = getProgress($achievementId, $stage, $userId, $con);
+        $progInfo = getProgress($id, $stage, $u, $con);
 
         $ach['bar'] = $progInfo['bar'];
 
@@ -217,10 +231,9 @@ if (isset($POST['userId']) {
           $ach['xpColor'] = "#2ecc71";
           $ach['progress'] = "";
 
-
         } else {
 
-          $ach['xp'] = $stageMsg . " (+" . number_format($xp) . " XP)";
+          $ach['xp'] = "(+" . number_format($xp) . " XP)";
           $ach['xpColor'] = "#3498db";
           $ach['progress'] = $progInfo['min'] . " / " . $progInfo['max'];
 
@@ -236,9 +249,26 @@ if (isset($POST['userId']) {
 
   }
 
+  $totalAchievements = 45;
+
+  function sortByStage($a, $b) {
+    return $a['stage'] <=> $b['stage'];
+  }
+
+  usort($achievements, 'sortByStage');
+
+  $achievementsFin = array_reverse($achievements);
+
+  $jason['achievements'] = $achievementsFin;
+  $jason['nav'] = $nav;
+
+  $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+
+  $jason['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#c3c3c3;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $totalCompleted . " / " . $totalAchievements ."</span> completed</body></html>";
+
 }
 
-echo json_encode($achievements);
+echo json_encode($jason);
 
 $con->close();
 ?>

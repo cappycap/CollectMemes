@@ -213,7 +213,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
       $memeText = ($size == 1) ? "meme" : "memes";
       
-      $response['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#dedede;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $size . "</span> " . $memeText . " liked!</body></html>";
+      $response['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#c3c3c3;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $size . "</span> " . $memeText . " liked!</body></html>";
 
     }
 

@@ -353,7 +353,7 @@
                   "action": {
                     "type": "$href",
                     "options": {
-                      "url": "https://collectmemes.com/devandroidaccess/challenges.json",
+                      "url": "https://collectmemes.com/devandroidviews/challenges.json",
                       "transition": "fullscreen"
                     }
                   }
@@ -609,7 +609,7 @@
                   "action": {
                     "type": "$href",
                     "options": {
-                      "url": "https://collectmemes.com/devandroidaccess/challenges.json",
+                      "url": "https://collectmemes.com/devandroidviews/challenges.json",
                       "transition": "fullscreen"
                     }
                   }
@@ -625,7 +625,7 @@
                   "action": {
                     "type": "$href",
                     "options": {
-                      "url": "https://collectmemes.com/devandroidaccess/profile.json",
+                      "url": "https://collectmemes.com/devandroidviews/profile.json",
                       "transition": "fullscreen"
                     }
                   }

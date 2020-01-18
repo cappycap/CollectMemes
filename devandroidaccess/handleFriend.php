@@ -5,7 +5,9 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_POST// Scenario: userId wants to deny senderId's request.['userId']) and isset($_POST['senderId']) and isset($_POST['decision'])) {
+// Scenario: userId wants to deny senderId's request.
+
+if (isset($_POST['userId']) and isset($_POST['senderId']) and isset($_POST['decision'])) {
 
   $userId = $con->real_escape_string($_POST['userId']);
   $senderId = $con->real_escape_string($_POST['senderId']);
@@ -18,9 +20,7 @@ if (isset($_POST// Scenario: userId wants to deny senderId's request.['userId'])
 
     if ($deleteStmt2 = $con->prepare($deleteRequestQuery2)) {
 
-
       $deleteStmt2->bind_param("ii",$userId,$senderId);
-
 
       if ($deleteStmt2->execute()) {
 
