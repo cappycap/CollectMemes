@@ -10,7 +10,7 @@
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}",
-              "scheme": "light"
+              "scheme": "{{$global.scheme}}"
             }
           },
           "success": {
@@ -43,7 +43,7 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "sections": [
             {
               "items": [
@@ -52,7 +52,8 @@
                   "style": {
                     "align": "center",
                     "padding": "0",
-                    "spacing": "0"
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                   },
                   "components": [
                     {
@@ -98,14 +99,14 @@
                         },
                         {
                           "type": "image",
-                          "url": "{{$cache.nav.challengesRight}}",
+                          "url": "{{$cache.nav.collectRight}}",
                           "style": {
                             "width": "12%"
                           },
                           "action": {
                             "type": "$href",
                             "options": {
-                              "url": "https://collectmemes.com/devandroidviews/challenges.json",
+                              "url": "https://collectmemes.com/devandroidviews/collect.json",
                               "transition": "fullscreen"
                             }
                           }
@@ -118,7 +119,7 @@
                       "style": {
                         "padding": "0",
                         "size": "40",
-                        "color": "#111111",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                         "align": "center"
                       }
                     },
@@ -192,7 +193,7 @@
                               "type": "label",
                               "text": "{{title}}",
                               "style": {
-                                "color": "#111111",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                                 "size": "25"
                               }
                             },
@@ -222,9 +223,10 @@
                                 {
                                   "type": "label",
                                   "text": "{{progress}}",
-                                  "color": "#111111",
-                                  "size": "12",
-                                  "width": "50%"
+                                  "style": {
+                                    "color": "{{xpColor}}",
+                                    "width": "20%"
+                                  }
                                 },
                                 {
                                   "type": "label",

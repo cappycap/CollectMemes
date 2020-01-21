@@ -9,9 +9,10 @@ $jason = array();
 if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']) and isset($_POST['sortDir'])) {
 
   $totalCompleted = 0;
-
   $u = $con->real_escape_string($_POST['userId']);
   $scheme = $_POST['scheme'];
+
+  $bg = ($scheme == "light") ? "#ffffff" : "#111111";
 
   $s = $con->real_escape_string($_POST['sort']);
   $d = $con->real_escape_string($_POST['sortDir']);
@@ -91,7 +92,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
 
           $chal['circleHTML'] = "<html>
           <head>
-          <style>body { margin:0; } </style>
+          <style>body { margin:0; background:" . $bg . "; } .progress-circle:after { background-color:" . $bg . " !important;} </style>
           <link href='https://collectmemes.com/dist/css-circular-prog-bar.css' rel='stylesheet'>
           </head>
           <body>
@@ -134,11 +135,9 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
     $jason['challenges'] = $new;
     $jason['nav'] = $nav;
 
-    $bg = ($scheme == "light") ? "#ffffff" : "#111111";
-
     $size = count($new);
 
-    $jason['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#c3c3c3;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $totalCompleted . " / " . $size ."</span> completed</body></html>";
+    $jason['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#c3c3c3;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $totalCompleted . "</span> completed</body></html>";
 
   }
 

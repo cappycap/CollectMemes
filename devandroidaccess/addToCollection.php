@@ -519,11 +519,11 @@ if (isset($_POST['userId']) and isset($_POST['memeId'])) {
 
 	      if (!$isPro) {
 
-	        $time2 = $time + 3600;
+	        $time2 = $time + 1800;
 
 	      } else {
 
-	        $time2 = $time + 1800;
+	        $time2 = $time + 900;
 
 	      }
 

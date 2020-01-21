@@ -15,16 +15,18 @@
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}",
-              "scheme": "light",
+              "scheme": "{{$global.scheme}}",
               "cur": "{{$cache.cur}}",
               "sort": "{{$cache.sort}}",
-              "sortDir": "{{$cache.sortDir}}"
+              "sortDir": "{{$cache.sortDir}}",
+              "devWidth": "{{$env.device.width}}"
             }
           },
           "success": {
             "type": "$cache.set",
             "options": {
               "profileTopHTML": "{{$jason.profileTopHTML}}",
+              "profileTopHeight": "{{$jason.profileTopHeight}}"
               "addFriendImage": "{{$jason.addFriendImage}}",
               "nav": "{{$jason.nav}}",
               "friends": "{{$jason.friends}}",
@@ -36,10 +38,32 @@
             }
           }
         },
+        "displayAlert": {
+          "type": "$util.banner",
+          "options": {
+            "title": "{{$params.title}}",
+            "description": "{{$params.description}}"
+          },
+          "success": {
+            "trigger": "getProfile"
+          }
+        },
+        "alertCheck": [
+          {
+            "{{#if 'title' in $params}}": {
+              "trigger": "displayAlert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "getProfile"
+            }
+          }
+        ],
         "mainLoad": [
           {
             "{{#if 'cur' in $cache}}": {
-              "trigger": "getProfile"
+              "trigger": "alertCheck"
             }
           },
           {
@@ -51,7 +75,7 @@
                 "sortDir": "1"
               },
               "success": {
-                "trigger": "getProfile"
+                "trigger": "alertCheck"
               }
             }
           }
@@ -74,7 +98,7 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "layers": [
             {
               "type": "image",
@@ -117,7 +141,7 @@
                       "style": {
                         "padding": "0",
                         "spacing": "0",
-                        "border": "none"
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                       },
                       "components": [
                         {
@@ -125,7 +149,7 @@
                           "text": "{{$cache.profileTopHTML}}",
                           "style": {
                             "width": "100%",
-                            "height": "61%"
+                            "height": "{{$cache.profileTopHeight}}"
                           }
                         },
                         {
@@ -144,7 +168,7 @@
                               "type": "label",
                               "text": "Friends",
                               "style": {
-                                "color": "#111111",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                                 "size": "45",
                                 "width": "40%"
                               }
@@ -249,14 +273,16 @@
                       "type": "vertical",
                       "style": {
                         "padding": "5",
-                        "border": "none"
+                        "spacing": "10",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                       },
                       "components": {
                         "{{#each $cache.friends}}": {
                           "type": "horizontal",
                           "style": {
                             "spacing": "10",
-                            "align": "center"
+                            "align": "center",
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                           },
                           "components": [
                             {
@@ -285,7 +311,7 @@
                                   "text": "{{username}}"
                                   "style": {
                                     "size": "25",
-                                    "color": "#111111"
+                                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
                                   }
                                 },
                                 {
@@ -329,7 +355,7 @@
                       "style": {
                         "padding": "0",
                         "spacing": "0",
-                        "border": "none"
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                       },
                       "components": [
                         {
@@ -338,7 +364,7 @@
                             "padding": "10",
                             "spacing": "10",
                             "align": "center",
-                            "border": "none"
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                             "width": [
                               {
                                 "{{#if $cache.nav.displayPager == 1}}": "100%"
@@ -411,7 +437,8 @@
                       "type": "vertical",
                       "style": {
                         "padding": "0",
-                        "spacing": "0"
+                        "spacing": "0",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                       },
                       "components": [
                         {
@@ -419,13 +446,14 @@
                           "text": "{{$cache.profileTopHTML}}",
                           "style": {
                             "width": "100%",
-                            "height": "61%"
+                            "height": "{{$cache.profileTopHeight}}"
                           }
                         },
                         {
                           "type": "horizontal",
                           "style": {
-                            "align": "center"
+                            "align": "center",
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                           },
                           "components": [
                             {
@@ -438,7 +466,7 @@
                               "type": "label",
                               "text": "Friends",
                               "style": {
-                                "color": "#111111",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                                 "size": "45",
                                 "width": "40%"
                               }
@@ -478,8 +506,9 @@
                       "style": {
                         "width": "100%",
                         "align": "center",
-                        "color": "#111111",
-                        "size": "25"
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                        "size": "25",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                       }
                     }
                   ]

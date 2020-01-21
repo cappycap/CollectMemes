@@ -14,14 +14,20 @@
           },
           {
             "{{#else}}": {
-              "type": "$render"
+              "type": "$global.set",
+              "options": {
+                "scheme": "light"
+              },
+              "success": {
+                "type": "$render"
+              }
             }
           }
         ]
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "layers": [
             {
               "type": "image",
@@ -37,7 +43,7 @@
               "type": "label",
               "text": "CollectMemes Alpha",
               "style": {
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "align": "center",
                 "width": "300",
                 "left": "50%-150",

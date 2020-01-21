@@ -11,7 +11,7 @@
             "data": {
               "userId": "{{$global.userKey}}",
               "collectionId": "{{$params.id}}",
-              "scheme": "light",
+              "scheme": "{{$global.scheme}}",
               "deviceHeight": "{{$env.device.height}}"
             }
           },
@@ -45,7 +45,7 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "sections": [
             {
               "items": [
@@ -53,7 +53,8 @@
                   "type": "vertical",
                   "style": {
                     "spacing": "0",
-                    "padding": "0"
+                    "padding": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                   },
                   "components": [
                     {
@@ -101,7 +102,7 @@
                           "text": "{{$cache.challenge.title}}",
                           "style": {
                             "size": "30",
-                            "color": "#111111",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                             "width": "60%",
                             "align": "center"
                           }
@@ -119,7 +120,7 @@
                       "text": "{{$cache.challenge.progress}}",
                       "style": {
                         "width": "100%",
-                        "color": "#111111",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                         "size": "25",
                         "align": "center"
                       }
@@ -146,7 +147,8 @@
                   "type": "vertical",
                   "style": {
                     "width": "100%",
-                    "padding": "5"
+                    "padding": "5",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                   },
                   "components": {
                     "{{#each $cache.memes}}": {
@@ -170,7 +172,7 @@
                           "style": {
                             "width": "100%",
                             "align": "center",
-                            "color": "#111111",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                             "size": "20"
                           }
                         },

@@ -21,120 +21,14 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
-          "layers": [
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "sections": [
             {
-              "type": "image",
-              "url": "https://collectmemes.com/img/logo.png",
-              "style": {
-                "width": "300",
-                "height": "100",
-                "top": "30%-100",
-                "left": "50%-150"
-              }
-            },
-            {
-              "type": "label",
-              "text": "CollectMemes Alpha",
-              "style": {
-                "color": "#111111",
-                "align": "center",
-                "width": "300",
-                "left": "50%-150",
-                "top": "30%+5",
-                "size": "25"
-              }
-            },
-            {
-              "type": "label",
-              "text": "by Adam B.",
-              "style": {
-                "color": "#b8b8b8",
-                "align": "center",
-                "width": "300",
-                "left": "50%-150",
-                "top": "30%+40",
-                "size": "15"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Upcoming features for Beta:",
-              "style": {
-                "top": "45%",
-                "left": "10%",
-                "width": "80%",
-                "color": "#111111",
-                "align": "center",
-                "size": "23"
-              }
-            },
-            {
-              "type": "image",
-              "url": "https://collectmemes.com/img/back.png",
-              "style": {
-                "align": "left",
-                "left": "2%",
-                "width": "7%",
-                "top": "2%"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/profile.json",
-                  "transition": "push"
+              "items": [
+                {
+                  "type": "vertical"
                 }
-              }
-            },
-            {
-              "type": "label",
-              "text": "User uploads, collection challenges, & more!",
-              "style": {
-                "top": "45%+30",
-                "left": "25%",
-                "width": "50%",
-                "color": "#111111",
-                "align": "center",
-                "size": "18"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Icons by Icons8",
-              "style": {
-                "top": "55%+90",
-                "left": "20%",
-                "width": "60%",
-                "color": "#111111",
-                "align": "center",
-                "size": "18"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://icons8.com",
-                  "view": "web"
-                }
-              }
-            },
-            {
-              "type": "label",
-              "text": "and DesignModo!",
-              "style": {
-                "top": "55%+120",
-                "left": "20%",
-                "width": "60%",
-                "color": "#111111",
-                "align": "center",
-                "size": "18"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://designmodo.com/",
-                  "view": "web"
-                }
-              }
+              ]
             }
           ]
         }

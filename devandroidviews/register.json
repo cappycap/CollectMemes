@@ -42,7 +42,8 @@
                 "success": {
                   "type": "$href",
                   "options": {
-                    "url": "https://collectmemes.com/devandroidviews/collect.json"
+                    "url": "https://collectmemes.com/devandroidviews/collect-welcome.json",
+                    "transition": "fullscreen"
                   }
                 }
               }
@@ -92,10 +93,10 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "header": {
             "style": {
-              "background": "#ffffff"
+              "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
             },
             "title": {
               "type": "image",
@@ -108,10 +109,26 @@
           },
           "layers": [
             {
+              "type": "image",
+              "url": "file://nav/tap-left-light.png",
+              "style": {
+                "top": "2%",
+                "left": "3%",
+                "width": "10%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/welcome.json",
+                  "transition": "fullscreen"
+                }
+              }
+            },
+            {
               "type": "label",
               "text": "Register",
               "style": {
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "align": "center",
                 "width": "300",
                 "left": "50%-150",
@@ -139,7 +156,7 @@
                 "font": "Roboto",
                 "align": "center",
                 "size": "20",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "15",
                 "top": "21%",
@@ -159,7 +176,7 @@
               "style": {
                 "font": "Roboto",
                 "size": "20",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "15",
                 "top": "34%",
@@ -175,7 +192,7 @@
               "style": {
                 "font": "Roboto",
                 "size": "20",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "15",
                 "secure": "true",
@@ -241,7 +258,7 @@
                 "right": "15",
                 "height": "30%"
               },
-              "text": "<html><body style='text-align:center;width:{{$cache.htmlWidth}}px;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'Before we get to the memes, set your profile up with some basic info!';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+              "text": "<html><body style='text-align:center;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'Before we get to the memes, set your profile up with some basic info!';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
             }
           ]
         }

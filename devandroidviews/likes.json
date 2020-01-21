@@ -109,7 +109,7 @@
               "cur": "{{$cache.cur}}",
               "sort": "{{$cache.sort}}",
               "sortDir": "{{$cache.sortDir}}",
-              "scheme": "light"
+              "scheme": "{{$global.scheme}}"
             }
           },
           "success": {
@@ -146,9 +146,9 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "style": {
-            "border": "none"
+            "border": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
           },
           "sections": [{
             "items": [
@@ -225,7 +225,7 @@
                         "style": {
                           "padding": "0",
                           "size": "40",
-                          "color": "#111111",
+                          "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                           "align": "center"
                         }
                       },
@@ -252,7 +252,7 @@
                               "width": "80%",
                               "align": "center",
                               "size": "25",
-                              "color": "#111111"
+                              "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
                             }
                           },
                           {
@@ -337,7 +337,7 @@
                         "style": {
                           "padding": "0",
                           "size": "40",
-                          "color": "#111111",
+                          "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                           "align": "center"
                         }
                       },
@@ -482,7 +482,7 @@
                                 "{{#if 'memeId' in $cache.components[0].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[0].components[0].memeId}}"
                                     }
@@ -502,7 +502,7 @@
                                 "{{#if 'memeId' in $cache.components[0].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[0].components[1].memeId}}"
                                     }
@@ -522,7 +522,7 @@
                                 "{{#if 'memeId' in $cache.components[0].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[0].components[2].memeId}}"
                                     }
@@ -551,7 +551,7 @@
                                 "{{#if 'memeId' in $cache.components[1].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[1].components[0].memeId}}"
                                     }
@@ -571,7 +571,7 @@
                                 "{{#if 'memeId' in $cache.components[1].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[1].components[1].memeId}}"
                                     }
@@ -591,7 +591,7 @@
                                 "{{#if 'memeId' in $cache.components[1].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[1].components[2].memeId}}"
                                     }
@@ -620,7 +620,7 @@
                                 "{{#if 'memeId' in $cache.components[2].components[0]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[2].components[0].memeId}}"
                                     }
@@ -640,7 +640,7 @@
                                 "{{#if 'memeId' in $cache.components[2].components[1]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[2].components[1].memeId}}"
                                     }
@@ -660,7 +660,7 @@
                                 "{{#if 'memeId' in $cache.components[2].components[2]}}": {
                                   "type": "$href",
                                   "options": {
-                                    "url": "https://collectmemes.com/devandroidviews/viewVaultMeme.json",
+                                    "url": "https://collectmemes.com/devandroidviews/view-liked-meme.json",
                                     "options": {
                                       "memeId": "{{$cache.components[2].components[2].memeId}}"
                                     }

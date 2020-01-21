@@ -1,0 +1,243 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Empty",
+      "actions": {
+        "getFriend": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getFriend.php",
+            "method": "post",
+            "data": {
+              "friendId": "{{$params.friendId}}",
+              "scheme": "light"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "profileTopHTML": "{{$jason.profileTopHTML}}",
+              "components": "{{$jason.components}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "memeHeight": [
+          {
+            "{{#if 'memeHeight' in $cache}}": {
+              "trigger": "getFriend"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/devandroidaccess/memeHeight.php",
+                "method": "post",
+                "data": {
+                  "width": "{{$env.device.width}}"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "memeHeight": "{{$jason.ret}}"
+                },
+                "success": {
+                  "trigger": "getFriend"
+                }
+              }
+            }
+          }
+        ],
+        "mainLoad": [
+          {
+            "{{#if 'friendId' in $params}}": {
+              "trigger": "memeHeight"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/profile.json",
+                "transition": "fullscreen"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/welcome.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "style": {
+            "border": "none"
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://nav/profile-right-view-friend.png",
+              "style": {
+                "width": "14%",
+                "top": "3%",
+                "left": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/profile.json",
+                  "transition": "fullscreen"
+                }
+              }
+            }
+          ],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "html",
+                  "text": "{{$cache.profileTopHTML}}",
+                  "style": {
+                    "width": "100%",
+                    "height": "61%"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "Top Memes",
+                  "style": {
+                    "color": "#111111",
+                    "size": "35",
+                    "align": "center",
+                    "width": "100%"
+                  }
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "spacing": "0"
+                  },
+                  "components": [
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

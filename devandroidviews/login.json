@@ -215,10 +215,10 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "header": {
             "style": {
-              "background": "#ffffff"
+              "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
             },
             "title": {
               "type": "image",
@@ -234,7 +234,7 @@
               "type": "label",
               "text": "Sign in",
               "style": {
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "align": "center",
                 "width": "300",
                 "left": "50%-150",
@@ -261,7 +261,7 @@
               "style": {
                 "font": "Roboto",
                 "size": "20",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "20",
                 "top": "21%",
@@ -277,7 +277,7 @@
               "style": {
                 "font": "Roboto",
                 "size": "20",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "20",
                 "secure": "true",

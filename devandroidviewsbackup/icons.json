@@ -1,0 +1,426 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "updateIcon": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/updateIcon.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "iconId": "{{$params.iconId}}"
+            }
+          },
+          "success": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/devandroidviews/settings.json",
+              "transition": "fullscreen",
+              "options": {
+                "alert": "true",
+                "title": "Success!",
+                "description": "Your new icon has been set!"
+              }
+            }
+          }
+        },
+        "mainLoad": [
+          {
+            "{{#if 'iconId' in $params}}": {
+              "trigger": "updateIcon"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$render"
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "align": "center"
+                  },
+                  "components": [
+                    {
+                      "type": "image",
+                      "url": "file://shared/lining.png",
+                      "style": {
+                        "width": "100%"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "1%"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "width": "100%",
+                        "padding": "10",
+                        "spacing": "10",
+                        "height": "10%"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": [
+                            {
+                              "{{#if $global.scheme == 'light'}}": "file://nav/tap-left-light.png"
+                            },
+                            {
+                              "{{#else}}": "file://nav/tap-left-dark.png"
+                            }
+                          ],
+                          "style": {
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/settings.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://tops/icons.png",
+                          "style": {
+                            "width": "20%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "12%"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "Icons",
+                      "style": {
+                        "padding": "0",
+                        "size": "40",
+                        "color": "#111111",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "text": "Represent yourself!",
+                      "style": {
+                        "width": "100%",
+                        "color": "#c3c3c3",
+                        "size": "20",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "2%"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "1%",
+                        "spacing": "3%",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/0.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "0"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/1.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "1"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/2.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "2"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "1%",
+                        "spacing": "3%",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/3.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "3"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/4.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "4"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/5.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "5"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "1%",
+                        "spacing": "3%",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/6.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "6"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/7.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "7"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/8.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "8"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "1%",
+                        "spacing": "3%",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/9.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "9"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/10.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "10"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "https://collectmemes.com/icons/11.jpg",
+                          "style": {
+                            "width": "30%",
+                            "corner_radius": "150"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/devandroidviews/icons.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "iconId": "11"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

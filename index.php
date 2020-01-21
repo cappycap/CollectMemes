@@ -115,6 +115,37 @@ if ($c = $con->prepare($collectedQ)) {
 
       </div> <!-- /tiles -->
 
+      <div style='text-align:center;'>
+
+        <h3>Beta Release Preview Images</h3>
+      </div>
+
+      <div class="row demo-tiles" style="width:90%;margin:auto;">
+
+        <div class="col">
+          <div class="tile tile-hot">
+            <img src="img/collect-light.png" alt="ribbon">
+              <p style="width:90%;margin-left:auto;margin-right:auto;font-size:20px;">Collect Page</p>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="tile tile-hot">
+            <img src="img/vault-light.png" alt="Pensils">
+            <p style="width:90%;margin-left:auto;margin-right:auto;font-size:20px;">Vault Page</p>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="tile tile-hot">
+            <img src="img/profile-light.png" alt="Chat">
+            <p style="width:90%;margin-left:auto;margin-right:auto;font-size:20px;">Profile Page</p>
+          </div>
+
+        </div>
+
+      </div>
+
 
     </div> <!-- /container -->
 

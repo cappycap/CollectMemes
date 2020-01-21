@@ -56,6 +56,8 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['cur'])
 
   $bg = ($scheme == "light") ? "#ffffff" : "#111111";
 
+  $response['profileTopHeight'] = intval(intval($_POST['devWidth']) + (intval($_POST['devWidth']) * 0.22));
+
   $textColor = ($scheme == "light") ? "#111111" : "#ffffff";
 
   $uQ = "SELECT username,avatar,xp,totalSpins,friends FROM users WHERE id=?";

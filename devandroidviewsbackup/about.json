@@ -1,0 +1,38 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$render"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

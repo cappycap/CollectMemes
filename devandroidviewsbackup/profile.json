@@ -1,0 +1,517 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Profile",
+      "actions": {
+        "getProfile": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getProfile.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "scheme": "light",
+              "cur": "{{$cache.cur}}",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "profileTopHTML": "{{$jason.profileTopHTML}}",
+              "addFriendImage": "{{$jason.addFriendImage}}",
+              "nav": "{{$jason.nav}}",
+              "friends": "{{$jason.friends}}",
+              "hasFriends": "{{$jason.hasFriends}}",
+              "cur": "{{$jason.cur}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "displayAlert": {
+          "type": "$util.banner",
+          "options": {
+            "title": "{{$params.title}}",
+            "description": "{{$params.description}}"
+          },
+          "success": {
+            "trigger": "getProfile"
+          }
+        },
+        "alertCheck": [
+          {
+            "{{#if 'title' in $params}}": {
+              "trigger": "displayAlert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "getProfile"
+            }
+          }
+        ],
+        "mainLoad": [
+          {
+            "{{#if 'cur' in $cache}}": {
+              "trigger": "alertCheck"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "cur": "0",
+                "sort": "sortByXP",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "alertCheck"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/welcome.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://nav/collect-profile.png",
+              "style": {
+                "width": "14%",
+                "top": "3%",
+                "left": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/collect.json"
+                }
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://nav/settings-profile.png",
+              "style": {
+                "width": "14%",
+                "top": "3%",
+                "right": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/settings.json"
+                }
+              }
+            }
+          ],
+          "sections": [
+            {
+              "items": [
+                {
+                  "{{#if $cache.hasFriends == 1}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0",
+                        "border": "none"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.profileTopHTML}}",
+                          "style": {
+                            "width": "100%",
+                            "height": "61%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "Friends",
+                              "style": {
+                                "color": "#111111",
+                                "size": "45",
+                                "width": "40%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.sortButton}}",
+                              "style": {
+                                "width": "7%"
+                              },
+                              "action": {
+                                "type": "$util.picker",
+                                "options": {
+                                  "title": "Sort By:",
+                                  "items": [
+                                    {
+                                      "text": "Last Collected (ascending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "1",
+                                          "sort": "sortByLastCollect"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Last Collected (descending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "0",
+                                          "sort": "sortByLastCollect"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Level (ascending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "1",
+                                          "sort": "sortByXP"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Level (descending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "0",
+                                          "sort": "sortByXP"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "38%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.addFriendImage}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/devandroidviews/add-friend.json"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "5",
+                        "spacing": "10",
+                        "border": "none"
+                      },
+                      "components": {
+                        "{{#each $cache.friends}}": {
+                          "type": "horizontal",
+                          "style": {
+                            "spacing": "10",
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "1%"
+                              }
+                            },
+                            {
+                              "type": "html",
+                              "text": "{{avatarHTML}}",
+                              "style": {
+                                "width": "25%"
+                              }
+                            },
+                            {
+                              "type": "vertical",
+                              "style": {
+                                "padding": "0",
+                                "spacing": "0",
+                                "width": "50%"
+                              },
+                              "components": [
+                                {
+                                  "type": "label",
+                                  "text": "{{username}}"
+                                  "style": {
+                                    "size": "25",
+                                    "color": "#111111"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "{{lastCollectText}}",
+                                  "style": {
+                                    "size": "15",
+                                    "color": "#ADADAD"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://shared/view-button.png",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/devandroidviews/view-friend.json",
+                                  "options": {
+                                    "friendId": "{{id}}"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0",
+                        "border": "none"
+                      },
+                      "components": [
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "padding": "10",
+                            "spacing": "10",
+                            "align": "center",
+                            "border": "none"
+                            "width": [
+                              {
+                                "{{#if $cache.nav.displayPager == 1}}": "100%"
+                              },
+                              {
+                                "{{#else}}": "0"
+                              }
+                            ]
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "24%"
+                              }
+                            }
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.pageLeft}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": [
+                                {
+                                  "{{#if $cache.nav.allowPageLeft != '0'}}": {
+                                    "trigger": "onPageLeft"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{$cache.nav.pageDisplay}}",
+                              "style": {
+                                "size": "30",
+                                "color": "#3b9fdf",
+                                "align": "center",
+                                "width": "36%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.pageRight}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": [
+                                {
+                                  "{{#if $cache.nav.allowPageRight != '0'}}": {
+                                    "trigger": "onPageRight"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "24%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "{{#else}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.profileTopHTML}}",
+                          "style": {
+                            "width": "100%",
+                            "height": "61%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "Friends",
+                              "style": {
+                                "color": "#111111",
+                                "size": "45",
+                                "width": "40%"
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "45%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.addFriendImage}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/devandroidviews/add-friend.json"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "No friends yet!",
+                      "style": {
+                        "width": "100%",
+                        "align": "center",
+                        "color": "#111111",
+                        "size": "25"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

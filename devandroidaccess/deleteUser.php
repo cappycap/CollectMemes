@@ -10,11 +10,11 @@ if (isset($_POST['userId']) and isset($_POST['pw'])) {
   $u = $con->real_escape_string($_POST['userId']);
   $p = crypt($con->real_escape_string($_POST['pw']), '$2a$07$5jh843257hquiyo7ghfkgi$');
 
-  $c = "SELECT id FROM users WHERE password=?";
+  $c = "SELECT password FROM users WHERE id=?";
 
   if ($cs = $con->prepare($c)) {
 
-    $cs->bind_param("s",$p);
+    $cs->bind_param("i",$u);
 
     $cs->execute();
 
@@ -22,7 +22,7 @@ if (isset($_POST['userId']) and isset($_POST['pw'])) {
 
     if ($cs->fetch()) {
 
-      if ($i == $u) {
+      if ($i == $p) {
 
         $cs->close();
 
@@ -34,7 +34,25 @@ if (isset($_POST['userId']) and isset($_POST['pw'])) {
 
         }
 
+        $q2 = "DELETE FROM achievementsProgress WHERE userId=" . $u;
+
+        if ($con->query($q2) === TRUE) {
+
+          $response['aSuccess'] = 1;
+
+        }
+
+        $q3 = "DELETE FROM collectionsProgress WHERE userId=" . $u;
+
+        if ($con->query($q3) === TRUE) {
+
+          $response['cSuccess'] = 1;
+
+        }
+
       } else {
+
+        $cs->close();
 
         $response['success'] = 0;
 
@@ -42,13 +60,14 @@ if (isset($_POST['userId']) and isset($_POST['pw'])) {
 
     } else {
 
-      $response['success'] = 0;
-      
+      $response['success'] = -1;
+
     }
 
   }
 
 }
+
 echo json_encode($response);
 
 $con->close();

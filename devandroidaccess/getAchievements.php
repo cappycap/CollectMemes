@@ -165,7 +165,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
   $nav = array();
 
-  $nav['challengesRight'] = ($scheme == "light") ? "file://nav/challenges-right-light.png" : "file://nav/challenges-right-dark.png";
+  $nav['collectRight'] = ($scheme == "light") ? "file://nav/collect-right-light.png" : "file://nav/collect-right-dark.png";
 
   $prog = array();
 
@@ -233,7 +233,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme'])) {
 
         } else {
 
-          $ach['xp'] = "(+" . number_format($xp) . " XP)";
+          $ach['xp'] = "next: +" . number_format($xp) . " XP";
           $ach['xpColor'] = "#3498db";
           $ach['progress'] = $progInfo['min'] . " / " . $progInfo['max'];
 

@@ -1,0 +1,106 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$render"
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/logo.png",
+              "style": {
+                "width": "300",
+                "height": "100",
+                "top": "30%-100",
+                "left": "50%-150"
+              }
+            },
+            {
+              "type": "label",
+              "text": "CollectMemes Alpha",
+              "style": {
+                "color": "#111111",
+                "align": "center",
+                "width": "300",
+                "left": "50%-150",
+                "top": "30%+5",
+                "size": "25"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Literally just collect memes!",
+              "style": {
+                "color": "#b8b8b8",
+                "align": "center",
+                "width": "300",
+                "left": "50%-150",
+                "top": "30%+40",
+                "size": "15"
+              }
+            },
+            { "type": "label",
+              "text": "Sign in",
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/login.json",
+                  "transition": "push"
+                }
+              },
+              "style": {
+                "width": "300",
+                "height": "55",
+                "size": "17",
+                "top": "77%",
+                "left": "50%-150",
+                "background": "#2d91d1",
+                "color": "#ffffff",
+                "padding": "2",
+                "corner_radius": "50",
+                "align": "center"
+              }
+            },
+            { "type": "label",
+              "text": "Sign up",
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/register-welcome-1.json",
+                  "transition": "push"
+                }
+              },
+              "style": {
+                "width": "300",
+                "height": "100",
+                "top": "78%+35",
+                "left": "50%-150",
+                "color": "#2d91d1",
+                "align": "center",
+                "size": "17"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -10,10 +10,10 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId']) && isset($_GET['remId'])) {
+if (isset($_POST['userId']) && isset($_POST['remId'])) {
 
-  $userId = $con->real_escape_string($_GET['userId']);
-  $remId = $con->real_escape_string($_GET['remId']);
+  $userId = $con->real_escape_string($_POST['userId']);
+  $remId = $con->real_escape_string($_POST['remId']);
 
   // Begin deletion of senderId from userId's friends list.
   // Get friends list for userId.

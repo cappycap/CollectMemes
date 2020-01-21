@@ -84,6 +84,7 @@ function getRankInfo($memeRank, $con) {
 		$info['rarity'] = "Legendary";
 		$info['rarityImage'] = "file://rarities/legendary.png";
 		$info['rarityLining'] = "file://shared/legendaryL.png";
+		$info['likeLining'] = "file://view-liked-meme/legendaryL.png";
 
 	} else if ($ratio > 0.07 and $ratio <= 0.19) {
 
@@ -92,6 +93,7 @@ function getRankInfo($memeRank, $con) {
 		$info['rarity'] = "Epic";
 		$info['rarityImage'] = "file://rarities/epic.png";
 		$info['rarityLining'] = "file://shared/epicL.png";
+		$info['likeLining'] = "file://view-liked-meme/epicL.png";
 
 	} else if ($ratio > 0.19 and $ratio <= 0.28) {
 
@@ -100,6 +102,7 @@ function getRankInfo($memeRank, $con) {
 		$info['rarity'] = "Rare";
 		$info['rarityImage'] = "file://rarities/rare.png";
 		$info['rarityLining'] = "file://shared/rareL.png";
+		$info['likeLining'] = "file://view-liked-meme/rareL.png";
 
 	} else if ($ratio > 0.28 and $ratio <= 0.58) {
 
@@ -108,6 +111,7 @@ function getRankInfo($memeRank, $con) {
 		$info['rarity'] = "Uncommon";
 		$info['rarityImage'] = "file://rarities/uncommon.png";
 		$info['rarityLining'] = "file://shared/uncommonL.png";
+		$info['likeLining'] = "file://view-liked-meme/uncommonL.png";
 
 	} else if ($ratio > 0.58 and $ratio <= 1) {
 
@@ -116,6 +120,7 @@ function getRankInfo($memeRank, $con) {
 		$info['rarity'] = "Common";
 		$info['rarityImage'] = "file://rarities/common.png";
 		$info['rarityLining'] = "file://shared/commonL.png";
+		$info['likeLining'] = "file://view-liked-meme/commonL.png";
 
 	}
 

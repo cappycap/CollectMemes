@@ -1,0 +1,78 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/collect.json"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/devandroidaccess/math.php",
+                "method": "post",
+                "data": {
+                  "div": "true",
+                  "x": "{{$env.device.width}}",
+                  "y": "2.5",
+                  "z": "10"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "htmlWidth": "{{$jason.ret}}"
+                },
+                "success": {
+                  "type": "$render"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "file://registration/register-welcome-1.png",
+          "layers": [
+            {
+              "type": "html",
+              "style": {
+                "width": "40%",
+                "height": "10%",
+                "top": "15%",
+                "right": "10%"
+              },
+              "text": "<html><body style='text-align:center;width:{{$cache.htmlWidth}}px;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'Welcome to CollectMemes! My name is Emma.';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+            },
+            {
+              "type": "image",
+              "url": "file://registration/next.png",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "top": "25%",
+                "right": "30%-25",
+                "color": "#48acec"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/register-welcome-2.json",
+                  "transition": "fullscreen"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

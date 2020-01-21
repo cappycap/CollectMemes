@@ -16,6 +16,8 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
 
   $scheme = $_POST['scheme'];
 
+  $bg = ($scheme == "light") ? "#ffffff" : "#111111";
+
   $nav = array();
 
   $nav['vaultLeft'] = ($scheme == "light") ? "file://nav/collection-left-light.png" : "file://nav/collection-left-dark.png";
@@ -113,7 +115,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
               box-sizing: border-box;
             }
             body {
-                background-color: #ffffff;
+                background-color: " . $bg . ";
                 margin:0;
                 padding:0;
                 width:100%;
@@ -156,6 +158,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
             width:100%;
             padding-top:100%;
             margin:0;
+            background:" . $bg . ";
         }
         </style>
         </head>
@@ -199,10 +202,10 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $nav['curMin'] = $c - 9;
 
       $curPage = 1 + intval($c / 9);
-      $totalPages = 1 + intval($size / 9);
+      $totalPages = 1 + intval($size / 10);
 
-      $nav['pageLeft'] = ($curPage != 1) ? "file://likes/page-left-active.png" : "file://shared/page-left-null.png";
-      $nav['pageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "file://likes/page-right-active.png" : "file://shared/page-right-null.png";
+      $nav['pageLeft'] = ($curPage != 1) ? "file://likes/page-left-active.png" : (($scheme == 'light') ? "file://shared/page-left-null.png" : "file://shared/page-left-null-dark.png");
+      $nav['pageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "file://likes/page-right-active.png" : (($scheme == 'light') ? "file://shared/page-right-null.png" : "file://shared/page-right-null-dark.png");
 
       $nav['allowPageLeft'] = ($curPage != 1) ? "1" : "0";
       $nav['allowPageRight'] = ($curPage != $totalPages and $totalPages != 1) ? "1" : "0";
@@ -212,7 +215,7 @@ if (isset($_POST['userId']) and isset($_POST['cur']) and isset($_POST['sort']) a
       $bg = ($scheme == "light") ? "#ffffff" : "#111111";
 
       $memeText = ($size == 1) ? "meme" : "memes";
-      
+
       $response['stats'] = "<html><head><style>body { background-color:" . $bg . ";margin:0;color:#c3c3c3;font-size:20px;text-align:center; }</style></head><body><span style='font-weight:bold;'>" . $size . "</span> " . $memeText . " liked!</body></html>";
 
     }

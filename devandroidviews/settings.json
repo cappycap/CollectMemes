@@ -32,10 +32,32 @@
             }
           }
         },
+        "alert": {
+          "type": "$util.banner",
+          "options": {
+            "title": "{{$params.title}}",
+            "description": "{{$params.description}}"
+          },
+          "success": {
+            "trigger": "updateProfileInfo"
+          }
+        },
+        "alertCheck": [
+          {
+            "{{#if 'alert' in $params}}": {
+              "trigger": "alert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "updateProfileInfo"
+            }
+          }
+        ],
         "mainLoad": [
           {
             "{{#if $global.userKey != '0'}}": {
-              "trigger": "updateProfileInfo"
+              "trigger": "alertCheck"
             }
           },
           {
@@ -73,7 +95,7 @@
                   "type": "$util.banner",
                   "options": {
                     "title": "Nice...",
-                    "description": "Email updated successfully!"
+                    "description": "Password updated successfully!"
                   },
                   "success": {
                     "type": "$global.set",
@@ -170,27 +192,92 @@
               }
             ]
           }
+        },
+        "changeScheme": {
+          "type": "$global.set",
+          "options": {
+            "scheme": [
+              {
+                "{{#if 'scheme' in $global}}": [
+                  {
+                    "{{#if $global.scheme == 'light'}}": "dark"
+                  },
+                  {
+                    "{{#else}}": "light"
+                  }
+                ]
+              },
+              {
+                "{{#else}}": "dark"
+              }
+            ]
+          },
+          "success": {
+            "type": "$render"
+          }
         }
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "style": {
-            "border": "none"
+            "border": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
           },
           "layers": [
+            {
+              "type": "image",
+              "url": "{{$cache.avatar}}",
+              "style": {
+                "width": "120",
+                "height": "120",
+                "top": "7%",
+                "corner_radius": "70",
+                "right": "50%-60"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/icons.json",
+                  "transition": "fullscreen"
+                }
+              }
+            },
+            {
+              "type": "image",
+              "url": [
+                {
+                  "{{#if $global.scheme == 'light'}}": "file://shared/change-icon-light.png"
+                },
+                {
+                  "{{#else}}": "file://shared/change-icon-dark.png"
+                }
+              ],
+              "style": {
+                "width": "40",
+                "height": "40",
+                "top": "7%+80",
+                "left": "50%+20"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/icons.json",
+                  "transition": "fullscreen"
+                }
+              }
+            },
             {
               "type": "label",
               "text": "{{$cache.username}}",
               "style": {
                 "width": "70%",
                 "height": "50",
-                "top": "7%",
+                "top": "24%",
                 "left": "15%",
                 "align": "center",
                 "font": "HelveticaNeue-Bold",
                 "size": "30",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
@@ -200,16 +287,23 @@
                 "width": "400",
                 "height": "30",
                 "align": "center",
-                "top": "7%+36",
+                "top": "24%+36",
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
                 "size": "15",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
               "type": "image",
-              "url": "file://nav/logout-light.png",
+              "url": [
+                {
+                  "{{#if $global.scheme == 'light'}}": "file://nav/logout-light.png"
+                },
+                {
+                  "{{#else}}": "file://nav/logout-dark.png"
+                }
+              ],
               "style": {
                 "width": "40",
                 "top": "2%+5",
@@ -228,12 +322,14 @@
                 "align": "center",
                 "top": "17%+150",
                 "left": "20%",
-                "background": "#111111",
-                "color": "#ffffff",
+                "background": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                "color": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
                 "size": "17",
                 "corner_radius": "25"
               },
-
+              "action": {
+                "trigger": "changeScheme"
+              }
             },
             {
               "type": "label",
@@ -246,7 +342,7 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
                 "size": "20",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
@@ -260,7 +356,7 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Normal",
                 "size": "18",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
@@ -296,7 +392,7 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Bold",
                 "size": "20",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
@@ -310,7 +406,7 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Normal",
                 "size": "18",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
@@ -364,23 +460,19 @@
                 "left": "50%-200",
                 "font": "HelveticaNeue-Normal",
                 "size": "15",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
               "type": "image",
-              "url": "{{$cache.avatar}}",
-              "style": {
-                "width": "120",
-                "height": "120",
-                "top": "17%",
-                "corner_radius": "70",
-                "left": "50%-60"
-              }
-            },
-            {
-              "type": "image",
-              "url": "file://nav/profile-left-light.png",
+              "url": [
+                {
+                  "{{#if $global.scheme == 'light'}}": "file://nav/profile-left-light.png"
+                },
+                {
+                  "{{#else}}": "file://nav/profile-left-dark.png"
+                }
+              ],
               "style": {
                 "width": "40",
                 "top": "2%+5",

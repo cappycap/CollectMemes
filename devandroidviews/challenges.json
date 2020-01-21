@@ -10,7 +10,7 @@
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}",
-              "scheme": "light",
+              "scheme": "{{$global.scheme}}",
               "sort": "{{$cache.sort}}",
               "sortDir": "{{$cache.sortDir}}"
             }
@@ -64,7 +64,7 @@
       },
       "templates": {
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "sections": [
             {
               "items": [
@@ -73,7 +73,8 @@
                   "style": {
                     "align": "center",
                     "padding": "0",
-                    "spacing": "0"
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                   },
                   "components": [
                     {
@@ -147,7 +148,7 @@
                       "style": {
                         "padding": "0",
                         "size": "40",
-                        "color": "#111111",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                         "align": "center"
                       }
                     },
@@ -190,7 +191,7 @@
                         {
                           "type": "space",
                           "style": {
-                            "width": "86%"
+                            "width": "89%"
                           }
                         },
                         {
@@ -245,7 +246,8 @@
                   "type": "vertical",
                   "style": {
                     "padding": "0",
-                    "spacing": "0"
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
                   },
                   "components": {
                     "{{#each $cache.challenges}}": {
@@ -280,7 +282,7 @@
                               "type": "label",
                               "text": "{{title}}",
                               "style": {
-                                "color": "#111111",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                                 "size": "25"
                               }
                             },

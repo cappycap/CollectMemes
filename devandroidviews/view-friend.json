@@ -8,34 +8,76 @@
       },
       "title": "Empty",
       "actions": {
-        "updateProfileInfo": {
+        "getFriend": {
           "type": "$network.request",
           "options": {
-            "url": "https://collectmemes.com/devandroidaccess/getUserProfileInfo.php",
+            "url": "https://collectmemes.com/devandroidaccess/getFriend.php",
             "method": "post",
             "data": {
-              "userId": "{{$global.userKey}}"
+              "friendId": "{{$params.friendId}}",
+              "scheme": "{{$global.scheme}}"
             }
           },
           "success": {
             "type": "$cache.set",
             "options": {
-              "username": "{{$jason.username}}",
-              "email": "{{$jason.email}}",
-              "avatar": "{{$jason.avatar}}",
-              "date": "{{$jason.date}}",
-              "totalSpins": "{{$jason.totalSpins}}",
-              "lastPassChange": "{{$jason.lastPassChange}}"
+              "profileTopHTML": "{{$jason.profileTopHTML}}",
+              "components": "{{$jason.components}}",
+              "id": "{{$params.friendId}}"
             },
             "success": {
               "type": "$render"
             }
           }
         },
+        "memeHeight": [
+          {
+            "{{#if 'memeHeight' in $cache}}": {
+              "trigger": "getFriend"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/devandroidaccess/memeHeight.php",
+                "method": "post",
+                "data": {
+                  "width": "{{$env.device.width}}"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "memeHeight": "{{$jason.ret}}"
+                },
+                "success": {
+                  "trigger": "getFriend"
+                }
+              }
+            }
+          }
+        ],
         "mainLoad": [
           {
+            "{{#if 'friendId' in $params}}": {
+              "trigger": "memeHeight"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/profile.json",
+                "transition": "fullscreen"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
             "{{#if $global.userKey != '0'}}": {
-              "trigger": "updateProfileInfo"
+              "trigger": "mainLoad"
             }
           },
           {
@@ -47,373 +89,193 @@
             }
           }
         ],
-        "$load": [
-          {
-            "{{#if 'profUpdated' in $global}}": [
-              {
-                "{{#if $global.profUpdated == '1'}}": {
-                  "type": "$util.banner",
-                  "options": {
-                    "title": "Nice...",
-                    "description": "Email updated successfully!"
-                  },
-                  "success": {
-                    "type": "$global.set",
-                    "options": {
-                      "profUpdated": "0"
-                    },
-                    "success": {
-                      "trigger": "mainLoad"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#elseif $global.profUpdated == '2'}}": {
-                  "type": "$util.banner",
-                  "options": {
-                    "title": "Nice...",
-                    "description": "Email updated successfully!"
-                  },
-                  "success": {
-                    "type": "$global.set",
-                    "options": {
-                      "profUpdated": "0"
-                    },
-                    "success": {
-                      "trigger": "mainLoad"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#else}}": {
-                  "trigger": "mainLoad"
-                }
-              }
-            ]
-          },
-          {
-            "{{#else}}": {
-              "trigger": "mainLoad"
-            }
-          }
-        ],
-        "logout": {
-          "type": "$global.set",
-          "options": {
-            "userKey": "0"
-          },
-          "success": {
-            "type": "$href",
-            "options": {
-              "url": "https://collectmemes.com/devandroidviews/welcome.json",
-              "transition": "push"
-            }
-          }
-        },
-        "deleteAccount": {
+        "remFriend": {
           "type": "$util.alert",
           "options": {
-            "title": "Delete Account?",
-            "description": "Are you sure you want to delete your account? All collected memes and likes will be lost. Enter your password and press OK if you're chill with that.",
-            "form": [
-              {
-                "name": "pw",
-                "placeholder": "account password...",
-                "type": "secure",
-                "align": "center"
-              }
-            ]
+            "title": "Remove Friend",
+            "description": "Are you sure you want to remove this friend?"
           },
           "success": {
             "type": "$network.request",
             "options": {
-              "url": "https://collectmemes.com/devandroidaccess/deleteUser.php",
+              "url": "https://collectmemes.com/devandroidaccess/remFriend.php",
               "method": "post",
               "data": {
                 "userId": "{{$global.userKey}}",
-                "pw": "{{$jason.pw}}"
+                "remId": "{{$cache.id}}"
               }
             },
-            "success": [
-              {
-                "{{#if $jason.success == 1}}": {
-                  "type": "$global.set",
-                  "options": {
-                    "userKey": "0"
-                  },
-                  "success": {
-                    "type": "$href",
-                    "options": {
-                      "url": "https://collectmemes.com/devandroidviews/welcome.json",
-                      "transition": "push"
-                    }
-                  }
-                }
-              },
-              {
-                "{{#else}}": {
-                  "type": "$util.alert",
-                  "options": {
-                    "title": "Password Incorrect",
-                    "description": "Sorry, that wasn't your password!"
-                  }
+            "success": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/profile.json",
+                "transition": "fullscreen",
+                "options": {
+                  "title": "Success!",
+                  "description": "Friend has been removed."
                 }
               }
-            ]
+            }
           }
         }
       },
       "templates": {
         "body": {
-          "background": "#111111",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "style": {
-            "border": "none"
+            "border": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
           },
           "layers": [
             {
               "type": "image",
-              "url": "file://profiletop.png",
+              "url": "file://nav/profile-right-view-friend.png",
               "style": {
-                "width": "100%",
-                "top": "0"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.username}}",
-              "style": {
-                "width": "70%",
-                "height": "50",
-                "top": "7%",
-                "left": "15%",
-                "align": "center",
-                "font": "HelveticaNeue-Bold",
-                "size": "30",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.totalSpins}} total spins",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "17%+130",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Registered {{$cache.date}}",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "7%+36",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "15",
-                "color": "#ffffff"
+                "width": "14%",
+                "top": "3%",
+                "left": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/profile.json",
+                  "transition": "fullscreen"
+                }
               }
             },
             {
               "type": "image",
-              "url": "file://about.png",
+              "url": "file://shared/rem-view-friend.png",
               "style": {
-                "width": "40",
-                "top": "1%+4",
-                "right": "3%"
+                "width": "14%",
+                "top": "3%",
+                "right": "0"
               },
               "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/about.json"
+                "trigger": "remFriend"
+              }
+            }
+          ],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "html",
+                  "text": "{{$cache.profileTopHTML}}",
+                  "style": {
+                    "width": "100%",
+                    "height": "61%"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "Top Memes",
+                  "style": {
+                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                    "size": "35",
+                    "align": "center",
+                    "width": "100%"
+                  }
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "spacing": "0"
+                  },
+                  "components": [
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[0].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[1].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[0].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[1].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.components[2].components[2].text}}",
+                          "style": {
+                            "height": "{{$cache.memeHeight}}"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 }
-              }
-            },
-            {
-              "type": "button",
-              "text": "Log Out",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "17%+165",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "trigger": "logout"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Email",
-              "style": {
-                "width": "400",
-                "height": "25",
-                "align": "center",
-                "top": "47%",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "{{$cache.email}}",
-              "style": {
-                "width": "400",
-                "height": "25",
-                "align": "center",
-                "top": "47%+25",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "18",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "button",
-              "text": "Update Email",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "47%+57",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/update-email.json",
-                  "transition": "push"
-                }
-              }
-            },
-            {
-              "type": "label",
-              "text": "Password",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "54%+72",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Bold",
-                "size": "20",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "label",
-              "text": "Last set {{$cache.lastPassChange}}",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "54%+102",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "18",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "button",
-              "text": "Update Password",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "54%+134",
-                "left": "25%",
-                "background": "#319CDE",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/update-password.json",
-                  "transition": "push"
-                }
-              }
-            },
-            {
-              "type": "button",
-              "text": "Delete Account",
-              "style": {
-                "width": "50%",
-                "height": "6%",
-                "align": "center",
-                "top": "85%",
-                "left": "25%",
-                "background": "#e74c3c",
-                "color": "#ffffff",
-                "size": "17",
-                "corner_radius": "25"
-              },
-              "action": {
-                "trigger": "deleteAccount"
-              }
-            },
-            {
-              "type": "label",
-              "text": "(Cannot be undone!)",
-              "style": {
-                "width": "400",
-                "height": "30",
-                "align": "center",
-                "top": "91%+1",
-                "left": "50%-200",
-                "font": "HelveticaNeue-Normal",
-                "size": "15",
-                "color": "#ffffff"
-              }
-            },
-            {
-              "type": "image",
-              "url": "{{$cache.avatar}}",
-              "style": {
-                "width": "120",
-                "height": "120",
-                "top": "17%",
-                "corner_radius": "70",
-                "left": "50%-60"
-              }
-            },
-            {
-              "type": "image",
-              "url": "https://collectmemes.com/img/back.png",
-              "style": {
-                "align": "left",
-                "left": "2%",
-                "width": "7%",
-                "top": "2%"
-              },
-              "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/collect.json",
-                  "transition": "push"
-                }
-              }
+              ]
             }
           ]
         }

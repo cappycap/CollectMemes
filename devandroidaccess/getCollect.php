@@ -61,7 +61,7 @@ function getMeme($userId, $con) {
           $meme['image'] = $image;
           $meme['rank'] = $rank;
 
-          $memeWidth = intval(0.84 * $_POST['screenWidth']);
+          $memeWidth = intval(0.78 * $_POST['screenWidth']);
 
           list($width, $height) = getimagesize($image);
 
@@ -138,7 +138,7 @@ function getMeme($userId, $con) {
 
 }
 
-function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
+function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin, $isLast) {
 
   $m = "";
   $color = "#111111";
@@ -150,6 +150,8 @@ function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
     $background = "#111111";
 
   }
+
+  $out = ($isLast) ? "Out of spins!" : "Spin to refresh!";
 
   if ($isCountdown) {
 
@@ -165,7 +167,7 @@ function spinMessage($spinsLeft, $isCountdown, $scheme, $nextSpin) {
       document.getElementById('demo').innerHTML = minutes + 'm ' + seconds + 's ';
       if (distance < 0) {
         clearInterval(x);
-        document.getElementById('demo').innerHTML = 'Spin to refresh!';
+        document.getElementById('demo').innerHTML = '" . $out . "';
       }
     }, 1000);
     </script>
@@ -330,6 +332,8 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
   if ($_POST['pass'] == "933kfjhga7862344bv") {
 
+    $pro = 0;
+
     $cur = array();
     $achievement = array();
 
@@ -340,7 +344,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
       $response['update'] = 1;
 
-      $q = "SELECT nextSpin, spinsLeft, totalSpins FROM users WHERE id=?";
+      $q = "SELECT nextSpin, spinsLeft, totalSpins, isPro FROM users WHERE id=?";
 
       if ($s = $con->prepare($q)) {
 
@@ -348,10 +352,11 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
         $s->execute();
 
-        $s->bind_result($nextSpin, $spinsLeft, $totalSpins);
+        $s->bind_result($nextSpin, $spinsLeft, $totalSpins, $isPro);
 
         if ($s->fetch()) {
 
+          $pro = $isPro;
           $s->close();
 
           $time = time();
@@ -374,7 +379,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               $cur['spinStatus'] = 1;
               $cur['collectStatus'] = 1;
 
-              $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0);
+              $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0, 0);
 
               $memeWidth = intval(0.84 * $_POST['screenWidth']);
 
@@ -399,7 +404,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               }
               $cur['spinStatus'] = 0;
               $cur['collectStatus'] = 1;
-              $cur['spinMessage'] = spinMessage($newSpinsLeft, 1, $scheme, $nextSpin);
+              $cur['spinMessage'] = spinMessage($newSpinsLeft, 1, $scheme, $nextSpin, 1);
 
               $achievement = checkAchievements($userId, $totalSpins+1, $con);
 
@@ -420,7 +425,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               }
               $cur['spinStatus'] = 1;
               $cur['collectStatus'] = 1;
-              $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0);
+              $cur['spinMessage'] = spinMessage($newSpinsLeft, 0, $scheme, 0, 0);
 
               $achievement = checkAchievements($userId, $totalSpins+1, $con);
 
@@ -432,7 +437,9 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
 
               if ($nU) {
 
-                $newNextSpin = time() + 1800;
+                $n = ($pro) ? 900 : 1800;
+                
+                $newNextSpin = time() + $n;
 
                 $u->bind_param("iii",$newSpinsLeft,$newNextSpin,$userId);
 
@@ -457,9 +464,9 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur['rarityLining'] = "file://shared/lining.png";
             $cur['spinStatus'] = 0;
             $cur['collectStatus'] = 0;
-            $cur['spinMessage'] = spinMessage(0, 1, $scheme, $nextSpin);
+            $cur['spinMessage'] = spinMessage(0, 1, $scheme, $nextSpin, 0);
 
-            $memeWidth = intval(0.84 * $_POST['screenWidth']);
+            $memeWidth = intval(0.80 * $_POST['screenWidth']);
 
             $cur['height'] = intval($memeWidth);
             $cur['heightdiv2'] = intval($memeWidth/2);

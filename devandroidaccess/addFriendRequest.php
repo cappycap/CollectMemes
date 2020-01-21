@@ -10,14 +10,14 @@ require 'db.php';
 // Define response array for delivering status.
 $response = array();
 
-if (isset($_GET['userId']) and isset($_GET['targetUsername'])) {
+if (isset($_POST['userId']) and isset($_POST['targetUsername'])) {
 
   // Clean variables.
-  $senderId = $con->real_escape_string($_GET['userId']);
-  $targetUser = $con->real_escape_string($_GET['targetUsername']);
+  $senderId = $con->real_escape_string($_POST['userId']);
+  $targetUser = $con->real_escape_string($_POST['targetUsername']);
 
   // See if username exists.
-  $search = "SELECT id,blockList FROM users WHERE username=?";
+  $search = "SELECT id,friends FROM users WHERE username=?";
 
   if ($searchStmt = $con->prepare($search)) {
 
@@ -25,23 +25,24 @@ if (isset($_GET['userId']) and isset($_GET['targetUsername'])) {
 
     $searchStmt->execute();
 
-    $result = $searchStmt->get_result();
+    $searchStmt->store_result();
 
-    if ($result->num_rows > 0) {
+    $searchStmt->bind_result($userId,$friends);
 
-      while ($data = $result->fetch_assoc()) {
+    if ($searchStmt->num_rows > 0) {
 
-        $userId = $data['id'];
-        $blockList = $data['blockList'];
+      if ($searchStmt->fetch()) {
 
-        $searchStmt->close();
+        $friendsArr = explode(",",$friends);
 
-        // Check if the sender is blocked by the user.
-        if (strpos(strval($blockList), strval($senderId)) === false) {
+        // Check if the sender is added by the user.
+        if (!in_array($senderId,$friendsArr)) {
+
+          $searchStmt->close();
 
           // We good. Continue.
           // Now, let's check if a friend request exists.
-          $reqSearch = "SELECT id FROM friendrequests WHERE userId=? and senderId=?";
+          $reqSearch = "SELECT id FROM friendRequests WHERE userId=? and senderId=?";
 
           if ($reqSearchStmt = $con->prepare($reqSearch)) {
 
@@ -49,16 +50,16 @@ if (isset($_GET['userId']) and isset($_GET['targetUsername'])) {
 
             $reqSearchStmt->execute();
 
-            $reqResult = $reqSearchStmt->get_result();
+            $reqSearchStmt->store_result();
 
-            if ($reqResult->num_rows > 0) {
+            if ($reqSearchStmt->num_rows > 0) {
 
-              $response['success'] = 2;
+              $response['success'] = 1;
 
             } else {
 
               // A request doesn't exist. We can insert one.
-              $insert = "INSERT INTO friendrequests (userId, senderId) VALUES (?, ?)";
+              $insert = "INSERT INTO friendRequests (userId, senderId) VALUES (?, ?)";
 
               if ($insertStmt = $con->prepare($insert)) {
 
@@ -84,14 +85,18 @@ if (isset($_GET['userId']) and isset($_GET['targetUsername'])) {
 
         } else {
 
-          // User is in the blockList.
-          $response['success'] = 0;
+          $searchStmt->close();
+          $response['success'] = 2;
 
         }
 
 
 
       }
+
+    } else {
+
+      $response['success'] = -1;
 
     }
 

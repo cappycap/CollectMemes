@@ -1,0 +1,726 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Collect",
+      "actions": {
+        "collect": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/addToCollection.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "memeId": "{{$cache.cur.memeId}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "achievement": "{{$jason.achievement}}"
+            },
+            "success": {
+              "type": "$render",
+              "options": {
+                "template": "{{$cache.achievement.nextTemplate}}"
+              }
+            }
+          }
+        },
+        "spinAchievementCheck": [
+          {
+            "{{#if $cache.achievement.status == 1}}": {
+              "type": "$render",
+              "options": {
+                "template": "achievement"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$render"
+            }
+          }
+        ],
+        "welcomeCheck": [
+          {
+            "{{#if 'welcome' in $params}}": {
+              "type": "$render",
+              "options": {
+                "template": "welcome"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "spinAchievementCheck"
+            }
+          }
+        ],
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getCollect.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "pass": "933kfjhga7862344bv",
+              "scheme": "light",
+              "spin": [
+                {
+                  "{{#if 'spin' in $params}}": "true"
+                },
+                {
+                  "{{#else}}": "false"
+                }
+              ],
+              "screenWidth": "{{$env.device.width}}"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.update == 1}}": {
+                "type": "$cache.set",
+                "options": {
+                  "cur": "{{$jason.cur}}",
+                  "achievement": "{{$jason.achievement}}",
+                  "heart": "{{$jason.heart}}",
+                  "currentSpinButton": "file://collect/spin.png",
+                  "currentCollectButton": "file://collect/collect.png",
+                  "liked": "{{$jason.cur.liked}}"
+                },
+                "success": {
+                  "trigger": "welcomeCheck"
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$cache.set",
+                "options": {
+                  "currentSpinButton": "file://collect/spin.png",
+                  "currentCollectButton": "file://collect/collect.png"
+                },
+                "success": {
+                  "type": "$render"
+                }
+              }
+            }
+          ]
+        },
+        "userCheck": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/welcome.json"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if 'userKey' in $global}}": {
+              "trigger": "userCheck"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$global.set",
+              "options": {
+                "userKey": "0"
+              },
+              "success": {
+                "trigger": "userCheck"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "welcome": {
+          "background": "#ffffff"
+        },
+        "achievement": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://collect/achievement-top-stars.png",
+              "style": {
+                "top": "-10",
+                "left": "0",
+                "width": "100%",
+                "height": "42%"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.achievement.image}}",
+              "style": {
+                "top": "2%",
+                "width": "58%",
+                "left": "21%"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.achievement.title}}",
+              "style": {
+                "top": "43%",
+                "left": "10%",
+                "width": "80%",
+                "size": "35",
+                "color": "#111111",
+                "align": "center"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.achievement.reqs}}",
+              "style": {
+                "top": "45%+40",
+                "left": "10%",
+                "width": "80%",
+                "size": "25",
+                "color": "#111111",
+                "align": "center"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.achievement.xp}}",
+              "style": {
+                "top": "45%+80",
+                "left": "10%",
+                "width": "80%",
+                "size": "25",
+                "color": "#2d91d1",
+                "align": "center"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.achievement.emmaImage}}",
+              "style": {
+                "left": "0",
+                "bottom": "0",
+                "width": "45%"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.achievement.emmaQuote}}",
+              "style": {
+                "width": "50%",
+                "bottom": "15%",
+                "right": "10",
+                "color": "#111111",
+                "size": "25",
+                "align": "center"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://collect/continue.png",
+              "style": {
+                "right": "10",
+                "bottom": "10",
+                "width": "50%"
+              },
+              "action": {
+                "type": "$render",
+                "options": {
+                  "template": "{{$cache.achievement.exitTemplate}}"
+                }
+              }
+            }
+          ]
+        },
+        "memeCollected": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "type": "image",
+              "url": "{{$cache.cur.rarityLining}}",
+              "style": {
+                "top": "-10",
+                "left": "0",
+                "width": "100%",
+                "height": "4%"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.cur.rarityLining}}",
+              "style": {
+                "bottom": "-10",
+                "left": "0",
+                "width": "100%",
+                "height": "4%"
+              }
+            },
+            {
+              "type": "label",
+              "text": "{{$cache.cur.title}}",
+              "style": {
+                "left": "3%",
+                "top": "10%",
+                "width": "94%",
+                "height": "6%",
+                "align": "center",
+                "color": "#111111",
+                "size": "35"
+              }
+            },
+            {
+              "type": "image",
+              "url": "{{$cache.cur.image}}",
+              "style": {
+                "top": "45%-{{$cache.cur.heightdiv2}}",
+                "left": "8%",
+                "width": "84%",
+                "height": "{{$cache.cur.height}}"
+              }
+            },
+            {
+              "type": "label",
+              "text": "Meme collected!",
+              "style": {
+                "top": "80%-30",
+                "left": "10%",
+                "width": "80%",
+                "align": "center",
+                "size": "25",
+                "color": "#111111"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://collect/view-vault.png",
+              "style": {
+                "top": "82%",
+                "left": "25%",
+                "width": "50%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/devandroidviews/vault.json",
+                  "transition": "fullscreen"
+                }
+              }
+            }
+          ]
+        },
+        "body": {
+          "background": "#ffffff",
+          "layers": [
+            {
+              "{{#if $cache.cur.isMeme == 1}}": [
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.rarityLining}}",
+                  "style": {
+                    "top": "-10",
+                    "left": "0",
+                    "width": "100%",
+                    "height": "4%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.rarityLining}}",
+                  "style": {
+                    "bottom": "-10",
+                    "left": "0",
+                    "width": "100%",
+                    "height": "4%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.challengesLeft}}",
+                  "style": {
+                    "left": "5",
+                    "width": "10%",
+                    "top" : "5%-5"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/challenges.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.profileRight}}",
+                  "style": {
+                    "right": "5",
+                    "width": "10%",
+                    "top" : "5%-5"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/profile.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.rarityImage}}",
+                  "style": {
+                    "left": "31%",
+                    "top": "3%",
+                    "width": "14%",
+                    "height": "7%"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "Rank: #{{$cache.cur.rank}}",
+                  "style": {
+                    "top": "3%+3",
+                    "left": "47%+2",
+                    "size": "17",
+                    "color": "#111111",
+                    "width": "30%",
+                    "height": "3%"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "{{$cache.cur.rarity}}",
+                  "style": {
+                    "top": "6%",
+                    "left": "47%+2",
+                    "size": "17",
+                    "color": "{{$cache.cur.rarityColor}}",
+                    "width": "30%",
+                    "height": "3%"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "{{$cache.cur.title}}",
+                  "style": {
+                    "left": "3%",
+                    "top": "10%",
+                    "width": "94%",
+                    "height": "6%",
+                    "align": "center",
+                    "color": "#111111",
+                    "size": "35"
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "by {{$cache.cur.author}}",
+                  "style": {
+                    "left": "3%",
+                    "top": "10%+40",
+                    "width": "94%",
+                    "height": "5%",
+                    "align": "center",
+                    "color": "#111111",
+                    "size": "20"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.image}}",
+                  "style": {
+                    "top": "45%-{{$cache.cur.heightdiv2}}",
+                    "left": "8%",
+                    "width": "84%",
+                    "height": "{{$cache.cur.height}}"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.heart}}",
+                  "style": {
+                    "top": "59%+65",
+                    "left": "8%",
+                    "width": "15%"
+                  },
+                  "action": [
+                    {
+                      "{{#if $cache.liked == 1}}": {
+                        "type": "$network.request",
+                        "options": {
+                          "url": "https://collectmemes.com/devandroidaccess/unlikeMeme.php",
+                          "method": "post",
+                          "data": {
+                            "userId": "{{$global.userKey}}",
+                            "memeId": "{{$cache.cur.memeId}}"
+                          }
+                        },
+                        "success": {
+                          "type": "$cache.set",
+                          "options": {
+                            "heart": [
+                              {
+                                "{{#if $global.scheme == 'light'}}": "file://collect/heart-empty-light.png"
+                              },
+                              {
+                                "{{#else}}": "file://collect/heart-empty-dark.png"
+                              }
+                            ],
+                            "liked": "0"
+                          },
+                          "success": {
+                            "type": "$render"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "{{#else}}": {
+                        "type": "$network.request",
+                        "options": {
+                          "url": "https://collectmemes.com/devandroidaccess/likeMeme.php",
+                          "method": "post",
+                          "data": {
+                            "userId": "{{$global.userKey}}",
+                            "memeId": "{{$cache.cur.memeId}}"
+                          }
+                        },
+                        "success": {
+                          "type": "$cache.set",
+                          "options": {
+                            "heart": "file://shared/heart-full.png",
+                            "liked": "1"
+                          },
+                          "success": {
+                            "type": "$render"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.currentSpinButton}}",
+                  "style": {
+                    "top": "70%+50",
+                    "width": "42%",
+                    "left": "6%",
+                    "height": "8%"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/collect.json",
+                      "transition": "fullscreen",
+                      "options": {
+                        "spin": "true"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.currentCollectButton}}",
+                  "style": {
+                    "top": "70%+50",
+                    "width": "42%",
+                    "left": "52%",
+                    "height": "8%"
+                  },
+                  "action": {
+                    "trigger": "collect"
+                  }
+                },
+                {
+                  "type": "html",
+                  "text": "{{$cache.cur.spinMessage}}",
+                  "style": {
+                    "height": "5%",
+                    "top": "80%+55",
+                    "width": "42%",
+                    "left": "6%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": [
+                    {
+                      "{{#if $global.scheme == 'light'}}": "file://collect/collection-light.png"
+                    },
+                    {
+                      "{{#else}}": "file://collect/collection-dark.png"
+                    }
+                  ],
+                  "style": {
+                    "top": "80%+60",
+                    "width": "6%",
+                    "left": "70%"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/vault.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "{{#else}}": [
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.rarityLining}}",
+                  "style": {
+                    "top": "-10",
+                    "left": "0",
+                    "width": "100%",
+                    "height": "4%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.rarityLining}}",
+                  "style": {
+                    "bottom": "-10",
+                    "left": "0",
+                    "width": "100%",
+                    "height": "4%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.challengesLeft}}",
+                  "style": {
+                    "left": "5",
+                    "width": "10%",
+                    "top" : "5%-5"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/challenges.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.profileRight}}",
+                  "style": {
+                    "right": "5",
+                    "width": "10%",
+                    "top" : "5%-5"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/profile.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                },
+                {
+                  "type": "label",
+                  "text": "{{$cache.cur.title}}",
+                  "style": {
+                    "left": "3%",
+                    "top": "10%",
+                    "width": "94%",
+                    "height": "6%",
+                    "align": "center",
+                    "color": "#111111",
+                    "size": "35"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.cur.image}}",
+                  "style": {
+                    "top": "45%-{{$cache.cur.heightdiv2}}",
+                    "left": "8%",
+                    "width": "84%",
+                    "height": "{{$cache.cur.height}}"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.currentSpinButton}}",
+                  "style": {
+                    "top": "70%+50",
+                    "width": "42%",
+                    "left": "6%",
+                    "height": "8%"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/collect.json",
+                      "transition": "fullscreen",
+                      "options": {
+                        "spin": "true"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": "{{$cache.currentCollectButton}}",
+                  "style": {
+                    "top": "70%+50",
+                    "width": "42%",
+                    "left": "52%",
+                    "height": "8%"
+                  }
+                },
+                {
+                  "type": "html",
+                  "text": "{{$cache.cur.spinMessage}}",
+                  "style": {
+                    "height": "5%",
+                    "top": "80%+55",
+                    "width": "42%",
+                    "left": "6%"
+                  }
+                },
+                {
+                  "type": "image",
+                  "url": [
+                    {
+                      "{{#if $global.scheme == 'light'}}": "file://collect/collection-light.png"
+                    },
+                    {
+                      "{{#else}}": "file://collect/collection-dark.png"
+                    }
+                  ],
+                  "style": {
+                    "top": "80%+60",
+                    "width": "6%",
+                    "left": "70%"
+                  },
+                  "action": {
+                    "type": "$href",
+                    "options": {
+                      "url": "https://collectmemes.com/devandroidviews/vault.json",
+                      "transition": "fullscreen"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

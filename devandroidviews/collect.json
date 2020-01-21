@@ -41,21 +41,6 @@
             }
           }
         ],
-        "welcomeCheck": [
-          {
-            "{{#if 'welcome' in $params}}": {
-              "type": "$render",
-              "options": {
-                "template": "welcome"
-              }
-            }
-          },
-          {
-            "{{#else}}": {
-              "trigger": "spinAchievementCheck"
-            }
-          }
-        ],
         "mainLoad": {
           "type": "$network.request",
           "options": {
@@ -64,7 +49,7 @@
             "data": {
               "userId": "{{$global.userKey}}",
               "pass": "933kfjhga7862344bv",
-              "scheme": "light",
+              "scheme": "{{$global.scheme}}",
               "spin": [
                 {
                   "{{#if 'spin' in $params}}": "true"
@@ -89,7 +74,7 @@
                   "liked": "{{$jason.cur.liked}}"
                 },
                 "success": {
-                  "trigger": "welcomeCheck"
+                  "trigger": "spinAchievementCheck"
                 }
               }
             },
@@ -107,10 +92,48 @@
             }
           ]
         },
+        "schemeCheck": [
+          {
+            "{{#if 'heart' in $cache && !('spin' in $params)}}": [
+              {
+                "{{#if $cache.heart == 'file://collect/heart-empty-dark.png' && $global.scheme == 'light'}}": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/devandroidviews/collect.json",
+                    "options": {
+                      "spin": "true"
+                    }
+                  }
+                }
+              },
+              {
+                "{{#elseif $cache.heart == 'file://collect/heart-empty-light.png' && $global.scheme == 'dark'}}": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/devandroidviews/collect.json",
+                    "options": {
+                      "spin": "true"
+                    }
+                  }
+                }
+              },
+              {
+                "{{#else}}": {
+                  "trigger": "mainLoad"
+                }
+              }
+            ]
+          },
+          {
+            "{{#else}}": {
+              "trigger": "mainLoad"
+            }
+          }
+        ],
         "userCheck": [
           {
             "{{#if $global.userKey != '0'}}": {
-              "trigger": "mainLoad"
+              "trigger": "schemeCheck"
             }
           },
           {
@@ -139,14 +162,46 @@
               }
             }
           }
-        ]
+        ],
+        "viewInVault": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/devandroidaccess/getCollect.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "pass": "933kfjhga7862344bv",
+              "scheme": "{{$global.scheme}}",
+              "spin": "true",
+              "screenWidth": "{{$env.device.width}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "cur": "{{$jason.cur}}",
+              "achievement": "{{$jason.achievement}}",
+              "heart": "{{$jason.heart}}",
+              "currentSpinButton": "file://collect/spin.png",
+              "currentCollectButton": "file://collect/collect.png",
+              "liked": "{{$jason.cur.liked}}"
+            },
+            "success": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/devandroidviews/vault.json",
+                "transition": "fullscreen"
+              }
+            }
+          }
+        }
       },
       "templates": {
         "welcome": {
-          "background": "#ffffff"
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
         },
         "achievement": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "layers": [
             {
               "type": "image",
@@ -174,8 +229,8 @@
                 "top": "43%",
                 "left": "10%",
                 "width": "80%",
-                "size": "35",
-                "color": "#111111",
+                "size": "33",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "align": "center"
               }
             },
@@ -184,10 +239,10 @@
               "text": "{{$cache.achievement.reqs}}",
               "style": {
                 "top": "45%+40",
-                "left": "10%",
-                "width": "80%",
-                "size": "25",
-                "color": "#111111",
+                "left": "5%",
+                "width": "90%",
+                "size": "20",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "align": "center"
               }
             },
@@ -219,7 +274,7 @@
                 "width": "50%",
                 "bottom": "15%",
                 "right": "10",
-                "color": "#111111",
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "size": "25",
                 "align": "center"
               }
@@ -242,7 +297,7 @@
           ]
         },
         "memeCollected": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "layers": [
             {
               "type": "image",
@@ -271,19 +326,19 @@
                 "left": "3%",
                 "top": "10%",
                 "width": "94%",
-                "height": "6%",
+                "height": "7%",
                 "align": "center",
-                "color": "#111111",
-                "size": "35"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                "size": "33"
               }
             },
             {
               "type": "image",
               "url": "{{$cache.cur.image}}",
               "style": {
-                "top": "45%-{{$cache.cur.heightdiv2}}",
-                "left": "8%",
-                "width": "84%",
+                "top": "46%-{{$cache.cur.heightdiv2}}",
+                "left": "10%",
+                "width": "80%",
                 "height": "{{$cache.cur.height}}"
               }
             },
@@ -296,29 +351,25 @@
                 "width": "80%",
                 "align": "center",
                 "size": "25",
-                "color": "#111111"
+                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
               }
             },
             {
               "type": "image",
-              "url": "file://collect/view-vault.png",
+              "url": "file://collect/continue.png",
               "style": {
                 "top": "82%",
                 "left": "25%",
                 "width": "50%"
               },
               "action": {
-                "type": "$href",
-                "options": {
-                  "url": "https://collectmemes.com/devandroidviews/vault.json",
-                  "transition": "fullscreen"
-                }
+                "trigger": "viewInVault"
               }
             }
           ]
         },
         "body": {
-          "background": "#ffffff",
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
           "layers": [
             {
               "{{#if $cache.cur.isMeme == 1}}": [
@@ -391,7 +442,7 @@
                     "top": "3%+3",
                     "left": "47%+2",
                     "size": "17",
-                    "color": "#111111",
+                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                     "width": "30%",
                     "height": "3%"
                   }
@@ -415,9 +466,9 @@
                     "left": "3%",
                     "top": "10%",
                     "width": "94%",
-                    "height": "6%",
+                    "height": "7%",
                     "align": "center",
-                    "color": "#111111",
+                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                     "size": "35"
                   }
                 },
@@ -430,7 +481,7 @@
                     "width": "94%",
                     "height": "5%",
                     "align": "center",
-                    "color": "#111111",
+                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                     "size": "20"
                   }
                 },
@@ -438,9 +489,9 @@
                   "type": "image",
                   "url": "{{$cache.cur.image}}",
                   "style": {
-                    "top": "45%-{{$cache.cur.heightdiv2}}",
-                    "left": "8%",
-                    "width": "84%",
+                    "top": "46%-{{$cache.cur.heightdiv2}}",
+                    "left": "10%",
+                    "width": "80%",
                     "height": "{{$cache.cur.height}}"
                   }
                 },
@@ -469,7 +520,7 @@
                           "options": {
                             "heart": [
                               {
-                                "{{#if 1}}": "file://collect/heart-empty-light.png"
+                                "{{#if $global.scheme == 'light'}}": "file://collect/heart-empty-light.png"
                               },
                               {
                                 "{{#else}}": "file://collect/heart-empty-dark.png"
@@ -555,7 +606,7 @@
                   "type": "image",
                   "url": [
                     {
-                      "{{#if 1}}": "file://collect/collection-light.png"
+                      "{{#if $global.scheme == 'light'}}": "file://collect/collection-light.png"
                     },
                     {
                       "{{#else}}": "file://collect/collection-dark.png"
@@ -637,9 +688,9 @@
                     "left": "3%",
                     "top": "10%",
                     "width": "94%",
-                    "height": "6%",
+                    "height": "7%",
                     "align": "center",
-                    "color": "#111111",
+                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                     "size": "35"
                   }
                 },
@@ -697,7 +748,7 @@
                   "type": "image",
                   "url": [
                     {
-                      "{{#if 1}}": "file://collect/collection-light.png"
+                      "{{#if $global.scheme == 'light'}}": "file://collect/collection-light.png"
                     },
                     {
                       "{{#else}}": "file://collect/collection-dark.png"
