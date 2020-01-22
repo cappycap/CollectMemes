@@ -142,7 +142,9 @@ function getProgress($achievementId, $stage, $userId, $con) {
 
   // generate progress bar
 
-  $p = ($max != 0) ? intval(($min / $max) * 100) : 100;
+  $frac = floatval($min) / floatval($max);
+
+  $p = ($max != 0) ? intval($frac * 100) : 100;
 
   $s = "<html><head><style>body { margin:0; height:24px; background:#dedede; } .bar { width:" . $p . "%; height:24px;background:#3498db; } </style></head><body><div class='bar'></div></body></html>";
 

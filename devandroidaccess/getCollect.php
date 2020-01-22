@@ -438,7 +438,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
               if ($nU) {
 
                 $n = ($pro) ? 900 : 1800;
-                
+
                 $newNextSpin = time() + $n;
 
                 $u->bind_param("iii",$newSpinsLeft,$newNextSpin,$userId);
@@ -460,7 +460,7 @@ if (isset($_POST['userId']) and isset($_POST['pass']) and isset($_POST['scheme']
             $cur['isMeme'] = "0";
             $cur['memeId'] = "0";
             $cur['title'] = "Out of spins!";
-            $cur['image'] = ($scheme == 'light') ? "file://collect/out-light.png" : "file://collect/out-dark.png";
+            $cur['image'] = ($scheme == 'light') ? "file://collect/timeout-light.png" : "file://collect/timeout-dark.png";
             $cur['rarityLining'] = "file://shared/lining.png";
             $cur['spinStatus'] = 0;
             $cur['collectStatus'] = 0;

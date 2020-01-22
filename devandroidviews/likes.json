@@ -44,14 +44,14 @@
                     "description": "Meme removed from likes!"
                   },
                   "success": {
-                    "type": "$global.set",
+                    "type": "$cache.set",
                     "options": {
-                      "memeRemoved": "0"
+                      "cur": "0"
                     },
                     "success": {
-                      "type": "$cache.set",
+                      "type": "$global.set",
                       "options": {
-                        "cur": "0"
+                        "memeRemoved": "0"
                       },
                       "success": {
                         "trigger": "mainLoad"
@@ -59,7 +59,8 @@
                     }
                   }
                 }
-              }
+              },
+
             ]
           },
           {
