@@ -1,0 +1,128 @@
+{
+  "$jason": {
+    "head": {
+      "title": "register",
+      "actions": {
+        "$load": {
+          "type": "$render"
+        },
+        "changeScheme": {
+          "type": "$global.set",
+          "options": {
+            "scheme": [
+              {
+                "{{#if 'scheme' in $global}}": [
+                  {
+                    "{{#if $global.scheme == 'light'}}": "dark"
+                  },
+                  {
+                    "{{#else}}": "light"
+                  }
+                ]
+              },
+              {
+                "{{#else}}": "dark"
+              }
+            ]
+          },
+          "success": {
+            "type": "$render"
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "header": {
+            "style": {
+              "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            }
+          },
+          "layers": [
+            {
+              "type": "image",
+              "url": "https://collectmemes.com/img/surprised-pikachu.png",
+              "style": {
+                "width": "80%",
+                "height": "200",
+                "left": "10%",
+                "top": "15%"
+              }
+            }
+            {
+              "type": "button",
+              "text": "Toggle Light/Dark Mode",
+              "style": {
+                "width": "60%",
+                "height": "6%",
+                "align": "center",
+                "top": "15%+220",
+                "left": "20%",
+                "background": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                "color": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+                "size": "17",
+                "corner_radius": "25"
+              },
+              "action": {
+                "trigger": "changeScheme"
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://emma/laughing.png",
+              "style": {
+                "left": "0",
+                "bottom": "0",
+                "width": "45%"
+              }
+            },
+            {
+              "type": "html",
+              "style": {
+                "width": "50%",
+                "top": "74%",
+                "right": "10",
+                "height": "30%"
+              },
+              "text": [
+                {
+                  "{{#if $global.scheme == 'light'}}": "<html><body style='text-align:center;background:#ffffff;color:#111111;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'This is the last step! Which scheme would you like to use? (Can be changed later.)';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+                },
+                {
+                  "{{#else}}": "<html><body style='text-align:center;background:#111111;color:#ffffff;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'This is the last step! Which scheme would you like to use? (Can be changed later.)';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "url": "file://collect/continue.png",
+              "style": {
+                "right": "10",
+                "bottom": "10",
+                "width": "50%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1androidviews/collect.json",
+                  "transition": "fullscreen",
+                  "options": {
+                    "spin": "true"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

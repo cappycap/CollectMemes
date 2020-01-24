@@ -10,7 +10,8 @@
             "method": "post",
             "data": {
               "userId": "{{$global.userKey}}",
-              "scheme": "{{$global.scheme}}"
+              "scheme": "{{$global.scheme}}",
+              "width": "{{$env.device.width}}"
             }
           },
           "success": {
@@ -209,7 +210,7 @@
                               "type": "html",
                               "text": "{{bar}}",
                               "style": {
-                                "width": "90%",
+                                "width": "{{width}}",
                                 "height": "24"
                               }
                             },

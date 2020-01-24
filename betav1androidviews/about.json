@@ -1,0 +1,38 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$render"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1androidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

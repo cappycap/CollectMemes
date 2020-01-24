@@ -48,13 +48,23 @@
           },
           "layers": [
             {
+              "type": "image",
+              "url": "https://collectmemes.com/img/surprised-pikachu.png",
+              "style": {
+                "width": "80%",
+                "height": "200",
+                "left": "10%",
+                "top": "15%"
+              }
+            }
+            {
               "type": "button",
               "text": "Toggle Light/Dark Mode",
               "style": {
                 "width": "60%",
                 "height": "6%",
                 "align": "center",
-                "top": "17%+150",
+                "top": "15%+220",
                 "left": "20%",
                 "background": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "color": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],

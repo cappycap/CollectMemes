@@ -1,0 +1,634 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Empty",
+      "actions": {
+        "getRequests": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/getFriendRequests.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "scheme": "{{$global.scheme}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "nav": "{{$jason.nav}}",
+              "hasRequests": "{{$jason.hasRequests}}",
+              "requests": "{{$jason.requests}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "handleDecision": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/handleFriend.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "senderId": "{{$params.senderId}}",
+              "decision": "{{$params.decision}}"
+            }
+          },
+          "success": {
+            "type": "$href",
+            "options": {
+              "url": "https://collectmemes.com/betav1androidviews/profile.json",
+              "transition": "fullscreen",
+              "options": {
+                "title": "{{$jason.title}}",
+                "description": "{{$jason.description}}"
+              }
+            }
+          }
+        },
+        "onSubmit": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/addFriendRequest.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "targetUsername": "{{$get.username}}"
+            }
+          },
+          "success": [
+            {
+              "{{#if $jason.success == 1}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Success!",
+                  "description": "Friend request sent."
+                },
+                "success": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/betav1androidviews/profile.json",
+                    "transition": "fullscreen"
+                  }
+                }
+              }
+            },
+            {
+              "{{#elseif $jason.success == 2}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Oops...",
+                  "description": "This user is already your friend."
+                },
+                "success": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/betav1androidviews/add-friend.json",
+                    "transition": "fullscreen"
+                  }
+                }
+              }
+            },
+            {
+              "{{#else}}": {
+                "type": "$util.alert",
+                "options": {
+                  "title": "Oops...",
+                  "description": "That username wasn't found."
+                },
+                "success": {
+                  "type": "$href",
+                  "options": {
+                    "url": "https://collectmemes.com/betav1androidviews/add-friend.json",
+                    "transition": "fullscreen"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "mainLoad": [
+          {
+            "{{#if 'decision' in $params}}": {
+              "trigger": "handleDecision"
+            }
+          },
+          {
+            "{{#elseif 'title' in $params}}": {
+              "trigger": "displayAlert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "getRequests"
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1androidviews/welcome.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "style": {
+            "border": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+          },
+          "sections": [
+            {
+              "items": [
+                {
+                  "{{#if $cache.hasRequests == 1}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "file://shared/lining.png",
+                          "style": {
+                            "width": "100%"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "1%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "width": "100%",
+                            "padding": "10",
+                            "spacing": "10",
+                            "height": "10%"
+                          },
+                          "components": [
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.profileLeft}}",
+                              "style": {
+                                "width": "12%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/betav1androidviews/profile.json",
+                                  "transition": "fullscreen"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://tops/add-friend.png",
+                              "style": {
+                                "width": "20%"
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "12%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "label",
+                          "text": "Add Friend",
+                          "style": {
+                            "padding": "0",
+                            "size": "40",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "Enter username to add:",
+                          "style": {
+                            "width": "100%",
+                            "color": "#c3c3c3",
+                            "size": "20",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "3%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "height": "200"
+                          },
+                          "components": [
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "padding": "0",
+                                "height": "90"
+                              }
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "10%"
+                                  }
+                                },
+                                {
+                                  "type": "textfield",
+                                  "name": "username",
+                                  "placeholder": "username...",
+                                  "style": {
+                                    "font": "Roboto",
+                                    "size": "20",
+                                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                    "background": "#eff0f2",
+                                    "padding": "20",
+                                    "width": "80%",
+                                    "align": "center",
+                                    "corner_radius": "30",
+                                    "height": "60"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "spacing": "0"
+                              },
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "50%-100"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "Submit",
+                                  "style": {
+                                    "width": "200",
+                                    "height": "55",
+                                    "size": "17",
+                                    "background": "#2d91d1",
+                                    "color": "#ffffff",
+                                    "padding": "2",
+                                    "corner_radius": "50",
+                                    "align": "center"
+                                  },
+                                  "action": {
+                                    "trigger": "onSubmit"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "vertical",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Friend Requests",
+                              "style": {
+                                "size": "40",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "padding": "10",
+                                "height": "400"
+                              }
+                              "components": {
+                                "{{#each $cache.requests}}": {
+                                  "type": "vertical",
+                                  "style": {
+                                    "width": "140",
+                                    "align": "center"
+                                  }
+                                  "components": [
+                                    {
+                                      "type": "image",
+                                      "url": "{{avatar}}",
+                                      "style": {
+                                        "width": "120",
+                                        "height": "120",
+                                        "corner_radius": "150"
+                                      }
+                                    },
+                                    {
+                                      "type": "label",
+                                      "text": "{{username}}",
+                                      "style": {
+                                        "align": "center",
+                                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                        "size": "18",
+                                        "width": "100%",
+                                        "height": "30"
+                                      }
+                                    },
+                                    {
+                                      "type": "horizontal",
+                                      "style": {
+                                        "spacing": "0",
+                                        "height": "60"
+                                        "align": "center"
+                                      }
+                                      "components": [
+                                        {
+                                          "type": "image",
+                                          "url": "file://add-friend/accept.png",
+                                          "style": {
+                                            "width": "50",
+                                            "height": "50"
+                                          },
+                                          "action": {
+                                            "type": "$href",
+                                            "options": {
+                                              "url": "https://collectmemes.com/betav1androidviews/add-friend.json",
+                                              "transition": "fullscreen",
+                                              "options": {
+                                                "decision": "1",
+                                                "senderId": "{{id}}"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "space",
+                                          "style": {
+                                            "width": "20"
+                                          }
+                                        },
+                                        {
+                                          "type": "image",
+                                          "url": "file://add-friend/deny.png",
+                                          "style": {
+                                            "width": "50",
+                                            "height": "50"
+                                          },
+                                          "action": {
+                                            "type": "$href",
+                                            "options": {
+                                              "url": "https://collectmemes.com/betav1androidviews/add-friend.json",
+                                              "transition": "fullscreen",
+                                              "options": {
+                                                "decision": "0",
+                                                "senderId": "{{id}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "{{#else}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "file://shared/lining.png",
+                          "style": {
+                            "width": "100%"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "1%"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "width": "100%",
+                            "padding": "10",
+                            "spacing": "10",
+                            "height": "10%"
+                          },
+                          "components": [
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.profileLeft}}",
+                              "style": {
+                                "width": "12%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/betav1androidviews/profile.json",
+                                  "transition": "fullscreen"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://tops/add-friend.png",
+                              "style": {
+                                "width": "20%"
+                              }
+                            },
+                            {
+                              "type": "space"
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "12%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "label",
+                          "text": "Add Friend",
+                          "style": {
+                            "padding": "0",
+                            "size": "40",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "Enter username to add:",
+                          "style": {
+                            "width": "100%",
+                            "color": "#c3c3c3",
+                            "size": "20",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "height": "3%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "height": "200"
+                          },
+                          "components": [
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "padding": "0",
+                                "height": "90"
+                              }
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "10%"
+                                  }
+                                },
+                                {
+                                  "type": "textfield",
+                                  "name": "username",
+                                  "placeholder": "username...",
+                                  "style": {
+                                    "font": "Roboto",
+                                    "size": "20",
+                                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                    "background": "#eff0f2",
+                                    "padding": "20",
+                                    "width": "80%",
+                                    "align": "center",
+                                    "corner_radius": "30",
+                                    "height": "60"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "spacing": "0"
+                              },
+                              "components": [
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "50%-100"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "Submit",
+                                  "style": {
+                                    "width": "200",
+                                    "height": "55",
+                                    "size": "17",
+                                    "background": "#2d91d1",
+                                    "color": "#ffffff",
+                                    "padding": "2",
+                                    "corner_radius": "50",
+                                    "align": "center"
+                                  },
+                                  "action": {
+                                    "trigger": "onSubmit"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "vertical",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Friend Requests",
+                              "style": {
+                                "size": "40",
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "No incoming requests!",
+                              "style": {
+                                "size": "25",
+                                "color": "#c3c3c3",
+                                "width": "100%",
+                                "align": "center"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

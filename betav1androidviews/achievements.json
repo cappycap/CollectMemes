@@ -1,0 +1,263 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Achievements",
+      "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/getAchievements.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "scheme": "{{$global.scheme}}",
+              "width": "{{$env.device.width}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "achievements": "{{$jason.achievements}}",
+              "nav": "{{$jason.nav}}",
+              "stats": "{{$jason.stats}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1androidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical",
+                  "style": {
+                    "align": "center",
+                    "padding": "0",
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                  },
+                  "components": [
+                    {
+                      "type": "image",
+                      "url": "file://achievements/lining.png",
+                      "style": {
+                        "width": "100%"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "1%"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "width": "98%",
+                        "padding": "10",
+                        "spacing": "10"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "12%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://tops/achievements.png",
+                          "style": {
+                            "width": "20%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.collectRight}}",
+                          "style": {
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/betav1androidviews/collect.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "Achievements",
+                      "style": {
+                        "padding": "0",
+                        "size": "40",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0",
+                        "height": "6%"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "10%"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.stats}}",
+                          "style": {
+                            "padding": "0",
+                            "width": "80%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "1%"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "spacing": "0"
+                  },
+                  "components": {
+                    "{{#each $cache.achievements}}": {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "10",
+                        "padding": "10",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "{{image}}",
+                          "style": {
+                            "width": "25%-10"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "spacing": "10",
+                            "padding": "2"
+                            "width": "75%-10"
+                          },
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "{{title}}",
+                              "style": {
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "size": "25"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{reqs}}",
+                              "style": {
+                                "color": "#c3c3c3",
+                                "size": "15"
+                              }
+                            },
+                            {
+                              "type": "html",
+                              "text": "{{bar}}",
+                              "style": {
+                                "width": "{{width}}",
+                                "height": "24"
+                              }
+                            },
+                            {
+                              "type": "horizontal",
+                              "style": {
+                                "spacing": "0",
+                                "padding": "0"
+                              }
+                              "components": [
+                                {
+                                  "type": "label",
+                                  "text": "{{progress}}",
+                                  "style": {
+                                    "color": "{{xpColor}}",
+                                    "width": "20%"
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "{{xp}}",
+                                  "style": {
+                                    "color": "{{xpColor}}",
+                                    "size": "12",
+                                    "align": "right",
+                                    "width": "49%"
+                                  }
+                                },
+                                {
+                                  "type": "space",
+                                  "style": {
+                                    "width": "1%"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

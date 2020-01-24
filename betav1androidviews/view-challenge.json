@@ -1,0 +1,201 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/getChallenge.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "collectionId": "{{$params.id}}",
+              "scheme": "{{$global.scheme}}",
+              "deviceHeight": "{{$env.device.height}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "challenge": "{{$jason.challenge}}",
+              "memes": "{{$jason.memes}}",
+              "nav": "{{$jason.nav}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "$load": [
+          {
+            "{{#if 'id' in $params}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1androidviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical",
+                  "style": {
+                    "spacing": "0",
+                    "padding": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                  },
+                  "components": [
+                    {
+                      "type": "image",
+                      "url": "file://shared/lining.png",
+                      "style": {
+                        "width": "100%"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "0",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "2%"
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.back}}",
+                          "style": {
+                            "width": "80",
+                            "height": "80"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/betav1androidviews/challenges.json"
+                            }
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "18%-80"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{$cache.challenge.title}}",
+                          "style": {
+                            "size": "30",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                            "width": "60%",
+                            "align": "center"
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "20%"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenge.progress}}",
+                      "style": {
+                        "width": "100%",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                        "size": "25",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{$cache.challenge.rewardText}}",
+                      "style": {
+                        "width": "100%",
+                        "color": "{{$cache.challenge.rewardColor}}",
+                        "size": "25",
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "3%"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "width": "100%",
+                    "padding": "5",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                  },
+                  "components": {
+                    "{{#each $cache.memes}}": {
+                      "type": "vertical",
+                      "style": {
+                        "spacing": "5",
+                        "padding": "0",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "{{image}}",
+                          "style": {
+                            "width": "60%"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{title}}",
+                          "style": {
+                            "width": "100%",
+                            "align": "center",
+                            "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                            "size": "20"
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{text}}",
+                          "style": {
+                            "width": "100%",
+                            "align": "center",
+                            "color": "{{textColor}}",
+                            "size": "16",
+                            "height": "40"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

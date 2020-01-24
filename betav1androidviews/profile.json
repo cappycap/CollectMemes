@@ -1,0 +1,523 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Profile",
+      "actions": {
+        "getProfile": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1androidaccess/getProfile.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "scheme": "{{$global.scheme}}",
+              "cur": "{{$cache.cur}}",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}",
+              "devWidth": "{{$env.device.width}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "profileTopHTML": "{{$jason.profileTopHTML}}",
+              "profileTopHeight": "{{$jason.profileTopHeight}}"
+              "addFriendImage": "{{$jason.addFriendImage}}",
+              "nav": "{{$jason.nav}}",
+              "friends": "{{$jason.friends}}",
+              "hasFriends": "{{$jason.hasFriends}}",
+              "cur": "{{$jason.cur}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "displayAlert": {
+          "type": "$util.banner",
+          "options": {
+            "title": "{{$params.title}}",
+            "description": "{{$params.description}}"
+          },
+          "success": {
+            "trigger": "getProfile"
+          }
+        },
+        "alertCheck": [
+          {
+            "{{#if 'title' in $params}}": {
+              "trigger": "displayAlert"
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "getProfile"
+            }
+          }
+        ],
+        "mainLoad": [
+          {
+            "{{#if 'cur' in $cache}}": {
+              "trigger": "alertCheck"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "cur": "0",
+                "sort": "sortByXP",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "alertCheck"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1androidviews/welcome.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://nav/collect-profile.png",
+              "style": {
+                "width": "14%",
+                "top": "3%",
+                "left": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1androidviews/collect.json"
+                }
+              }
+            },
+            {
+              "type": "image",
+              "url": "file://nav/settings-profile.png",
+              "style": {
+                "width": "14%",
+                "top": "3%",
+                "right": "0"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1androidviews/settings.json"
+                }
+              }
+            }
+          ],
+          "sections": [
+            {
+              "items": [
+                {
+                  "{{#if $cache.hasFriends == 1}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.profileTopHTML}}",
+                          "style": {
+                            "width": "100%",
+                            "height": "{{$cache.profileTopHeight}}"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "Friends",
+                              "style": {
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "size": "45",
+                                "width": "40%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.sortButton}}",
+                              "style": {
+                                "width": "7%"
+                              },
+                              "action": {
+                                "type": "$util.picker",
+                                "options": {
+                                  "title": "Sort By:",
+                                  "items": [
+                                    {
+                                      "text": "Last Collected (ascending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "1",
+                                          "sort": "sortByLastCollect"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Last Collected (descending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "0",
+                                          "sort": "sortByLastCollect"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Level (ascending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "1",
+                                          "sort": "sortByXP"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "text": "Level (descending)",
+                                      "action": {
+                                        "type": "$cache.set",
+                                        "options": {
+                                          "sortDir": "0",
+                                          "sort": "sortByXP"
+                                        },
+                                        "success": {
+                                          "type": "$reload"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "38%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.addFriendImage}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/betav1androidviews/add-friend.json"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "5",
+                        "spacing": "10",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                      },
+                      "components": {
+                        "{{#each $cache.friends}}": {
+                          "type": "horizontal",
+                          "style": {
+                            "spacing": "10",
+                            "align": "center",
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "1%"
+                              }
+                            },
+                            {
+                              "type": "html",
+                              "text": "{{avatarHTML}}",
+                              "style": {
+                                "width": "25%"
+                              }
+                            },
+                            {
+                              "type": "vertical",
+                              "style": {
+                                "padding": "0",
+                                "spacing": "0",
+                                "width": "50%"
+                              },
+                              "components": [
+                                {
+                                  "type": "label",
+                                  "text": "{{username}}"
+                                  "style": {
+                                    "size": "25",
+                                    "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
+                                  }
+                                },
+                                {
+                                  "type": "label",
+                                  "text": "{{lastCollectText}}",
+                                  "style": {
+                                    "size": "15",
+                                    "color": "#ADADAD"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "image",
+                              "url": "file://shared/view-button.png",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/betav1androidviews/view-friend.json",
+                                  "options": {
+                                    "friendId": "{{id}}"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                      },
+                      "components": [
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "padding": "10",
+                            "spacing": "10",
+                            "align": "center",
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                            "width": [
+                              {
+                                "{{#if $cache.nav.displayPager == 1}}": "100%"
+                              },
+                              {
+                                "{{#else}}": "0"
+                              }
+                            ]
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "24%"
+                              }
+                            }
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.pageLeft}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": [
+                                {
+                                  "{{#if $cache.nav.allowPageLeft != '0'}}": {
+                                    "trigger": "onPageLeft"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{$cache.nav.pageDisplay}}",
+                              "style": {
+                                "size": "30",
+                                "color": "#3b9fdf",
+                                "align": "center",
+                                "width": "36%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.nav.pageRight}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": [
+                                {
+                                  "{{#if $cache.nav.allowPageRight != '0'}}": {
+                                    "trigger": "onPageRight"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "24%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "{{#else}}": [
+                    {
+                      "type": "vertical",
+                      "style": {
+                        "padding": "0",
+                        "spacing": "0",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                      },
+                      "components": [
+                        {
+                          "type": "html",
+                          "text": "{{$cache.profileTopHTML}}",
+                          "style": {
+                            "width": "100%",
+                            "height": "{{$cache.profileTopHeight}}"
+                          }
+                        },
+                        {
+                          "type": "horizontal",
+                          "style": {
+                            "align": "center",
+                            "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                          },
+                          "components": [
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "Friends",
+                              "style": {
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "size": "45",
+                                "width": "40%"
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "45%"
+                              }
+                            },
+                            {
+                              "type": "image",
+                              "url": "{{$cache.addFriendImage}}",
+                              "style": {
+                                "width": "8%"
+                              },
+                              "action": {
+                                "type": "$href",
+                                "options": {
+                                  "url": "https://collectmemes.com/betav1androidviews/add-friend.json"
+                                }
+                              }
+                            },
+                            {
+                              "type": "space",
+                              "style": {
+                                "width": "2%"
+                              }
+                            },
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "No friends yet!",
+                      "style": {
+                        "width": "100%",
+                        "align": "center",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                        "size": "25",
+                        "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
