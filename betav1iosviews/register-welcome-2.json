@@ -1,0 +1,93 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Welcome",
+      "actions": {
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1iosviews/collect.json"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/betav1iosaccess/math.php",
+                "method": "post",
+                "data": {
+                  "div": "true",
+                  "x": "{{$env.device.width}}",
+                  "y": "2.5",
+                  "z": "15"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "htmlWidth": "{{$jason.ret}}"
+                },
+                "success": {
+                  "type": "$render"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": "file://registration/register-welcome-2.png",
+          "layers": [
+            {
+              "type": "image",
+              "url": "file://nav/tap-left-light.png",
+              "style": {
+                "left": "2%",
+                "top": "4%",
+                "width": "10%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1iosviews/welcome.json"
+                }
+              }
+            },
+            {
+              "type": "html",
+              "style": {
+                "width": "40%",
+                "height": "15%",
+                "top": "15%",
+                "right": "10%"
+              },
+              "text": "<html><body style='text-align:center;width:{{$cache.htmlWidth}}px;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'I am here to help you set up your account and show you how the app works!';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+            },
+            {
+              "type": "image",
+              "url": "file://registration/next.png",
+              "style": {
+                "width": "40",
+                "height": "40",
+                "top": "30%",
+                "right": "30%-25",
+                "color": "#48acec"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1iosviews/register.json",
+                  "transition": "fullscreen"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

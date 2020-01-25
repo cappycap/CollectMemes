@@ -1,0 +1,58 @@
+{
+  "$jason": {
+    "head": {
+      "title": "register",
+      "actions": {
+        "$load": {
+          "type": "$render"
+        }
+      },
+      "templates": {
+        "body": {
+          "background": "file://collect/welcome.png",
+          "header": {
+            "style": {
+              "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+            },
+            "title": {
+              "type": "image",
+              "style": {
+                "width": "94",
+                "height": "27"
+              },
+              "url": "https://collectmemes.com/img/logo.png"
+            }
+          },
+          "layers": [
+            {
+              "type": "html",
+              "style": {
+                "width": "50%",
+                "top": "74%",
+                "right": "10",
+                "height": "30%"
+              },
+              "text": "<html><body style='text-align:center;' onload='typeWriter()'><p id='demo'></p><script>var i = 0;var txt = 'Nice job! Here are the five major parts of the app. Explore to learn more!';var speed = 30;function typeWriter() {if (i < txt.length) {document.getElementById('demo').innerHTML += txt.charAt(i);i++;setTimeout(typeWriter, speed);}}</script></body></html>"
+            },
+            {
+              "type": "image",
+              "url": "file://collect/continue.png",
+              "style": {
+                "right": "10",
+                "bottom": "10",
+                "width": "50%"
+              },
+              "action": {
+                "type": "$href",
+                "options": {
+                  "url": "https://collectmemes.com/betav1iosviews/choose-scheme.json",
+                  "transition": "fullscreen"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

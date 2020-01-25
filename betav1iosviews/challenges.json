@@ -1,0 +1,341 @@
+{
+  "$jason": {
+    "head": {
+      "title": "Challenges",
+      "actions": {
+        "mainLoad": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1iosaccess/getChallenges.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "scheme": "{{$global.scheme}}",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "challenges": "{{$jason.challenges}}",
+              "nav": "{{$jason.nav}}",
+              "stats": "{{$jason.stats}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "vibeCheck": [
+          {
+            "{{#if 'sort' in $cache}}": {
+              "trigger": "mainLoad"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "sort": "totalOwned",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "mainLoad"
+              }
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "trigger": "vibeCheck"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1iosviews/collect.json"
+              }
+            }
+          }
+        ]
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "sections": [
+            {
+              "items": [
+                {
+                  "type": "vertical",
+                  "style": {
+                    "align": "center",
+                    "padding": "0",
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                  },
+                  "components": [
+                    {
+                      "type": "image",
+                      "url": "file://shared/lining.png",
+                      "style": {
+                        "width": "100%"
+                      }
+                    },
+                    {
+                      "type": "space",
+                      "style": {
+                        "height": "1%"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "width": "98%",
+                        "padding": "10",
+                        "spacing": "10"
+                      },
+                      "components": [
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.achievementsLeft}}",
+                          "style": {
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/betav1iosviews/achievements.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://tops/challenges.png",
+                          "style": {
+                            "width": "20%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        },
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.collectRight}}",
+                          "style": {
+                            "width": "12%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/betav1iosviews/collect.json",
+                              "transition": "fullscreen"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "label",
+                      "text": "Challenges",
+                      "style": {
+                        "padding": "0",
+                        "size": "40",
+                        "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                        "align": "center"
+                      }
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0",
+                        "height": "6%"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "10%"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{$cache.stats}}",
+                          "style": {
+                            "padding": "0",
+                            "width": "80%"
+                          }
+                        },
+                        {
+                          "type": "space"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal",
+                      "style": {
+                        "align": "center",
+                        "padding": "0",
+                        "spacing": "0"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "89%"
+                          }
+                        },
+                        {
+                          "type": "image",
+                          "url": "{{$cache.nav.sortButton}}",
+                          "style": {
+                            "width": "7%"
+                          },
+                          "action": {
+                            "type": "$util.picker",
+                            "options": {
+                              "title": "Sort By:",
+                              "items": [
+                                {
+                                  "text": "Progress (ascending)",
+                                  "action": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "sortDir": "1",
+                                      "sort": "totalOwned"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                },
+                                {
+                                  "text": "Progress (descending)",
+                                  "action": {
+                                    "type": "$cache.set",
+                                    "options": {
+                                      "sortDir": "0",
+                                      "sort": "totalOwned"
+                                    },
+                                    "success": {
+                                      "type": "$reload"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "space"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "style": {
+                    "padding": "0",
+                    "spacing": "0",
+                    "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+                  },
+                  "components": {
+                    "{{#each $cache.challenges}}": {
+                      "type": "horizontal",
+                      "style": {
+                        "spacing": "10",
+                        "align": "center"
+                      },
+                      "components": [
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "1%"
+                          }
+                        },
+                        {
+                          "type": "html",
+                          "text": "{{circleHTML}}",
+                          "style": {
+                            "width": "32%"
+                          }
+                        },
+                        {
+                          "type": "vertical",
+                          "style": {
+                            "spacing": "0",
+                            "width": "53%",
+                            "align": "center"
+                          },
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "{{title}}",
+                              "style": {
+                                "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                                "size": "25"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{xpTop}}",
+                              "style": {
+                                "color": "{{xpColor}}",
+                                "size": "15"
+                              }
+                            },
+                            {
+                              "type": "label",
+                              "text": "{{xp}}",
+                              "style": {
+                                "color": "{{xpColor}}",
+                                "size": "15"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "image",
+                          "url": "file://shared/view-button.png",
+                          "style": {
+                            "width": "8%"
+                          },
+                          "action": {
+                            "type": "$href",
+                            "options": {
+                              "url": "https://collectmemes.com/betav1iosviews/view-challenge.json",
+                              "transition": "fullscreen",
+                              "options": {
+                                "id": "{{id}}"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "space",
+                          "style": {
+                            "width": "6%"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

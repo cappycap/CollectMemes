@@ -1,0 +1,772 @@
+{
+  "$jason": {
+    "head": {
+      "data": {
+        "load-phrases": [
+          { "phrase": "?" }
+        ]
+      },
+      "title": "Vault",
+      "actions": {
+        "mainLoad": [
+          {
+            "{{#if 'cur' in $cache}}": {
+              "trigger": "fetchImages"
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$cache.set",
+              "options": {
+                "cur": "0",
+                "sort": "rank",
+                "sortDir": "1"
+              },
+              "success": {
+                "trigger": "fetchImages"
+              }
+            }
+          }
+        ],
+        "deletedCheck": [
+          {
+            "{{#if 'memeRemoved' in $global}}": [
+              {
+                "{{#if $global.memeRemoved == 0}}": {
+                  "trigger": "mainLoad"
+                }
+              },
+              {
+                "{{#else}}": {
+                  "type": "$util.banner",
+                  "options": {
+                    "title": "Attention:",
+                    "description": "Meme removed from likes!"
+                  },
+                  "success": {
+                    "type": "$cache.set",
+                    "options": {
+                      "cur": "0"
+                    },
+                    "success": {
+                      "type": "$global.set",
+                      "options": {
+                        "memeRemoved": "0"
+                      },
+                      "success": {
+                        "trigger": "mainLoad"
+                      }
+                    }
+                  }
+                }
+              },
+
+            ]
+          },
+          {
+            "{{#else}}": {
+              "trigger": "mainLoad"
+            }
+          }
+        ],
+        "trashCheck": [
+          {
+            "{{#if 'trash' in $params}}": {
+              "type": "$cache.set",
+              "options": {
+                "cur": "0"
+              },
+              "success": {
+                "trigger": "deletedCheck"
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "trigger": "deletedCheck"
+            }
+          }
+        ],
+        "$load": [
+          {
+            "{{#if $global.userKey != '0'}}": {
+              "type": "$network.request",
+              "options": {
+                "url": "https://collectmemes.com/betav1iosaccess/memeHeight.php",
+                "method": "post",
+                "data": {
+                  "width": "{{$env.device.width}}"
+                }
+              },
+              "success": {
+                "type": "$cache.set",
+                "options": {
+                  "memeHeight": "{{$jason.ret}}"
+                },
+                "success": {
+                  "trigger": "trashCheck"
+                }
+              }
+            }
+          },
+          {
+            "{{#else}}": {
+              "type": "$href",
+              "options": {
+                "url": "https://collectmemes.com/betav1iosviews/welcome.json"
+              }
+            }
+          }
+        ],
+        "fetchImages": {
+          "type": "$network.request",
+          "options": {
+            "url": "https://collectmemes.com/betav1iosaccess/getLikesCollection.php",
+            "method": "post",
+            "data": {
+              "userId": "{{$global.userKey}}",
+              "cur": "{{$cache.cur}}",
+              "sort": "{{$cache.sort}}",
+              "sortDir": "{{$cache.sortDir}}",
+              "scheme": "{{$global.scheme}}"
+            }
+          },
+          "success": {
+            "type": "$cache.set",
+            "options": {
+              "components": "{{$jason.components}}",
+              "stats": "{{$jason.stats}}",
+              "nav": "{{$jason.nav}}",
+              "cur": "{{$jason.cur}}"
+            },
+            "success": {
+              "type": "$render"
+            }
+          }
+        },
+        "onPageLeft": {
+          "type": "$cache.set",
+          "options": {
+            "cur": "{{$cache.nav.curMin}}"
+          },
+          "success": {
+            "type": "$reload"
+          }
+        },
+        "onPageRight": {
+          "type": "$cache.set",
+          "options": {
+            "cur": "{{$cache.nav.curAdd}}"
+          },
+          "success": {
+            "type": "$reload"
+          }
+        }
+      },
+      "templates": {
+        "body": {
+          "background": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}],
+          "style": {
+            "border": [{"{{#if $global.scheme == 'light'}}":"#ffffff"},{"{{#else}}":"#111111"}]
+          },
+          "sections": [{
+            "items": [
+              {
+                "{{#if $cache.components == 'undefined'}}": [
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "align": "center",
+                      "padding": "0",
+                      "spacing": "0"
+                    }
+                    "components": [
+                      {
+                        "type": "image",
+                        "url": "file://likes/likesLining.png",
+                        "style": {
+                          "width": "100%"
+                        }
+                      },
+                      {
+                        "type": "space",
+                        "style": {
+                          "height": "1%"
+                        }
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "width": "98%",
+                          "padding": "10",
+                          "spacing": "10"
+                        }
+                        "components": [
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.vaultLeft}}",
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": {
+                              "type": "$href",
+                              "options": {
+                                "url": "https://collectmemes.com/betav1iosviews/vault.json",
+                                "transition": "fullscreen"
+                              }
+                            }
+                          },
+                          {
+                            "type": "space"
+                          },
+                          {
+                            "type": "image",
+                            "url": "file://shared/heart-full.png",
+                            "style": {
+                              "width": "20%"
+                            }
+                          },
+                          {
+                            "type": "space"
+                          },
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "12%"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "label",
+                        "text": "Liked Memes",
+                        "style": {
+                          "padding": "0",
+                          "size": "40",
+                          "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                          "align": "center"
+                        }
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "padding": "0",
+                          "spacing": "0",
+                          "height": "6%"
+                        }
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "10%"
+                            }
+                          },
+                          {
+                            "type": "label",
+                            "text": "No memes liked yet!",
+                            "style": {
+                              "padding": "0",
+                              "width": "80%",
+                              "align": "center",
+                              "size": "25",
+                              "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}]
+                            }
+                          },
+                          {
+                            "type": "space"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "{{#else}}": [
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "align": "center",
+                      "padding": "0",
+                      "spacing": "0"
+                    }
+                    "components": [
+                      {
+                        "type": "image",
+                        "url": "file://likes/likesLining.png",
+                        "style": {
+                          "width": "100%"
+                        }
+                      },
+                      {
+                        "type": "space",
+                        "style": {
+                          "height": "1%"
+                        }
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "width": "98%",
+                          "padding": "10",
+                          "spacing": "10"
+                        }
+                        "components": [
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.vaultLeft}}",
+                            "style": {
+                              "width": "12%"
+                            },
+                            "action": {
+                              "type": "$href",
+                              "options": {
+                                "url": "https://collectmemes.com/betav1iosviews/vault.json",
+                                "transition": "fullscreen"
+                              }
+                            }
+                          },
+                          {
+                            "type": "space"
+                          },
+                          {
+                            "type": "image",
+                            "url": "file://shared/heart-full.png",
+                            "style": {
+                              "width": "20%"
+                            }
+                          },
+                          {
+                            "type": "space"
+                          },
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "12%"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "label",
+                        "text": "Liked Memes",
+                        "style": {
+                          "padding": "0",
+                          "size": "40",
+                          "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
+                          "align": "center"
+                        }
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "padding": "0",
+                          "spacing": "0",
+                          "height": "6%"
+                        }
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "10%"
+                            }
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.stats}}",
+                            "style": {
+                              "padding": "0",
+                              "width": "80%"
+                            }
+                          },
+                          {
+                            "type": "space"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "align": "center",
+                          "padding": "0",
+                          "spacing": "0"
+                        }
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "86%"
+                            }
+                          },
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.sortButton}}",
+                            "style": {
+                              "width": "7%"
+                            },
+                            "action": {
+                              "type": "$util.picker",
+                              "options": {
+                                "title": "Sort By:",
+                                "items": [
+                                  {
+                                    "text": "Likes (ascending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "1",
+                                        "sort": "likes"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Likes (descending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "0",
+                                        "sort": "likes"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Date Liked (ascending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "1",
+                                        "sort": "dateAdded"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": "Date Liked (descending)",
+                                    "action": {
+                                      "type": "$cache.set",
+                                      "options": {
+                                        "sortDir": "0",
+                                        "sort": "dateAdded"
+                                      },
+                                      "success": {
+                                        "type": "$reload"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "space"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0"
+                    },
+                    "components": [
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[0].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[0].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[0].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[1].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[1].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[1].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "horizontal",
+                        "style": {
+                    			"padding": "0",
+                    			"spacing": "0"
+                    		},
+                        "components": [
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[0].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[0]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[0].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[1].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[1]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[1].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "html",
+                            "text": "{{$cache.components[2].components[2].text}}",
+                            "style": {
+                              "height": "{{$cache.memeHeight}}"
+                            },
+                            "action": [
+                              {
+                                "{{#if 'memeId' in $cache.components[2].components[2]}}": {
+                                  "type": "$href",
+                                  "options": {
+                                    "url": "https://collectmemes.com/betav1iosviews/view-liked-meme.json",
+                                    "options": {
+                                      "memeId": "{{$cache.components[2].components[2].memeId}}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "vertical",
+                    "style": {
+                      "padding": "0",
+                      "spacing": "0",
+                    },
+                    "components": [
+                      {
+                        "type": "horizontal",
+                        "style": {
+                          "padding": "10",
+                          "spacing": "10",
+                          "align": "center"
+                        },
+                        "components": [
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "24%"
+                            }
+                          }
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.pageLeft}}",
+                            "style": {
+                              "width": "8%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.nav.allowPageLeft != '0'}}": {
+                                  "trigger": "onPageLeft"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "label",
+                            "text": "{{$cache.nav.pageDisplay}}",
+                            "style": {
+                              "size": "30",
+                              "color": "#e74c3c",
+                              "align": "center",
+                              "width": "36%"
+                            }
+                          },
+                          {
+                            "type": "image",
+                            "url": "{{$cache.nav.pageRight}}",
+                            "style": {
+                              "width": "8%"
+                            },
+                            "action": [
+                              {
+                                "{{#if $cache.nav.allowPageRight != '0'}}": {
+                                  "trigger": "onPageRight"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "space",
+                            "style": {
+                              "width": "24%"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }]
+        }
+      }
+    }
+  }
+}
