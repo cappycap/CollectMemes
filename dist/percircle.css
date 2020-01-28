@@ -1,0 +1,85 @@
+@use postcss-for;
+@use postcss-mixins;
+@use postcss-nested;
+
+:root {
+  --color-ui-1: #f3f5f6;
+  --color-brand-1: #3b9fdf;
+}
+
+.progress-circle {
+  height: 8rem;
+  position: relative;
+  width: 8rem;
+
+  &__svg {
+    border-radius: 50%;
+    height: 100%;
+    transform: scaleX(-1) rotate(-90deg);
+    width: 100%;
+  }
+
+  &__stroke {
+    fill: none;
+    stroke-width: 0.25rem;
+
+    &:nth-child(1) {
+      stroke: var(--color-brand-1);
+    }
+
+    &:nth-child(2) {
+      stroke: var(--color-ui-1);
+      stroke-dasharray: 314.1592%;
+    }
+  }
+
+  @for $i from 0 to 100 {
+    &[data-percentage="$i"] {
+      .progress-circle__stroke:nth-child(2) {
+        stroke-dashoffset: calc(314.1592% * ($(i) / 100));
+      }
+    }
+  }
+}
+
+/* Demo Styles */
+:root {
+  --font-family-default: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Helvetica", "Arial", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+html,
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family-default);
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+input[type="text"] {
+  background-color: transparent;
+  border: 0;
+  bottom: 0;
+  color: var(--color-brand-1);
+  font-family: var(--font-family-default);
+  font-size: 1.5em;
+  font-weight: 200;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 3.5rem;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+  }
+}

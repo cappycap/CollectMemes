@@ -19,16 +19,12 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
 
   $nav = array();
 
-  $dir = "";
-
   if ($d == 0) {
 
-    $dir = "ASC";
     $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-down-light.png" : "file://shared/sort-down-dark.png";
 
   } else {
 
-    $dir = "DESC";
     $nav['sortButton'] = ($scheme == "light") ? "file://shared/sort-up-light.png" : "file://shared/sort-up-dark.png";
 
   }
@@ -38,7 +34,7 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
   $nav['collectRight'] = ($scheme == "light") ? "file://nav/collect-right-light.png" : "file://nav/collect-right-dark.png";
   $nav['achievementsLeft'] = ($scheme == "light") ? "file://nav/achievements-left-light.png" : "file://nav/achievements-left-dark.png";
 
-  $cpQ = "SELECT collectionId,totalOwned,completed FROM collectionsProgress WHERE userId=? ORDER BY " . $s . " " . $dir;
+  $cpQ = "SELECT collectionId,totalOwned,completed FROM collectionsProgress WHERE userId=?";
 
   if ($cpS = $con->prepare($cpQ)) {
 
@@ -90,18 +86,26 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
 
           $percent = intval(intval($challenge['totalOwned']) / intval($totalMemes) * 100);
 
+          $chal['percent'] = $percent;
+
+          $green = ($percent == 100) ? "green" : "";
+
           $chal['circleHTML'] = "<html>
           <head>
-          <style>body { margin:0; background:" . $bg . "; } .progress-circle:after { background-color:" . $bg . " !important;} </style>
-          <link href='https://collectmemes.com/dist/css-circular-prog-bar.css' rel='stylesheet'>
+          <style>
+            body { background:" . $bg . "; } .c100 { zoom:0.7;margin:0 auto !important;float:none !important; } .c100:after { background-color:" . $bg . " !important; }
+          </style>
+            <link href='https://collectmemes.com/dist/circle.css' rel='stylesheet'>
           </head>
           <body>
-          <div class='progress-circle p" . $percent . "'>
-            <span>" . $challenge['totalOwned'] . "/" . $totalMemes . "</span>
-            <div class='left-half-clipper'>
-              <div class='first50-bar'></div>
-              <div class='value-bar'></div>
-            </div>
+          <div class='c100 p" . $percent . " " . $green . "'>
+              <span>" . $challenge['totalOwned'] . "/" . $totalMemes . "</span>
+              <div class='slice'>
+                  <div class='bar'></div>
+                  <div class='fill'></div>
+              </div>
+          </div>
+        </div>
           </div>
           </body>
           </html>";
@@ -129,6 +133,18 @@ if (isset($_POST['userId']) and isset($_POST['scheme']) and isset($_POST['sort']
       }
 
       $new[] = $chal;
+
+    }
+
+    function sortByPercent($a, $b) {
+      return $a['percent'] <=> $b['percent'];
+    }
+
+    usort($new, 'sortByPercent');
+
+    if ($d == 1) {
+
+      $new = array_reverse($new);
 
     }
 
