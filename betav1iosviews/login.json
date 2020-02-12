@@ -223,8 +223,8 @@
             "title": {
               "type": "image",
               "style": {
-                "width": "94",
-                "height": "27"
+                "width": "40",
+                "height": "35"
               },
               "url": "https://collectmemes.com/img/logo.png"
             }
@@ -259,15 +259,15 @@
               "name": "username",
               "placeholder": "username...",
               "style": {
-                "font": "Roboto",
+                "left": "50%-150",
+                "top": "21%",
+                "placeholder_color": "#cecece",
                 "size": "20",
                 "color": [{"{{#if $global.scheme == 'light'}}":"#111111"},{"{{#else}}":"#ffffff"}],
                 "background": "#eff0f2",
                 "padding": "20",
-                "top": "21%",
-                "width": "80%",
-                "left": "10%",
-                "corner_radius": "30"
+                "width": "300",
+                "height": "80"
               }
             },
             {
@@ -299,7 +299,7 @@
                 "background": "#2d91d1",
                 "color": "#ffffff",
                 "padding": "2",
-                "corner_radius": "50",
+                "corner_radius": "10",
                 "align": "center"
               },
               "action": {

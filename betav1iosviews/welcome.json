@@ -33,10 +33,9 @@
               "type": "image",
               "url": "https://collectmemes.com/img/logo.png",
               "style": {
-                "width": "300",
-                "height": "100",
+                "width": "120",
                 "top": "30%-100",
-                "left": "50%-150"
+                "left": "50%-60"
               }
             },
             {
@@ -68,7 +67,7 @@
               "action": {
                 "type": "$href",
                 "options": {
-                  "url": "https://collectmemes.com/betav1iosviews/login.json",
+                  "url": "https://collectmemes.com/betav1iosviews/newlogin.json",
                   "transition": "push"
                 }
               },
@@ -81,7 +80,7 @@
                 "background": "#2d91d1",
                 "color": "#ffffff",
                 "padding": "2",
-                "corner_radius": "50",
+                "corner_radius": "10",
                 "align": "center"
               }
             },
