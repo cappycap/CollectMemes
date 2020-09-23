@@ -1,10 +1,10 @@
 <?php
 
 // Database information.
-define('DB_USER', "adamvxoc_phpaccess"); // db user
-define('DB_PASSWORD', "jUJ16efs04X+"); // db password (mention your db password here)
-define('DB_DATABASE', "adamvxoc_memecollector"); // database name
-define('DB_SERVER', "localhost"); // db server
+define('DB_USER', "?"); // db user
+define('DB_PASSWORD', "?"); // db password
+define('DB_DATABASE', "?"); // database name
+define('DB_SERVER', "?"); // db server
 
 $con = mysqli_connect(DB_SERVER,DB_USER,DB_PASSWORD,DB_DATABASE);
 
