@@ -7,7 +7,8 @@ Featuring:
 
 ![CollectMemes Diagram](http://adambullard.com/CMBackend.png)
 
------------- | ------------- | -------------
-![Spin](http://adambullard.com/images/cm/1.png)  |  ![Vault](http://adambullard.com/images/cm/2.png) |  ![Profiles](http://adambullard.com/images/cm/3.png)
+| Spin | Vault | Collect |
+| ------------ | ------------- | ------------- |
+| ![Spin](http://adambullard.com/images/cm/1.png)  |  ![Vault](http://adambullard.com/images/cm/2.png) |  ![Profiles](http://adambullard.com/images/cm/3.png) |
 
 >>>>>>> 25b4e2ddb2ed97a4cf7d6e8a9a67b7e093ca6869
