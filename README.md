@@ -7,6 +7,7 @@ Featuring:
 * Available on the [Google Play Store](https://play.google.com/store/apps/details?id=com.collectmemes&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)!
 ![CollectMemes Diagram](http://adambullard.com/CMBackend.png)
 
+| Spin | Vault | Profiles |
 | ------------ | ------------- | ------------- |
 | ![Spin](http://adambullard.com/images/cm/1.png)  |  ![Vault](http://adambullard.com/images/cm/2.png) |  ![Profiles](http://adambullard.com/images/cm/3.png) |
 
